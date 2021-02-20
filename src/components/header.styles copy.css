@@ -1,0 +1,91 @@
+
+
+#header {
+    padding: 0;
+    /* position: absolute;
+    height: 0;
+    top: 0;
+    left: 0;
+    right: 0; */
+    padding-right: 13px;
+    /* z-index: 121;
+    min-width: 685px; */
+}
+
+#headerImage {
+    margin-top: 4px;
+    padding-top: 8px;
+    float: left;
+    height: 40px;
+    overflow: hidden;
+}
+
+.logo {
+    width: 258px;
+    height: 32px;
+    margin-left: 10px;
+}
+
+.headerText {
+    /* margin-top: 4px;
+    padding-top: 8px;
+    height: 40px;
+    overflow: hidden;
+    font-size: 10px; */
+    float: right;
+}
+
+.tradingClock {
+    /* margin: 0; */
+    /* float: right; */
+    /* height: 40px;
+    padding: 8px 20px 0px 0px;
+    overflow: hidden; */
+}
+
+.clockGroup {
+    /* float: right; */
+    /* margin: 0px 5px 0px 1px; */
+}
+
+.time {
+    /* font-size: 25px;
+    float: left;
+    height: 27px;
+    width: 25px;
+    line-height: 27px; */
+}
+
+.date, .timeZone {
+    /* float: right; */
+    /* height: 31px;
+    padding-bottom: 2px;
+    font-size: 9px; */
+    /* clear: both; */
+}
+
+/* nav {
+    z-index: 10;
+    position: fixed;
+    width: 100vw;
+    background: grey;
+    padding: 25px;
+    font-size: 24px;
+    letter-spacing: 3px;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    margin-right: 25px;
+} */
+
+/* #headerImage {
+    display: flex;
+    z-index: 100;
+    align-items: center;
+    position: fixed;
+    top: 30px;
+    right: 25px;
+} */
