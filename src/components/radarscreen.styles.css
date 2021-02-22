@@ -13,6 +13,8 @@
 }
 
 #grid-container {
+
+	width: 80%;
 	display: grid;
 	/* grid-gap: 1px; */
 
