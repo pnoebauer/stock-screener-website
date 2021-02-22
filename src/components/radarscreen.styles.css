@@ -1,0 +1,29 @@
+
+.space {
+	background: red;
+	height: 30px;
+}
+
+#resizable {
+	resize: both;
+	overflow: auto;
+
+	height: 50px;
+	background-color: green;
+}
+
+#grid-container {
+	display: grid;
+	/* grid-gap: 1px; */
+
+}
+
+.item {
+	background-color: orange;
+	border: 0.5px solid rgba(0, 0, 0, 0.8);
+	height: 40px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
