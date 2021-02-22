@@ -1,17 +1,29 @@
 import React from 'react';
 
 class Clock extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      time: new Date().toLocaleString()
+      dateTime: this.convertDateTime()
     };
+  }
+
+  convertDateTime() {
+    const {type} = this.props;
+
+    if (type === 'time') {
+        return new Date().toLocaleTimeString()
+    }
+    else {
+        return new Date().toLocaleDateString()
+    }
   }
 
   //method that updates the time property of state to the current time
   tick() {
     this.setState({
-      time: new Date().toLocaleString()
+        dateTime: this.convertDateTime()
     });
   }
 
@@ -26,10 +38,11 @@ class Clock extends React.Component {
   }
 
   render() {
+    const {dateTime} = this.state;
     return (
-      <p className="App-clock">
-        The time is {this.state.time}.
-      </p>
+      <span>
+          {dateTime}
+      </span>
     );
   }
 } 

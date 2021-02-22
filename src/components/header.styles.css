@@ -15,31 +15,34 @@
   font-size: 18px;
   line-height: 26px;
   border-radius: 4px;
-/* background: yellow; */
+  /* background: yellow; */
 }
 
-.zone-date {
+.header-right .container {
   /* background: red; */
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+  padding-right: 3px;
 }
 
-div .date, div .zone {
+#zone {
   font-size: 12px;
   padding: 0;
   line-height: 13px;
+  /* background: blue; */
+  /* align-self: flex-end; */
 }
 
-div .date {
+#date {
+  font-size: 12px;
+  padding: 0;
+  line-height: 13px;
   /* justify-self: end; */
   /* align-self: center; */
   /* background: orange; */
 }
 
-div .zone {
-  /* background: blue; */
-  align-self: flex-start;
-}
 
 /* Style the logo link (notice that we set the same value of line-height and font-size to prevent the header to increase when the font gets bigger */
 .logo {
