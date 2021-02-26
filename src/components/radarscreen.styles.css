@@ -18,14 +18,26 @@
 	display: grid;
 	/* grid-gap: 1px; */
 
+
+	border-bottom: 1px solid black;
+  border-left: 1px solid black;
+
 }
 
 .item {
 	background-color: orange;
-	border: 0.5px solid rgba(0, 0, 0, 0.8);
+	/* border: 0.5px solid rgba(0, 0, 0, 0.8); */
 	height: 40px;
-
+	box-sizing: border-box;
+	
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+#grid-container > .item, #grid-container > .header {
+	/* padding: 15px; */
+	text-align: center;
+	border-top: 1px solid black;
+	border-right: 1px solid black;
 }

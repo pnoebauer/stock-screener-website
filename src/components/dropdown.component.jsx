@@ -25,8 +25,8 @@ class Dropdown extends React.Component {
     //if click happens outside the dropdown area close the list
     handleClickOutside = event => {
       if(
-        !event.target.classList.contains('custom-select-option') && 
-        !event.target.classList.contains('selected-text')
+        !event.target.classList.contains('dropdown-option') && 
+        !event.target.classList.contains('selected-value')
       ) {
         this.setState({
           showList: false
@@ -38,6 +38,7 @@ class Dropdown extends React.Component {
     handleDisplay = () => {
       this.setState(prevState => ({
             showList: !prevState.showList
+            // showList: false
           })
       );
     };
@@ -53,35 +54,36 @@ class Dropdown extends React.Component {
 
   
     render() {
-      const { options } = this.props;
+      const { options, style, className } = this.props;
       const { selectedValue, showList } = this.state;
-      console.log('a',this.props)
+      // console.log('a',this.props)
       return (
         <div 
-          className='custom-select-container'
+          className={'dropdown-container'}
           style={{ 
-            gridRow: 2,
-            gridColumn: 4,
+            gridRow: style.gridRow,
+            gridColumn: style.gridColumn,
           }}
         >
           <div 
-            className={showList ? 'selected-text active' : 'selected-text'}
+            className={showList ? 'selected-value active' : 'selected-value'}
             onClick={this.handleDisplay}  
           >
             {selectedValue}
           </div>
-            {showList && (<ul className='select-options'>
+            {showList && (<ul className='options-list'>
               {options.map((value, index) => {
-                return(
-                  <li 
-                    className='custom-select-option'
-                    value={value} 
-                    key={index}
-                    onClick={this.handleOptionClick}
-                  >
-                    {value}
-                  </li>
-                )
+                if(value !== selectedValue) {
+                  return(
+                    <li 
+                      className='dropdown-option'
+                      value={value} 
+                      key={index}
+                      onClick={this.handleOptionClick}
+                    >
+                      {value}
+                    </li>
+                  )}
               })}
             </ul>)}
         </div>
