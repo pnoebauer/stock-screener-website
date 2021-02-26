@@ -44,16 +44,17 @@ class Dropdown extends React.Component {
     };
 
     // set text based on click in displayed list
-    handleOptionClick = (event, headerCol) => {
+    handleOptionClick = (event, headerCol, valueRow) => {
       // console.log(event.target.getAttribute('value'))
       // console.log(event)
 
       this.setState({
         selectedValue: event.target.getAttribute('value'),
         showList: false
-      });
+      }, () => this.props.onChange(this.state.selectedValue, headerCol, valueRow)      
+      );
 
-      this.props.onChange(this.state.selectedValue, headerCol);
+      
     };
 
   
@@ -83,7 +84,7 @@ class Dropdown extends React.Component {
                       className='dropdown-option'
                       value={value} 
                       key={index}
-                      onClick={e => this.handleOptionClick(e, style.gridColumn-1)}
+                      onClick={e => this.handleOptionClick(e, style.gridColumn-1, style.gridRow-2)}
                     >
                       {value}
                     </li>

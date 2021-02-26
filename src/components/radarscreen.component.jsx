@@ -29,8 +29,24 @@ class RadarScreen extends React.Component {
 	// 	console.log('change', this.state.header[headerCol]);
 	// }
 
-	onChange = x => (p, headerCol) => {
-		console.log('change', x, this.state.header[headerCol]);
+	onChange = key => (updatedValue, headerCol, valueRow) => {
+		// console.log('change', key, updatedValue, this.state.header[headerCol], valueRow);
+
+		const stateKey = this.state.header[headerCol];
+		const values = [...this.state[stateKey]];
+
+		// console.log('values',values, stateKey);
+		values[valueRow] = updatedValue;
+
+		// console.log('updatedValue',values);
+		// console.log('state', this.state[stateKey]);
+
+		this.setState({
+			[stateKey]: values
+		}
+		// , () => console.log('updated state',this.state[stateKey])
+		);
+
 	}
 
 	render() {
@@ -68,7 +84,7 @@ class RadarScreen extends React.Component {
 									return (
 										<Dropdown 
 											options={selectTbl[header[colIdx]]}
-											defaultValue={selectTbl[header[colIdx]][0]}
+											defaultValue={this.state[header[colIdx]][rowIdx]}
 											style={{ 
 												gridRow: rowIdx+2,
 												gridColumn: colIdx+1}}
