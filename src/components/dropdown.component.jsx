@@ -17,17 +17,14 @@ class Dropdown extends React.Component {
       document.addEventListener('mousedown', this.handleClickOutside);
     }
 
-    //remove the event listner on component unmounting
+    //remove the event listener on component unmounting
     componentWillUnmount() {
       document.removeEventListener('mousedown', this.handleClickOutside);
     }
 
     //if click happens outside the dropdown area close the list
     handleClickOutside = event => {
-      if(
-        !event.target.classList.contains('dropdown-option') && 
-        !event.target.classList.contains('selected-value')
-      ) {
+      if(!this.node.contains(event.target)) {
         this.setState({
           showList: false
         });
@@ -53,8 +50,6 @@ class Dropdown extends React.Component {
         showList: false
       }, () => this.props.onChange(this.state.selectedValue, headerCol, valueRow)      
       );
-
-      
     };
 
   
@@ -62,6 +57,8 @@ class Dropdown extends React.Component {
       const { options, style } = this.props;
       const { selectedValue, showList } = this.state;
       // console.log('a',this.props)
+      
+
       return (
         <div 
           className={'dropdown-container'}
@@ -69,13 +66,25 @@ class Dropdown extends React.Component {
             gridRow: style.gridRow,
             gridColumn: style.gridColumn,
           }}
+          ref = {node => this.node=node}
         >
           <div 
             className={showList ? 'selected-value active' : 'selected-value'}
             onClick={this.handleDisplay}  
+            contentEditable='true'
+            suppressContentEditableWarning={true}
           >
             {selectedValue}
           </div>
+          {/* WON'T WORK AS INPUT DOES NOT SUPPORT PSEUDO ELEMENTS
+          <input
+            className={showList ? 'selected-value active' : 'selected-value'}
+            type='text'
+            name='userInput'
+            value={selectedValue}
+            onClick={this.handleDisplay}  
+          /> */}
+
             {showList && (<ul className='options-list'>
               {options.map((value, index) => {
                 if(value !== selectedValue) {

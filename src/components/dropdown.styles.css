@@ -9,7 +9,7 @@
 }
 
 .selected-value {
-  background-color: inherit;
+  background-color: green;
   border-top: 1px solid black;
 	border-right: 1px solid black;
   
@@ -20,7 +20,15 @@
   justify-content: center;
   align-items: center; 
   box-sizing: border-box;
+  text-align: center;
+  outline: none;
 }
+
+/* input {
+  outline: none;
+  padding: 0;
+  border: 0;
+} */
 
 /* down arrow */
 .selected-value::after {

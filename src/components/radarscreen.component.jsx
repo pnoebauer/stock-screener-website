@@ -167,6 +167,7 @@ class RadarScreen extends React.Component {
 					}
 					
 					{
+						//loop through the header items (columns) and afterwards loop through stored values (rows)  
 						header.map((value, colIdx) => this.state[value].map((rowVal,rowIdx) => {
 								i++;
 								if(selectTbl[header[colIdx]] !== undefined) {
@@ -194,7 +195,7 @@ class RadarScreen extends React.Component {
 												gridRow: rowIdx+2,
 												gridColumn: colIdx+1}}
 										>
-											{rowVal}
+											{rowVal.toFixed(2)}
 										</div>
 									)
 								}
