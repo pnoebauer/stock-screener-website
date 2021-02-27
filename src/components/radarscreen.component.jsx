@@ -14,6 +14,22 @@ const selectTbl = {
 	Interval: INTERVALS
 }
 
+const retrieveData = () => {
+	const url = 'https://api.tdameritrade.com/v1/marketdata/quotes';
+	const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
+
+	const symbol = SYMBOLS;
+	const params = {apikey, symbol};
+	
+	const queryExt = new URLSearchParams(params).toString();
+	const queryString = url.concat('?', queryExt);
+
+	fetch(queryString)
+		.then(response => response.json())
+		.then(data => console.log(data))
+
+}
+
 class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
@@ -25,29 +41,35 @@ class RadarScreen extends React.Component {
 		}
 	}
 
-	// onChange = (p, headerCol) => {
-	// 	console.log('change', this.state.header[headerCol]);
-	// }
-
-	onChange = key => (updatedValue, headerCol, valueRow) => {
-		// console.log('change', key, updatedValue, this.state.header[headerCol], valueRow);
+	onChange = (updatedValue, headerCol, valueRow) => {
 
 		const stateKey = this.state.header[headerCol];
 		const values = [...this.state[stateKey]];
-
-		// console.log('values',values, stateKey);
 		values[valueRow] = updatedValue;
-
-		// console.log('updatedValue',values);
-		// console.log('state', this.state[stateKey]);
 
 		this.setState({
 			[stateKey]: values
-		}
-		// , () => console.log('updated state',this.state[stateKey])
-		);
-
+		});
 	}
+
+	// onChange = key => (updatedValue, headerCol, valueRow) => {
+	// 	// console.log('change', key, updatedValue, this.state.header[headerCol], valueRow);
+
+	// 	const stateKey = this.state.header[headerCol];
+	// 	const values = [...this.state[stateKey]];
+
+	// 	// console.log('values',values, stateKey);
+	// 	values[valueRow] = updatedValue;
+
+	// 	// console.log('updatedValue',values);
+	// 	// console.log('state', this.state[stateKey]);
+
+	// 	this.setState({
+	// 		[stateKey]: values
+	// 	}
+	// 	// , () => console.log('updated state',this.state[stateKey])
+	// 	);
+	// }
 
 	render() {
 	let i=0;
@@ -90,7 +112,8 @@ class RadarScreen extends React.Component {
 												gridColumn: colIdx+1}}
 											key={i} 
 											id={i} 
-											onChange={this.onChange(i)}
+											// onChange={this.onChange(i)}
+											onChange={this.onChange}
 										/> 
 									)
 								}
