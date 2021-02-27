@@ -2,10 +2,12 @@ import React from 'react';
 
 import Dropdown from './dropdown.component';
 
-import { SYMBOLS, INTERVALS } from '../assets/constants';
+import { SYMBOLS, INTERVALS, SP500 } from '../assets/constants';
 
 import './radarscreen.styles.css';
 
+const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
+const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 
 const headerConst = ['Symbol', 'Interval', 'Price']
 
@@ -14,20 +16,35 @@ const selectTbl = {
 	Interval: INTERVALS
 }
 
-const retrieveData = () => {
-	const url = 'https://api.tdameritrade.com/v1/marketdata/quotes';
-	const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
+// const retrieveData = () => {
 
-	const symbol = SYMBOLS;
+// 	const symbol = SYMBOLS;
+// 	const params = {apikey, symbol};
+	
+// 	const queryExt = new URLSearchParams(params).toString();
+// 	const queryString = urlRealTime.concat('?', queryExt);
+
+// 	fetch(queryString)
+// 		.then(response => response.json())
+// 		.then(data => console.log(data))
+// }
+
+const fetchRealTimeData = async (symbol) => {
 	const params = {apikey, symbol};
 	
 	const queryExt = new URLSearchParams(params).toString();
-	const queryString = url.concat('?', queryExt);
+	const queryString = urlRealTime.concat('?', queryExt);
 
-	fetch(queryString)
-		.then(response => response.json())
-		.then(data => console.log(data))
+	const response = await fetch(queryString);
 
+	if (!response.ok) {
+		const message = `An error has occured: ${response.status}`;
+		throw new Error(message);
+	}
+
+	const data = await response.json();
+
+	return data;
 }
 
 class RadarScreen extends React.Component {
@@ -35,21 +52,71 @@ class RadarScreen extends React.Component {
 		super(props);
 		this.state = {
 			header: headerConst,
-			Symbol: ['SPX', '@ES', '@NQ', 'SPY'],
-			Interval: ['Daily', 'Daily', '5 Min', 'Hourly'],
-			Price: [3, 6, 8, 0]
+			Symbol: SP500.slice(0,8),
+			Interval: Array(8).fill(INTERVALS[0]),
+			Price: Array(8).fill(0)
 		}
+	}
+
+	componentDidMount() {
+		const { Symbol } = this.state;
+
+		fetchRealTimeData(Symbol)
+			.then(data => {
+				const prices = Symbol.map((symbolName, index) => {
+					return data[symbolName].lastPrice;
+				})
+				// console.log(prices);
+				this.setState({
+					Price: prices
+				});
+			})
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
 
 		const stateKey = this.state.header[headerCol];
 		const values = [...this.state[stateKey]];
+		const prices = [...this.state.Price];
+
 		values[valueRow] = updatedValue;
+
+		// console.log('change', stateKey, updatedValue, this.state.header[headerCol], valueRow);
+		
+		let symbol = updatedValue, interval = updatedValue;
+		if (stateKey==='Symbol') {
+			interval = this.state.Interval[valueRow];
+		}
+		else if (stateKey==='Interval'){
+			symbol = this.state.Symbol[valueRow];
+		}
+
+		// console.log('symbol', symbol, 'interval', interval);
+
+		fetchRealTimeData(symbol)
+			.then(data => {
+				const lastPrice = data[symbol].lastPrice;
+				// console.log(lastPrice);
+
+				prices[valueRow] = lastPrice;
+
+				// console.log(prices);
+
+				this.setState({
+					Price: prices
+				});
+
+			})
+			.catch(e => {
+				console.log('An error occurred during fetching: ' + e.message);
+		  	});
+
 
 		this.setState({
 			[stateKey]: values
 		});
+		
+
 	}
 
 	// onChange = key => (updatedValue, headerCol, valueRow) => {
