@@ -6,61 +6,47 @@ class Dropdown extends React.Component {
     constructor(props) {
       const {defaultValue} = props;
       super(props);
-      this.container = React.createRef();
-
       this.state = {
           selectedValue: defaultValue,
           showList: false,
-          displayedOptions: this.props.options,
-
+          displayedOptions: this.props.options
       };
     }
     
-    // //on mounting add event listener to handle click outside the Custom Select Container
-    // componentDidMount() {
-    //   document.addEventListener('mousedown', this.handleClickOutside);
-    // }
+    //on mounting add event listener to handle click outside the Custom Select Container
+    componentDidMount() {
+      document.addEventListener('mousedown', this.handleClickOutside);
+    }
 
-    // //remove the event listener on component unmounting
-    // componentWillUnmount() {
-    //   document.removeEventListener('mousedown', this.handleClickOutside);
-    // }
+    //remove the event listener on component unmounting
+    componentWillUnmount() {
+      document.removeEventListener('mousedown', this.handleClickOutside);
+    }
 
     //if click happens outside the dropdown area close the list
     handleClickOutside = event => {
-      if(this.container.current && !this.container.current.contains(event.target)) {
+      if(!this.node.contains(event.target)) {
         const priorValue = this.state.selectedValue;
-        // console.log(priorValue, this.state.shownValue)
+        console.log(priorValue, this.state.shownValue)
         
-        this.setState({
+        this.setState((prevState) => ({
           showList: false,
           shownValue: priorValue
-        }//);
-        ,
+        }),
         ()=>console.log('click out',this.state.selectedValue));
+        // console.log(this.node2, 'node2')
 
+        // this.node2.innerText = 'test'
       }
     }
 
     //handle the displaying of the list (if currently shown, then hide and vice versa)
     handleDisplay = () => {
-      this.setState(prevState => {
-        console.log(prevState,'prevState')
-
-        if(!prevState.showList) {
-          document.addEventListener('mousedown', this.handleClickOutside);
-        }
-        else if(prevState.showList) {
-          document.removeEventListener('mousedown', this.handleClickOutside);
-        }
-
-        return {
+      this.setState(prevState => ({
             showList: !prevState.showList
             // showList: false
-          }}
+          })
       );
-
-
     };
 
     // set text based on click in displayed list
@@ -114,7 +100,7 @@ class Dropdown extends React.Component {
             gridRow: style.gridRow,
             gridColumn: style.gridColumn,
           }}
-          ref = {this.container}
+          ref = {node => this.node=node}
         >
           <div 
             className={showList ? 'selected-value active' : 'selected-value'}
@@ -122,6 +108,7 @@ class Dropdown extends React.Component {
             contentEditable='true'
             suppressContentEditableWarning={true}
             onInput={this.onTextChange}
+            ref = {node2 => this.node2=node2}
           >
             {selectedValue}
           </div>
