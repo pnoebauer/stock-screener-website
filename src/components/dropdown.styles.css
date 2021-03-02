@@ -96,7 +96,7 @@
   border-bottom: 1px solid black;
 }
 
-.dropdown-option:hover {
+.dropdown-option:hover, .dropdown-option.active {
   background-color: blue;
   /* opacity: 0.8; */
   color: #ffffff;

@@ -1,10 +1,6 @@
 import React from 'react';
 
-import ScreenHeader from './screen-heading.component';
 import Dropdown from './dropdown.component';
-import ValueCell from './screen-value-cell.component';
-
-
 
 import { SYMBOLS, INTERVALS, SP500 } from '../assets/constants';
 
@@ -19,6 +15,19 @@ const selectTbl = {
 	Symbol: SYMBOLS,
 	Interval: INTERVALS
 }
+
+// const retrieveData = () => {
+
+// 	const symbol = SYMBOLS;
+// 	const params = {apikey, symbol};
+	
+// 	const queryExt = new URLSearchParams(params).toString();
+// 	const queryString = urlRealTime.concat('?', queryExt);
+
+// 	fetch(queryString)
+// 		.then(response => response.json())
+// 		.then(data => console.log(data))
+// }
 
 const fetchRealTimeData = async (symbol) => {
 	const params = {apikey, symbol};
@@ -106,7 +115,28 @@ class RadarScreen extends React.Component {
 		this.setState({
 			[stateKey]: values
 		});
+		
+
 	}
+
+	// onChange = key => (updatedValue, headerCol, valueRow) => {
+	// 	// console.log('change', key, updatedValue, this.state.header[headerCol], valueRow);
+
+	// 	const stateKey = this.state.header[headerCol];
+	// 	const values = [...this.state[stateKey]];
+
+	// 	// console.log('values',values, stateKey);
+	// 	values[valueRow] = updatedValue;
+
+	// 	// console.log('updatedValue',values);
+	// 	// console.log('state', this.state[stateKey]);
+
+	// 	this.setState({
+	// 		[stateKey]: values
+	// 	}
+	// 	// , () => console.log('updated state',this.state[stateKey])
+	// 	);
+	// }
 
 	render() {
 	let i=0;
@@ -122,12 +152,16 @@ class RadarScreen extends React.Component {
 						header.map((value, colIdx) => {
 							i++;
 							return (
-								<ScreenHeader 
+								<div 
 									key={i} 
-									gridColumn={colIdx+1}
+									id={i} 
+									className='header'
+									style={{ 
+										gridRow: 1,
+										gridColumn: colIdx+1}}
 								>
 									{value}
-								</ScreenHeader>
+								</div>
 							)
 						})
 					}
@@ -141,22 +175,28 @@ class RadarScreen extends React.Component {
 										<Dropdown 
 											options={selectTbl[header[colIdx]]}
 											defaultValue={this.state[header[colIdx]][rowIdx]}
-											gridRow={rowIdx+2}
-											gridColumn={colIdx+1}
+											style={{ 
+												gridRow: rowIdx+2,
+												gridColumn: colIdx+1}}
 											key={i} 
+											id={i} 
+											// onChange={this.onChange(i)}
 											onChange={this.onChange}
 										/> 
 									)
 								}
 								else {
 									return (
-										<ValueCell 
+										<div 
 											key={i} 
-											gridRow={rowIdx+2}
-											gridColumn={colIdx+1}
+											id={i} 
+											className='item'
+											style={{ 
+												gridRow: rowIdx+2,
+												gridColumn: colIdx+1}}
 										>
-											{rowVal}
-										</ValueCell>
+											{rowVal.toFixed(2)}
+										</div>
 									)
 								}
 							})
