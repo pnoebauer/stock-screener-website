@@ -36,7 +36,100 @@ const fetchRealTimeData = async (symbol) => {
 	return data;
 }
 
-class RadarScreen extends React.Component {
+
+const sortTableO = (list) => {
+	// const list = [...this.state[sortedField]]
+	
+	console.log(list);
+
+	// temporary array holds objects with position and sort-value
+	const mapped = list.map((value, index) => {
+		if(typeof(value) ==='string') value = value.toLowerCase();
+		  
+		return { 
+			  index, 
+			  value 
+			};
+		}
+	);
+
+	console.log(mapped);
+
+	// sorting the mapped array containing the reduced values
+	mapped.sort(function(a, b) {
+		if (a.value > b.value) {
+			return 1;
+		}
+		if (a.value < b.value) {
+			return -1;
+		}
+		return 0;
+	});
+
+	console.log(mapped);
+
+	// container for the resulting order
+	const result = mapped.map(element => list[element.index]);
+
+	console.log(result)
+}
+
+
+const sortTable = (stateClone, sortedField) => {
+	
+	const list = [...stateClone[sortedField]];
+	
+	console.log(list);
+
+	// temporary array holds objects with position and sort-value
+	const mapped = list.map((value, index) => {
+		if(typeof(value) ==='string') value = value.toLowerCase();
+		  
+		return { 
+			  index, 
+			  value 
+			};
+		}
+	);
+
+	console.log(mapped);
+
+	// sorting the mapped array containing the reduced values
+	mapped.sort((a, b) => {
+		if (a.value > b.value) {
+			return 1;
+		}
+		if (a.value < b.value) {
+			return -1;
+		}
+		return 0;
+	});
+
+	console.log(mapped);
+
+	// container for the resulting order
+	// const result = mapped.map(element => list[element.index]);
+
+	const result = mapped.map(element => {
+		// list[element.index]
+		const Price = stateClone.Price[element.index];
+		const Interval = stateClone.Interval[element.index]
+		const Symbol = stateClone.Symbol[element.index]
+		
+
+		return {
+			...stateClone,
+			Price,
+			Interval,
+			Symbol
+		}
+	});
+
+	console.log(result)
+}
+
+
+class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -58,7 +151,10 @@ class RadarScreen extends React.Component {
 				// console.log(prices);
 				this.setState({
 					Price: prices
-				});
+				}
+				,
+				// () => console.log(this.state)
+				);
 			})
 	}
 
@@ -108,7 +204,25 @@ class RadarScreen extends React.Component {
 
 	render() {
 
-	const { header } = this.state;
+		const { header } = this.state;
+
+		const sortedField = 'Price';
+		// const list = [...this.state[sortedField]]
+
+		// sortTable(list);
+
+		const stateClone = {...this.state};
+
+		sortTable(stateClone, sortedField);
+
+		// console.log(this.state);
+
+		// const priceArr = [...this.state.Price]
+		// priceArr.sort(function(a, b) {
+		// 	return a - b;
+		//   })
+
+		// console.log(priceArr)
 
 		return(
 			<div className="radarscreen">
