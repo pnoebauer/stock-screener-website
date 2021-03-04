@@ -2,7 +2,7 @@ import React from 'react';
 
 import Dropdown from './dropdown.component';
 
-import { SYMBOLS, INTERVALS, SP500 } from '../assets/constants';
+import { SYMBOLS, INTERVALS, SP500 } from '../../assets/constants';
 
 import './radarscreen.styles.css';
 

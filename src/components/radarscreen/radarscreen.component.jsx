@@ -1,12 +1,10 @@
 import React from 'react';
 
-import ScreenHeader from './screen-heading.component';
-import Dropdown from './dropdown.component';
-import ValueCell from './screen-value-cell.component';
+import ScreenHeader from '../screen-heading/screen-heading.component';
+import Dropdown from '../dropdown/dropdown.component';
+import ValueCell from '../screen-value-cell/screen-value-cell.component';
 
-
-
-import { SYMBOLS, INTERVALS, SP500 } from '../assets/constants';
+import { SYMBOLS, INTERVALS, SP500 } from '../../assets/constants';
 
 import './radarscreen.styles.css';
 
@@ -109,7 +107,6 @@ class RadarScreen extends React.Component {
 	}
 
 	render() {
-	let i=0;
 
 	const { header } = this.state;
 
@@ -119,23 +116,20 @@ class RadarScreen extends React.Component {
 				
 				<div id="grid-container">
 					{
-						header.map((value, colIdx) => {
-							i++;
-							return (
+						header.map((value, colIdx) => (
 								<ScreenHeader 
-									key={i} 
+									key={colIdx.toString()} 
 									gridColumn={colIdx+1}
 								>
 									{value}
 								</ScreenHeader>
 							)
-						})
+						)
 					}
 					
 					{
 						//loop through the header items (columns) and afterwards loop through stored values (rows)  
 						header.map((value, colIdx) => this.state[value].map((rowVal,rowIdx) => {
-								i++;
 								if(selectTbl[header[colIdx]] !== undefined) {
 									return (
 										<Dropdown 
@@ -143,7 +137,7 @@ class RadarScreen extends React.Component {
 											defaultValue={this.state[header[colIdx]][rowIdx]}
 											gridRow={rowIdx+2}
 											gridColumn={colIdx+1}
-											key={i} 
+											key={colIdx.toString()+rowIdx.toString()} 
 											onChange={this.onChange}
 										/> 
 									)
@@ -151,7 +145,7 @@ class RadarScreen extends React.Component {
 								else {
 									return (
 										<ValueCell 
-											key={i} 
+											key={colIdx.toString()+rowIdx.toString()} 
 											gridRow={rowIdx+2}
 											gridColumn={colIdx+1}
 										>

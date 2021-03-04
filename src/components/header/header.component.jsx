@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { ReactComponent as Logo } from '../logo.svg';
+import { ReactComponent as Logo } from '../../logo.svg';
 
-import Clock from './clock.component';
+import Clock from '../clock/clock.component';
 import './header.styles.css';
 
 

@@ -1,7 +1,7 @@
 
 import './App.css';
-import Header from './components/header.component';
-import RadarScreen from './components/radarscreen.component';
+import Header from './components/header/header.component';
+import RadarScreen from './components/radarscreen/radarscreen.component';
 
 function App() {
   return (
