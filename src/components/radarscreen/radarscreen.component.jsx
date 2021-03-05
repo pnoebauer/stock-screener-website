@@ -11,7 +11,7 @@ import './radarscreen.styles.css';
 const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
 const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 
-const headerConst = ['Symbol', 'Interval', 'Price']
+const headerTitle = ['Symbol', 'Interval', 'Price']
 
 const selectTbl = {
 	Symbol: SYMBOLS,
@@ -34,16 +34,15 @@ const fetchRealTimeData = async (symbol) => {
 	}
 
 	const data = await response.json();
-
+	console.log(data)
 	return data;
 }
 
-
-
-const sortTable = (state, sortedField) => {
+const sortTable = (state, sortedField, direction) => {
 	
 	const stateClone = JSON.parse(JSON.stringify(state));
 	delete stateClone.header;
+	delete stateClone.sortConfig;
 	
 	// console.log(stateClone,'stateClone orig');
 	const list = [...stateClone[sortedField]];
@@ -66,10 +65,10 @@ const sortTable = (state, sortedField) => {
 	// sorting the mapped array containing the reduced values
 	mapped.sort((a, b) => {
 		if (a.value > b.value) {
-			return 1;
+			return direction;
 		}
 		if (a.value < b.value) {
-			return -1;
+			return -direction;
 		}
 		return 0;
 	});
@@ -98,7 +97,8 @@ class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			header: headerConst,
+			header: headerTitle,
+			sortConfig: {},
 			Symbol: SP500.slice(0,8),
 			Interval: Array(8).fill(INTERVALS[0]),
 			Price: Array(8).fill(0)
@@ -125,20 +125,19 @@ class RadarScreen extends React.Component {
 
 	onChange = (updatedValue, headerCol, valueRow) => {
 
-		const stateKey = this.state.header[headerCol];
-		const values = [...this.state[stateKey]];
-		const prices = [...this.state.Price];
+		const stateKey = this.state.header[headerCol];	//which column changed (Symbol, Interval)
+		const values = [...this.state[stateKey]];	//all values of that column from top to bottom
+		const prices = [...this.state.Price];	//all prices
 
-		values[valueRow] = updatedValue;
-
+		values[valueRow] = updatedValue;	//update that particular cell that changed (i.e. GOOGL to AMZN)
 		// console.log('change', stateKey, updatedValue, this.state.header[headerCol], valueRow);
 		
-		let symbol = updatedValue, interval = updatedValue;
-		if (stateKey==='Symbol') {
-			interval = this.state.Interval[valueRow];
+		let symbol = updatedValue, interval = updatedValue; //set symbol and interval to that new value
+		if (stateKey==='Symbol') {	//if a value in the Symbol column changed
+			interval = this.state.Interval[valueRow];	//reset Interval for that row to the prior value
 		}
-		else if (stateKey==='Interval'){
-			symbol = this.state.Symbol[valueRow];
+		else if (stateKey==='Interval') {	//if a value in the Interval column changed
+			symbol = this.state.Symbol[valueRow];	//reset Symbol for that row to the prior value
 		}
 
 		// console.log('symbol', symbol, 'interval', interval);
@@ -170,20 +169,42 @@ class RadarScreen extends React.Component {
 	}
 
 	onSort = (event) => {
+		const { sortConfig } = this.state;
+		// console.log('click',event.target.id)
 		
-		const sortedField = 'Price';
+		// const sortedField = 'Price';
+		const sortedField = event.target.id;
 		// const list = [...this.state[sortedField]]
 
-		const sortedData = sortTable(this.state, sortedField);
+		let direction = 1;
+
+		if(sortConfig.sortedField === sortedField) {
+			if(sortConfig.direction === direction) {
+				direction = -1;
+			}
+			else if(sortConfig.direction === -1) {
+				// direction = 0;
+			}
+		}
+
+		const sortedData = sortTable(this.state, sortedField, direction);
 		// console.log(sortedData.Price);
 		// console.log(sortedData,'sortedData');
 
-		this.setState(sortedData,
-			// () => console.log(this.state,'onsort')
-			)
+		this.setState({
+			sortConfig: {
+				sortedField,
+				direction
+			}
+		}
+		,
+		// ()` => console.log(this.state)
+		);
 
-		// this.setState({Price: sortedData.Price})
-		// this.setState({Symbol: sortedData.Symbol})
+		
+
+		this.setState(sortedData);
+
 	}
 
 	render() {
@@ -203,6 +224,8 @@ class RadarScreen extends React.Component {
 								<ScreenHeader 
 									key={colIdx.toString()} 
 									gridColumn={colIdx+1}
+									onSort={this.onSort}
+									id={value}
 								>
 									{value}
 								</ScreenHeader>
@@ -212,20 +235,22 @@ class RadarScreen extends React.Component {
 					
 					{
 						//loop through the header items (columns) and afterwards loop through stored values (rows)  
-						header.map((value, colIdx) => this.state[value].map((rowVal,rowIdx) => {
-								if(selectTbl[header[colIdx]] !== undefined) {
+						header.map((type, colIdx) => this.state[type].map((rowVal,rowIdx) => {
+								if(selectTbl[type] !== undefined) {
 									
+									// console.log(type)
 									// if(colIdx === 0 && rowIdx === 0) console.log('dd pass',this.state[header[colIdx]][rowIdx])
 
 									return (
 										<Dropdown 
-											options={selectTbl[header[colIdx]]}
-											defaultValue={this.state[header[colIdx]][rowIdx]}
+											options={selectTbl[type]}
 											gridRow={rowIdx+2}
 											gridColumn={colIdx+1}
 											key={colIdx.toString()+rowIdx.toString()} 
 											onChange={this.onChange}
-										/> 
+										>
+											{rowVal}
+										</Dropdown> 
 									)
 								}
 								else {
