@@ -37,31 +37,34 @@ class Dropdown extends React.Component {
           // if the typed in value exists in the options list then use it,
           // if it does not exist replace it with the value that was in the cell before typing in
           insertValue = options.includes(prevState.shownValue) ? prevState.shownValue : prevState.selectedValue;
-          // console.log(prevState.selectedValue,'prevState.selectedValue')
+          console.log(prevState.selectedValue,'prevState.selectedValue')
             // const activeValue = prevState.displayedOptions[prevState.activeItem];
             // console.log(activeValue,'activeValue')
             // const insertValue = activeValue === undefined ? prevState.selectedValue : activeValue;
+
+          
           // use below to leave the typed in value even if value does not exist in options list
           // const insertValue = prevState.shownValue;
           
           // console.log(insertValue,'insertValue',options.includes(prevState.shownValue))
           return {
             showList: false,
+            displayedOptions: options,
+            selectedValue: insertValue,
             shownValue: insertValue
           }
         }
           , 
           () => {
             // console.log(this.selectionDisplay.current.innerText,event.target.innerText)
-              if(this.selectionDisplay.current.innerText !== insertValue) {
-                this.selectionDisplay.current.innerText = insertValue;
-                //happens if typed in text does not match anything
-                // console.log('does not match')
+              if(this.selectionDisplay.current.innerText !== this.state.selectedValue) {
+                this.selectionDisplay.current.innerText = this.state.selectedValue;
               };
               
               document.removeEventListener('mousedown', this.handleClickOutside);
-              // console.log(insertValue)
+              console.log(insertValue)
               return onChange(insertValue, headerCol, valueRow);
+        // ()=>console.log('click out',this.state.selectedValue)
           }
         );
       }
@@ -106,34 +109,26 @@ class Dropdown extends React.Component {
       // console.log(event.target.innerText, this.state.shownValue)
       const { onChange } = this.props;
 
-      // this.setState({
-      //   showList: false,
-      //   shownValue: event.target.innerText
-      // }
-      //   , 
-      //   () => {
-
-      //     console.log(this.state)
-      //     // console.log(this.selectionDisplay.current.innerText,event.target.innerText)
-      //       if(this.selectionDisplay.current.innerText !== event.target.innerText) {
-      //         // console.log('set inner handleOption')
-      //         // this.selectionDisplay.current.innerText = event.target.innerText;
-      //       }
-
-      //       document.removeEventListener('mousedown', this.handleClickOutside);
-      //       return onChange(event.target.innerText, headerCol, valueRow);
-      //   }      
-      
-      // );
-
       this.setState({
+        selectedValue: event.target.innerText,
         showList: false,
-        shownValue: event.target.innerText
-      });
+        shownValue: event.target.innerText,
+        displayedOptions: this.props.options
+      }
+        , 
+        () => {
 
-      document.removeEventListener('mousedown', this.handleClickOutside);
+          
+          // console.log(this.selectionDisplay.current.innerText,event.target.innerText)
+            if(this.selectionDisplay.current.innerText !== event.target.innerText) {
+              this.selectionDisplay.current.innerText = event.target.innerText;
+            }
+
+            document.removeEventListener('mousedown', this.handleClickOutside);
+            return onChange(this.state.selectedValue, headerCol, valueRow);
+        }      
       
-      onChange(event.target.innerText, headerCol, valueRow);
+      );
 
     };
 
@@ -159,8 +154,10 @@ class Dropdown extends React.Component {
         showList: true,
         shownValue: currentInput,
         activeItem: 0
-      });
-
+      }
+      // ,
+      // ()=>console.log(this.state)
+      )
     }
 
     onKeyDown = (event, headerCol, valueRow) => {
@@ -199,48 +196,28 @@ class Dropdown extends React.Component {
         // enter
         case 13:
           event.preventDefault();
-          // this.setState(prevState => {
-          //   // console.log('enter active',displayedOptions[prevState.activeItem],prevState.activeItem)
-          //   return {
-          //     activeItem: 0,
-          //     selectedValue: displayedOptions[prevState.activeItem],
-          //     showList: false,
-          //     shownValue: displayedOptions[prevState.activeItem],
-          //     displayedOptions: this.props.options
-          //   }
-          // }
-          // , 
-          // () => {
-          //   console.log('enter',this.state.activeItem);
-          //   if(this.selectionDisplay.current.innerText !== this.state.selectedValue) {
-          //     this.selectionDisplay.current.innerText = this.state.selectedValue;
-          //   }
-
-          //   document.removeEventListener('mousedown', this.handleClickOutside);
-
-          //   // return onChange(this.state.selectedValue, headerCol, valueRow);
-          //   return onChange(displayedOptions[prevState.activeItem], headerCol, valueRow);
-          // }
-          // );
-          const displayedValue = displayedOptions[this.state.activeItem];
-          this.setState({
+          this.setState(prevState => {
+            // console.log('enter active',displayedOptions[prevState.activeItem],prevState.activeItem)
+            return {
               activeItem: 0,
+              selectedValue: displayedOptions[prevState.activeItem],
               showList: false,
-              shownValue: displayedValue
+              shownValue: displayedOptions[prevState.activeItem],
+              displayedOptions: this.props.options
             }
-          );
-          
-          console.log('enter',this.state.activeItem);
-          if(this.selectionDisplay.current.innerText !== displayedValue) {
-            this.selectionDisplay.current.innerText = displayedValue;
           }
+          , 
+          () => {
+            console.log('enter',this.state.activeItem);
+            if(this.selectionDisplay.current.innerText !== this.state.selectedValue) {
+              this.selectionDisplay.current.innerText = this.state.selectedValue;
+            }
 
-          document.removeEventListener('mousedown', this.handleClickOutside);
+            document.removeEventListener('mousedown', this.handleClickOutside);
 
-          // return onChange(this.state.selectedValue, headerCol, valueRow);
-          return onChange(displayedValue, headerCol, valueRow);
-          
-          
+            return onChange(this.state.selectedValue, headerCol, valueRow);
+          }
+          );
           break;
     
         default:

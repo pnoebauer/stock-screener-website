@@ -19,6 +19,8 @@ const selectTbl = {
 }
 
 const fetchRealTimeData = async (symbol) => {
+	// console.log('fetch')
+
 	const params = {apikey, symbol};
 	
 	const queryExt = new URLSearchParams(params).toString();
@@ -37,49 +39,16 @@ const fetchRealTimeData = async (symbol) => {
 }
 
 
-const sortTableO = (list) => {
-	// const list = [...this.state[sortedField]]
+
+const sortTable = (state, sortedField) => {
 	
-	console.log(list);
-
-	// temporary array holds objects with position and sort-value
-	const mapped = list.map((value, index) => {
-		if(typeof(value) ==='string') value = value.toLowerCase();
-		  
-		return { 
-			  index, 
-			  value 
-			};
-		}
-	);
-
-	console.log(mapped);
-
-	// sorting the mapped array containing the reduced values
-	mapped.sort(function(a, b) {
-		if (a.value > b.value) {
-			return 1;
-		}
-		if (a.value < b.value) {
-			return -1;
-		}
-		return 0;
-	});
-
-	console.log(mapped);
-
-	// container for the resulting order
-	const result = mapped.map(element => list[element.index]);
-
-	console.log(result)
-}
-
-
-const sortTable = (stateClone, sortedField) => {
+	const stateClone = JSON.parse(JSON.stringify(state));
+	delete stateClone.header;
 	
+	// console.log(stateClone,'stateClone orig');
 	const list = [...stateClone[sortedField]];
 	
-	console.log(list);
+	// console.log(list);
 
 	// temporary array holds objects with position and sort-value
 	const mapped = list.map((value, index) => {
@@ -92,7 +61,7 @@ const sortTable = (stateClone, sortedField) => {
 		}
 	);
 
-	console.log(mapped);
+	// console.log(mapped);
 
 	// sorting the mapped array containing the reduced values
 	mapped.sort((a, b) => {
@@ -105,31 +74,27 @@ const sortTable = (stateClone, sortedField) => {
 		return 0;
 	});
 
-	console.log(mapped);
+	// console.log(mapped);
 
-	// container for the resulting order
-	// const result = mapped.map(element => list[element.index]);
+	// console.log(stateClone,'stateClone start')
 
-	const result = mapped.map(element => {
-		// list[element.index]
-		const Price = stateClone.Price[element.index];
-		const Interval = stateClone.Interval[element.index]
-		const Symbol = stateClone.Symbol[element.index]
-		
+	const keys = Object.keys(stateClone);
 
-		return {
-			...stateClone,
-			Price,
-			Interval,
-			Symbol
-		}
-	});
+	keys.forEach(key => {
+		// console.log(stateClone[key],'k')
 
-	console.log(result)
+		stateClone[key] = mapped.map(element => stateClone[key][element.index]);
+		// console.log(stateClone[key],'mapped')
+		// console.log(stateClone,'stateClone')
+	})
+
+	// console.log(stateClone,'stateClone fin')
+
+	return stateClone;
 }
 
 
-class RadarScreen extends React.PureComponent {
+class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -142,7 +107,7 @@ class RadarScreen extends React.PureComponent {
 
 	componentDidMount() {
 		const { Symbol } = this.state;
-
+		// console.log('mount')
 		fetchRealTimeData(Symbol)
 			.then(data => {
 				const prices = Symbol.map((symbolName, index) => {
@@ -178,6 +143,8 @@ class RadarScreen extends React.PureComponent {
 
 		// console.log('symbol', symbol, 'interval', interval);
 
+		// console.log('onchange',headerCol, valueRow)
+
 		fetchRealTimeData(symbol)
 			.then(data => {
 				const lastPrice = data[symbol].lastPrice;
@@ -202,31 +169,33 @@ class RadarScreen extends React.PureComponent {
 		});
 	}
 
-	render() {
-
-		const { header } = this.state;
-
+	onSort = (event) => {
+		
 		const sortedField = 'Price';
 		// const list = [...this.state[sortedField]]
 
-		// sortTable(list);
+		const sortedData = sortTable(this.state, sortedField);
+		// console.log(sortedData.Price);
+		// console.log(sortedData,'sortedData');
 
-		const stateClone = {...this.state};
+		this.setState(sortedData,
+			// () => console.log(this.state,'onsort')
+			)
 
-		sortTable(stateClone, sortedField);
+		// this.setState({Price: sortedData.Price})
+		// this.setState({Symbol: sortedData.Symbol})
+	}
 
-		// console.log(this.state);
+	render() {
 
-		// const priceArr = [...this.state.Price]
-		// priceArr.sort(function(a, b) {
-		// 	return a - b;
-		//   })
-
-		// console.log(priceArr)
+		const { header } = this.state;
+		// console.log('rend',this.state)
 
 		return(
 			<div className="radarscreen">
-				<div className='space'></div>
+				<div className='space'
+					onClick={this.onSort}
+				></div>
 				
 				<div id="grid-container">
 					{
@@ -245,6 +214,9 @@ class RadarScreen extends React.PureComponent {
 						//loop through the header items (columns) and afterwards loop through stored values (rows)  
 						header.map((value, colIdx) => this.state[value].map((rowVal,rowIdx) => {
 								if(selectTbl[header[colIdx]] !== undefined) {
+									
+									// if(colIdx === 0 && rowIdx === 0) console.log('dd pass',this.state[header[colIdx]][rowIdx])
+
 									return (
 										<Dropdown 
 											options={selectTbl[header[colIdx]]}
