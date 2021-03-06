@@ -1,10 +1,9 @@
 import React from 'react';
 
 import ScreenHeader from '../screen-heading/screen-heading.component';
-import Dropdown from '../dropdown/dropdown.component';
-import ValueCell from '../screen-value-cell/screen-value-cell.component';
+import GenerateGrid from '../generate-screen-grid/generate-screen-grid.component';
 
-import { SYMBOLS, INTERVALS, SP500 } from '../../assets/constants';
+import { INTERVALS, SYMBOLS } from '../../assets/constants';
 
 import './radarscreen.styles.css';
 
@@ -12,11 +11,6 @@ const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
 const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 
 const headerTitle = ['Symbol', 'Interval', 'Price']
-
-const selectTbl = {
-	Symbol: SYMBOLS,
-	Interval: INTERVALS
-}
 
 const fetchRealTimeData = async (symbol) => {
 	// console.log('fetch')
@@ -99,7 +93,7 @@ class RadarScreen extends React.Component {
 		this.state = {
 			header: headerTitle,
 			sortConfig: {},
-			Symbol: SP500.slice(0,8),
+			Symbol: SYMBOLS.slice(0,8),
 			Interval: Array(8).fill(INTERVALS[0]),
 			Price: Array(8).fill(0)
 		}
@@ -201,23 +195,17 @@ class RadarScreen extends React.Component {
 		// ()` => console.log(this.state)
 		);
 
-		
-
 		this.setState(sortedData);
 
 	}
 
 	render() {
 
-		const { header } = this.state;
+		const { header, Symbol } = this.state;
 		// console.log('rend',this.state)
 
 		return(
 			<div className="radarscreen">
-				<div className='space'
-					onClick={this.onSort}
-				></div>
-				
 				<div id="grid-container">
 					{
 						header.map((value, colIdx) => (
@@ -235,36 +223,17 @@ class RadarScreen extends React.Component {
 					
 					{
 						//loop through the header items (columns) and afterwards loop through stored values (rows)  
-						header.map((type, colIdx) => this.state[type].map((rowVal,rowIdx) => {
-								if(selectTbl[type] !== undefined) {
-									
-									// console.log(type)
-									// if(colIdx === 0 && rowIdx === 0) console.log('dd pass',this.state[header[colIdx]][rowIdx])
-
-									return (
-										<Dropdown 
-											options={selectTbl[type]}
-											gridRow={rowIdx+2}
-											gridColumn={colIdx+1}
-											key={colIdx.toString()+rowIdx.toString()} 
-											onChange={this.onChange}
-										>
-											{rowVal}
-										</Dropdown> 
-									)
-								}
-								else {
-									return (
-										<ValueCell 
-											key={colIdx.toString()+rowIdx.toString()} 
-											gridRow={rowIdx+2}
-											gridColumn={colIdx+1}
-										>
-											{rowVal}
-										</ValueCell>
-									)
-								}
-							})
+						header.map((type, colIdx) => this.state[type].map((rowVal,rowIdx) => (
+									<GenerateGrid
+										type={type}
+										gridLocation={{rowIdx, colIdx}}
+										onChange={this.onChange}
+										key={`${Symbol[rowIdx]}-${type}`} 
+									>
+										{rowVal}
+									</GenerateGrid>
+								)
+							)
 						) 
 					}
 					

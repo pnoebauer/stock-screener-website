@@ -1,33 +1,28 @@
 import React from 'react';
 
-import { SYMBOLS, INTERVALS, SP500 } from '../../assets/constants';
+import Dropdown from '../dropdown/dropdown.component';
+import ValueCell from '../screen-value-cell/screen-value-cell.component';
 
-const selectTbl = {
+import { SYMBOLS, INTERVALS } from '../../assets/constants';
+
+const dropdownOptions = {
 	Symbol: SYMBOLS,
 	Interval: INTERVALS
 }
-
-
-// gridRow={rowIdx+2}
-//     gridColumn={colIdx+1}
-//     key={colIdx.toString()+rowIdx.toString()} 
-//     onChange={this.onChange})
 
 const GenerateGrid = ({ type, gridLocation, onChange, children }) => {
 
     const { rowIdx, colIdx } = gridLocation;
 
-        if(selectTbl[type] !== undefined) {
-                                            
-            // if(colIdx === 0 && rowIdx === 0) console.log('dd pass',this.state[header[colIdx]][rowIdx])
+        if(dropdownOptions[type] !== undefined) {
 
             return (
                 <Dropdown 
-                    options={selectTbl[type]}
+                    options={dropdownOptions[type]}
                     gridRow={rowIdx+2}
                     gridColumn={colIdx+1}
-                    key={colIdx.toString()+rowIdx.toString()} 
-                    onChange={this.onChange}
+                    // key={colIdx.toString()+rowIdx.toString()} 
+                    onChange={onChange}
                 >
                     {children}
                 </Dropdown> 
@@ -36,7 +31,7 @@ const GenerateGrid = ({ type, gridLocation, onChange, children }) => {
         else {
             return (
                 <ValueCell 
-                    key={colIdx.toString()+rowIdx.toString()} 
+                    // key={colIdx.toString()+rowIdx.toString()} 
                     gridRow={rowIdx+2}
                     gridColumn={colIdx+1}
                 >

@@ -1,7 +1,7 @@
 
-.space {
-	background: red;
-	height: 30px;
+.radarscreen {
+	margin-top: 30px;
+	margin-left: 10px;
 }
 
 #grid-container {
@@ -10,7 +10,7 @@
 	display: grid;
 	/* grid-gap: 1px; */
 
-
+	margin-left: -1px;
 	border-bottom: 1px solid black;
   	border-left: 1px solid black;
 
