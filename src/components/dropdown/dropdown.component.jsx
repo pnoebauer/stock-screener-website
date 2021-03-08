@@ -188,7 +188,7 @@ class Dropdown extends React.Component {
           }
           ,
           () => {
-            console.log('enter',this.state.shownValue);
+            // console.log('enter',this.state.shownValue);
             if(this.selectionDisplay.current.innerText !== this.state.shownValue) {
               this.selectionDisplay.current.innerText = this.state.shownValue;
             }

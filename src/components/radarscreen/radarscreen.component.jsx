@@ -7,30 +7,8 @@ import { INTERVALS, SYMBOLS } from '../../assets/constants';
 
 import './radarscreen.styles.css';
 
-const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
-const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 
 const headerTitle = ['Symbol', 'Interval', 'Price']
-
-const fetchRealTimeData = async (symbol) => {
-	// console.log('fetch')
-
-	const params = {apikey, symbol};
-	
-	const queryExt = new URLSearchParams(params).toString();
-	const queryString = urlRealTime.concat('?', queryExt);
-
-	const response = await fetch(queryString);
-
-	if (!response.ok) {
-		const message = `An error has occured: ${response.status}`;
-		throw new Error(message);
-	}
-
-	const data = await response.json();
-	console.log(data)
-	return data;
-}
 
 const sortTable = (state, sortedField, direction) => {
 	
@@ -86,7 +64,6 @@ const sortTable = (state, sortedField, direction) => {
 	return stateClone;
 }
 
-
 class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
@@ -102,19 +79,11 @@ class RadarScreen extends React.Component {
 	componentDidMount() {
 		const { Symbol } = this.state;
 		// console.log('mount')
-		fetchRealTimeData(Symbol)
-			.then(data => {
-				const prices = Symbol.map((symbolName, index) => {
-					return data[symbolName].lastPrice;
-				})
-				// console.log(prices);
-				this.setState({
-					Price: prices
-				}
-				,
-				// () => console.log(this.state)
-				);
-			})
+		this.props.fetchRealTimeData(Symbol, 'lastPrice')
+		.then(data => this.setState({
+					Price: data
+				})	
+		);
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
@@ -138,23 +107,18 @@ class RadarScreen extends React.Component {
 
 		// console.log('onchange',headerCol, valueRow)
 
-		fetchRealTimeData(symbol)
-			.then(data => {
-				const lastPrice = data[symbol].lastPrice;
-				// console.log(lastPrice);
+		this.props.fetchRealTimeData(new Array(symbol), 'lastPrice')
+		.then(lastPrice => {
 
-				prices[valueRow] = lastPrice;
+			prices[valueRow] = lastPrice[0];
 
-				// console.log(prices);
-
-				this.setState({
-					Price: prices
-				});
-
-			})
-			.catch(e => {
-				console.log('An error occurred during fetching: ' + e.message);
-		  	});
+			this.setState({
+				Price: prices
+			});
+		})
+		.catch(e => {
+			console.log('An error occurred during fetching: ' + e.message);
+		});
 
 
 		this.setState({
@@ -228,7 +192,7 @@ class RadarScreen extends React.Component {
 										type={type}
 										gridLocation={{rowIdx, colIdx}}
 										onChange={this.onChange}
-										key={`${Symbol[rowIdx]}-${type}`} 
+										key={`${Symbol[rowIdx]}-${type}-${rowIdx}`} 
 									>
 										{rowVal}
 									</GenerateGrid>

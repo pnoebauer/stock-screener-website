@@ -5,15 +5,8 @@ import './App.css';
 import Header from './components/header/header.component';
 // import RadarScreen from './components/radarscreen/radarscreen.component';
 
-import withFetch from './components/radarscreen/withFetch';
-import Test from './components/radarscreen/test'
+import BuildScreener from './components/build-screener/build-screener.component';
 
-
-
-const TestFetch = withFetch(
-  Test,
-  'test'
-)
 
 
 function App() {
@@ -21,7 +14,7 @@ function App() {
     <div className="App">
       <Header></Header>
       
-      <TestFetch injectProp={'abcd'}/>
+      <BuildScreener injectProp={'abcd'}/>
 
     </div>
   );
