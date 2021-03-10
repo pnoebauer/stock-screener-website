@@ -46,16 +46,14 @@ const sortTable = (state, sortedField, direction) => {
 	});
 
 	// console.log(mapped);
+	// table headers (Symbol, Interval, Price, ...)
+	const columnHeaders = Object.keys(stateClone);
 
-	// console.log(stateClone,'stateClone start')
-
-	const keys = Object.keys(stateClone);
-
-	keys.forEach(key => {
-		// console.log(stateClone[key],'k')
-
-		stateClone[key] = mapped.map(element => stateClone[key][element.index]);
-		// console.log(stateClone[key],'mapped')
+	// loop over each header and resort its rows based on mapped array
+	columnHeaders.forEach(column => {
+		// reorders the current column based on the resorted list (stored in mapped)
+		stateClone[column] = mapped.map(element => stateClone[column][element.index]);
+		// console.log(stateClone[column],'mapped')
 		// console.log(stateClone,'stateClone')
 	})
 
@@ -87,7 +85,6 @@ class RadarScreen extends React.Component {
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
-
 		const stateKey = this.state.header[headerCol];	//which column changed (Symbol, Interval)
 		const values = [...this.state[stateKey]];	//all values of that column from top to bottom
 		const prices = [...this.state.Price];	//all prices
@@ -102,27 +99,16 @@ class RadarScreen extends React.Component {
 		else if (stateKey==='Interval') {	//if a value in the Interval column changed
 			symbol = this.state.Symbol[valueRow];	//reset Symbol for that row to the prior value
 		}
-
 		// console.log('symbol', symbol, 'interval', interval);
-
 		// console.log('onchange',headerCol, valueRow)
 
 		this.props.fetchRealTimeData(new Array(symbol), 'lastPrice')
 		.then(lastPrice => {
-
 			prices[valueRow] = lastPrice[0];
-
 			this.setState({
-				Price: prices
+				Price: prices,
+				[stateKey]: values
 			});
-		})
-		.catch(e => {
-			console.log('An error occurred during fetching: ' + e.message);
-		});
-
-
-		this.setState({
-			[stateKey]: values
 		});
 	}
 
@@ -130,7 +116,6 @@ class RadarScreen extends React.Component {
 		const { sortConfig } = this.state;
 		// console.log('click',event.target.id)
 		
-		// const sortedField = 'Price';
 		const sortedField = event.target.id;
 		// const list = [...this.state[sortedField]]
 
@@ -140,26 +125,17 @@ class RadarScreen extends React.Component {
 			if(sortConfig.direction === direction) {
 				direction = -1;
 			}
-			else if(sortConfig.direction === -1) {
-				// direction = 0;
-			}
 		}
 
 		const sortedData = sortTable(this.state, sortedField, direction);
-		// console.log(sortedData.Price);
-		// console.log(sortedData,'sortedData');
-
+		this.setState(sortedData);
+	
 		this.setState({
 			sortConfig: {
 				sortedField,
 				direction
 			}
-		}
-		,
-		// ()` => console.log(this.state)
-		);
-
-		this.setState(sortedData);
+		});
 
 	}
 
