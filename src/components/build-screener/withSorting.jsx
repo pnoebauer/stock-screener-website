@@ -11,6 +11,7 @@ function withSorting(WrappedComponent) {
         }
 
         sortTable = (tableObject, sortedField, direction) => {
+            // console.log('sort')
 	
             const stateClone = JSON.parse(JSON.stringify(tableObject));
             delete stateClone.header;
@@ -62,39 +63,40 @@ function withSorting(WrappedComponent) {
             return stateClone;
         }
 
-        onSort = (event) => {
+        onSort = (event, state) => {
             const { sortConfig } = this.state;
             // console.log('click',event.target.id)
-            console.log('click',event)
+            // console.log('click',event.target.id, list)
             
-            // const sortedField = event.target.id;
+            const sortedField = event.target.id;
             // // const list = [...this.state[sortedField]]
     
-            // let direction = 1;
+            let direction = 1;
     
-            // if(sortConfig.sortedField === sortedField) {
-            //     if(sortConfig.direction === direction) {
-            //         direction = -1;
-            //     }
-            // }
+            if(sortConfig.sortedField === sortedField) {
+                if(sortConfig.direction === direction) {
+                    direction = -1;
+                }
+            }
     
-            // // const sortedData = sortTable(this.state, sortedField, direction);
-            
-            // // this.setState(sortedData);
+            // const sortedData = sortTable(this.state, sortedField, direction);
+            const sortedData = this.sortTable(state, sortedField, direction);
+            // this.setState(sortedData);
         
-            // this.setState({
-            //     sortConfig: {
-            //         sortedField,
-            //         direction
-            //     }
-            // });
+            this.setState({
+                sortConfig: {
+                    sortedField,
+                    direction
+                }
+            });
+
+            return sortedData;
     
         }
 
-
         render() {
             return (
-                <WrappedComponent onSort={this.onSort}/>
+                <WrappedComponent onSort={this.onSort} {...this.state} {...this.props}/>
             )
         }
     }

@@ -22,5 +22,11 @@ const BuildScreener = withSorting(
 	Test
 );
 
+// const BuildScreener = withSorting(withFetch(
+// 	RadarScreen,
+// 	urlRealTime,
+//  	apikey
+// ));
+
 
 export default BuildScreener;
