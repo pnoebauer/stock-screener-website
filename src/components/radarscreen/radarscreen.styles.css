@@ -40,3 +40,15 @@
   padding: 10px 10px;
   grid-row: 1;
 }
+
+.screen-header.ascending::after {
+	content: '👇';
+	display: inline-block;
+	margin-left: 1em;
+  }
+  
+.screen-header.descending::after {
+	content: '☝️';
+	display: inline-block;
+	margin-left: 1em;
+}

@@ -18,15 +18,15 @@ const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 //  	apikey
 // );
 
-const BuildScreener = withSorting(
-	Test
-);
+// const BuildScreener = withSorting(
+// 	Test
+// );
 
-// const BuildScreener = withSorting(withFetch(
-// 	RadarScreen,
-// 	urlRealTime,
-//  	apikey
-// ));
+const BuildScreener = withSorting(withFetch(
+	RadarScreen,
+	urlRealTime,
+ 	apikey
+));
 
 
 export default BuildScreener;

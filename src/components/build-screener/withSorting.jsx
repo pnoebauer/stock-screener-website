@@ -90,6 +90,11 @@ function withSorting(WrappedComponent) {
                 }
             });
 
+            // console.log({
+            //     sortedField,
+            //     direction
+            // });
+
             return sortedData;
     
         }

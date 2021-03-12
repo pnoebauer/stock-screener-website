@@ -64,10 +64,21 @@ class RadarScreen extends React.Component {
 		const sortedTable = this.props.onSort(event, this.state);
 		this.setState(sortedTable);
 	}
+
+	getClassNameForHeader = name => {
+		const { sortConfig } = this.props;
+		if (!sortConfig) {
+			return;
+		}
+		const direction = sortConfig.direction === 1 ? 'ascending' : 'descending';
+		return sortConfig.sortedField === name ? direction : undefined;
+	};
 	
 	render() {
 		const { header, Symbol } = this.state;
 		// console.log('rend',this.state)
+		// console.log('rend',this.props)
+		
 
 		return(
 			<div className="radarscreen">
@@ -79,6 +90,7 @@ class RadarScreen extends React.Component {
 									gridColumn={colIdx+1}
 									onSort={this.sortTable}
 									id={value}
+									className={`screen-header ${this.getClassNameForHeader(value)}`}
 								>
 									{value}
 								</ScreenHeader>
