@@ -19,18 +19,29 @@ class Dropdown extends React.Component {
 
     //if click happens outside the dropdown area close the list
     handleClickOutside = (event) => {
+      // console.log('handleClickOutside')
+      // const { options, onChange } = this.props;
       const { options, onChange, gridColumn, gridRow, children} = this.props;
 
       const headerCol = gridColumn-1;
       const valueRow = gridRow-2;
 
       if(this.container.current && !this.container.current.contains(event.target)) {
+        
+        // console.log(options.includes(shownValue),'click')
+
         let insertValue;
 
         this.setState(prevState => {
           // if the typed in value exists in the options list then use it,
           // if it does not exist replace it with the value that was in the cell before typing in
           insertValue = options.includes(prevState.shownValue) ? prevState.shownValue : children;
+          // console.log(prevState.shownValue,'prevState.shownValue',children)
+          // const activeValue = prevState.displayedOptions[prevState.activeItem];
+          // console.log(activeValue,'activeValue',this.props.children)
+          // insertValue = activeValue === undefined ? children : activeValue;
+          // use below to leave the typed in value even if value does not exist in options list
+          // insertValue = prevState.shownValue;
           
           return {
             showList: false,
@@ -39,39 +50,57 @@ class Dropdown extends React.Component {
         }
           , 
           () => {
+            // console.log(this.selectionDisplay.current.innerText,event.target.innerText)
               if(this.selectionDisplay.current.innerText !== insertValue) {
-                //happens if typed in text does not match anything
                 this.selectionDisplay.current.innerText = insertValue;
+                //happens if typed in text does not match anything
+                // console.log('does not match')
               };
+              
               document.removeEventListener('mousedown', this.handleClickOutside);
+              // console.log(insertValue)
               return onChange(insertValue, headerCol, valueRow);
           }
         );
       }
+
     }
 
     //handle the displaying of the list (if currently shown, then hide and vice versa)
     handleDisplay = (clickEvent, headerCol, valueRow) => {
+      
       const { options } = this.props;
       const { shownValue } = this.state;
+
+      // console.log('handleDisplay',options,shownValue)
 
       // comment if statement to allow closing the list even if value does not exist in options list
       if(options.includes(shownValue)) { 
         this.setState(prevState => {
- 
+          // console.log(prevState,'prevState')
+          // console.log(this.container.current,'this.container.current')
+          // console.log(this.state.displayedOptions, 'this.state.displayedOptions')
+
           if(!prevState.showList) {
+            // console.log('add listener')
             document.addEventListener('mousedown', this.handleClickOutside);
           }
           else if(prevState.showList) {
+            // console.log('remove listener')
             document.removeEventListener('mousedown', this.handleClickOutside);
           }
+
           return { showList: !prevState.showList }
-        }); 
+        });
+        
       }
+
     };
 
     // set text based on click in displayed list
     handleOptionClick = (event, headerCol, valueRow) => {
+      // console.log('handleOptionClick')
+      // console.log(this.selectionDisplay.current.innerText,'this.selectionDisplay')
       const { onChange } = this.props;
 
       this.setState({
@@ -80,21 +109,28 @@ class Dropdown extends React.Component {
       });
 
       if(this.selectionDisplay.current.innerText !== event.target.innerText) {
+        // console.log('set inner handleOption')
         this.selectionDisplay.current.innerText = event.target.innerText;
       }
 
       document.removeEventListener('mousedown', this.handleClickOutside);
+      
       onChange(event.target.innerText, headerCol, valueRow);
+
     };
 
     onTextChange = event => {
+      // console.log('onTextChange',event.keyCode)
+      // console.log(event.currentTarget.textContent,'text change')
       const { options } = this.props;
 
       const currentInput = event.currentTarget.textContent;
 
       const newFilteredOptions = options.filter(item => {
+        // return item.toLowerCase().indexOf(currentInput.toLowerCase()) > -1 //filter if occurs at all
         return item.toLowerCase().indexOf(currentInput.toLowerCase()) === 0 //filter all with the same start
       });
+      // console.log(newFilteredOptions);
 
       this.setState({
         displayedOptions: newFilteredOptions,
@@ -102,11 +138,14 @@ class Dropdown extends React.Component {
         shownValue: currentInput,
         activeItem: 0
       });
+
     }
 
     onKeyDown = (event, headerCol, valueRow) => {
       const { onChange } = this.props;
       const { activeItem, displayedOptions } = this.state;
+      // console.log(event.keyCode);//,activeItem,filteredSuggestions.length);
+      //40 down, 38 up, 13 enter
     
       switch (event.keyCode) {
         // down
@@ -116,7 +155,10 @@ class Dropdown extends React.Component {
               return {
                 activeItem: prevState.activeItem + 1
               }
-            });           
+            }
+            // , () => console.log('down',this.state.activeItem, displayedOptions[this.state.activeItem])
+            );
+              
           } 
           break;
         // up
@@ -126,12 +168,16 @@ class Dropdown extends React.Component {
               return {
                 activeItem: prevState.activeItem - 1
               }
-            });
+            }
+            // , () => console.log('up',this.state.activeItem)
+            );
+              
           } 
           break;
         // enter
         case 13:
           event.preventDefault();
+
           this.setState(prevState => {
             const displayedValue = prevState.displayedOptions[prevState.activeItem];
             return {
@@ -142,9 +188,11 @@ class Dropdown extends React.Component {
           }
           ,
           () => {
+            // console.log('enter',this.state.shownValue);
             if(this.selectionDisplay.current.innerText !== this.state.shownValue) {
               this.selectionDisplay.current.innerText = this.state.shownValue;
             }
+            
             return onChange(this.state.shownValue, headerCol, valueRow);
           }
           );
@@ -154,11 +202,18 @@ class Dropdown extends React.Component {
     
         default:
       }
+    
     }
 
     render() {
+      
       const { gridRow, gridColumn, children } = this.props;
+      
+      // console.log('dd',this.state, this.props.children);
+
       const { showList, displayedOptions, activeItem } = this.state;
+      
+      // console.log(displayedOptions.length)
       
       let number = displayedOptions.length;
       number = number > 5 ? 5 : number < 1 ? 1 : number;
@@ -166,6 +221,7 @@ class Dropdown extends React.Component {
       const dropDownHeight = `${number*100}%`;
       const liHeight = `calc(${1/number*100}% - 1px)`;
 
+      // console.log(showList,'showList')
       return (
         <div 
           className={'dropdown-container'}
@@ -205,6 +261,7 @@ class Dropdown extends React.Component {
                   )
                 // }
                 //   else return null;
+
               })}
             </ul>)}
         </div>

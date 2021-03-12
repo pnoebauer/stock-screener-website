@@ -10,7 +10,7 @@ const dropdownOptions = {
 	Interval: INTERVALS
 }
 
-const GenerateGrid = ({ type, gridLocation, onChange, children }) => {
+const GenerateGridCell = ({ type, gridLocation, onChange, children }) => {
 
     const { rowIdx, colIdx } = gridLocation;
 
@@ -42,4 +42,4 @@ const GenerateGrid = ({ type, gridLocation, onChange, children }) => {
     
 }
 
-export default GenerateGrid;
+export default GenerateGridCell;

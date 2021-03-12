@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { SYMBOLS } from '../../assets/constants';
+import { SYMBOLS } from '../../../assets/constants';
 
 
 function withFetch(WrappedComponent, urlRealTime, apikey) {

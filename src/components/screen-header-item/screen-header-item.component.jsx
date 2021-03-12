@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ScreenHeader = ( { gridColumn, onSort, id, className, children } ) => (
+const ScreenHeaderItem = ( { gridColumn, onSort, id, className, children } ) => (
 
     <div 
         // className='screen-header'
@@ -13,4 +13,4 @@ const ScreenHeader = ( { gridColumn, onSort, id, className, children } ) => (
     </div>
 )
 
-export default ScreenHeader;
+export default ScreenHeaderItem;
