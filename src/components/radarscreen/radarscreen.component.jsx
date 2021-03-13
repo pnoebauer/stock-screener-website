@@ -1,8 +1,8 @@
 import React from 'react';
 
 import ScreenHeader from '../screen-header/screen-header.component';
-
 import GenerateGrid from '../generate-grid/generate-grid.component';
+import AddColumnButton from '../add-column-button/add-column-button.component';
 
 import { INTERVALS, SYMBOLS } from '../../assets/constants';
 
@@ -80,15 +80,7 @@ class RadarScreen extends React.Component {
 						sortTable={this.sortTable}
 						sortConfig={sortConfig}
 					/>
-					<button 
-						className="add-column" 
-						style={{
-							gridColumn: 4,
-							width: '35px'
-						}}
-					>
-						+
-					</button>
+					<AddColumnButton />
 					<GenerateGrid 
 						{...this.state}
 						onChange={this.onChange}
