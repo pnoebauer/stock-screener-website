@@ -3,23 +3,24 @@ import React from 'react';
 
 import './App.css';
 import Header from './components/header/header.component';
-// import RadarScreen from './components/radarscreen/radarscreen.component';
 
 import BuildScreener from './components/build-screener/build-screener.component';
+
+import ModalExample from './components/modal/modal.example';
 
 
 
 function App() {
   return (
     <div className="App">
-      <Header></Header>
-      
-      <BuildScreener injectProp={'abcd'}/>
+      <ModalExample />
 
     </div>
   );
 }
 
-{/* <RadarScreen></RadarScreen> */}
+{/* <Header></Header>
+      
+<BuildScreener injectProp={'abcd'}/> */}
 
 export default App;
