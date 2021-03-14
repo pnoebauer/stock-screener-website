@@ -11,23 +11,6 @@ const IS_IE_9 = UA && UA.indexOf('msie 9.0') > 0;
 
 
 class Modal extends React.Component {
-  static defaultProps = {
-    width: 400,
-    height: 240,
-    measure: 'px',
-    visible: false,
-    showMask: true,
-    closeOnEsc: true,
-    closeMaskOnClick: true,
-    showCloseButton: true,
-    animation: 'slideUp',
-    enterAnimation: 'fade',
-    leaveAnimation: 'rotate',
-    duration: 1300,
-    className: '',
-    customStyles: {},
-    customMaskStyles: {}
-  };
 
   constructor(props) {
       super(props);
@@ -38,7 +21,6 @@ class Modal extends React.Component {
       };
   }
   
-
   componentDidMount() {
     if (this.props.visible) {
       this.enter();
@@ -116,6 +98,8 @@ class Modal extends React.Component {
       WebkitAnimationDuration: duration + 'ms'
     };
 
+    // console.log({...this.props},'{...this.props}')
+
     return (
       <div
         style={style}
@@ -134,5 +118,23 @@ class Modal extends React.Component {
     );
   }
 }
+
+Modal.defaultProps = {
+  width: 400,
+  height: 240,
+  measure: 'px',
+  visible: false,
+  showMask: true,
+  closeOnEsc: true,
+  closeMaskOnClick: true,
+  showCloseButton: true,
+  animation: 'slideUp',
+  enterAnimation: 'fade',
+  leaveAnimation: 'rotate',
+  duration: 1300,
+  className: '',
+  customStyles: {},
+  customMaskStyles: {}
+};
 
 export default Modal;

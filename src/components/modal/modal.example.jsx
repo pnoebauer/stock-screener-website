@@ -1,6 +1,8 @@
 import React from 'react';
 import Modal from './modal.component';
 
+import IndicatorSelector from '../indicator-selector/indicator-selector.component';
+
 // include styles
 import './modal.styles.css';
 
@@ -27,8 +29,11 @@ class ModalExample extends React.Component {
                 <Modal 
                     visible={this.state.visible} 
                     onClose={this.hide.bind(this)}
+                    width={60}
+                    height={50}
+                    measure={'%'}
                 >
-                    <div>Content</div>
+                    <IndicatorSelector />
                 </Modal>
             </div>
         )
