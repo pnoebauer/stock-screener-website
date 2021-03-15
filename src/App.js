@@ -13,14 +13,16 @@ import ModalExample from './components/modal/modal.example';
 function App() {
   return (
     <div className="App">
-      <ModalExample />
+      
+      <Header></Header>
+      <BuildScreener injectProp={'abcd'}/>
 
     </div>
   );
 }
 
 {/* <Header></Header>
-      
+  <ModalExample />    
 <BuildScreener injectProp={'abcd'}/> */}
 
 export default App;

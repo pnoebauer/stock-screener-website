@@ -10,30 +10,53 @@ class ModalExample extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { visible: false };
+        this.state = { 
+            visible: false,
+            //TEMPORARY TO TEST PASSING OF STATE - REMOVE AFTERWARDS
+            availableIndicators: [
+                {name: 'SMA', id: 0, selected: false}, 
+                {name: 'EMA', id: 1, selected: false}, 
+                {name: 'Open', id: 2, selected: true},
+                {name: 'Close', id: 3, selected: false}
+            ],
+            usedIndicators: []
+        };
     }
 
-    show() {
+    show = () => {
         this.setState({ visible: true });
     }
 
-    hide() {
+    hide = () => {
         this.setState({ visible: false });
+    }
+
+    //TEMPORARY METHOD TO TEST PASSING OF STATE - REMOVE AFTERWARDS
+    handleOkCancel = (type, updatedState) => {
+        this.hide();
+        if(type === 'ok') this.setState(updatedState);
     }
 
     render() {
         return (
             <div>
-                <button onClick={this.show.bind(this)}>show</button>
+                <button onClick={this.show}>show</button>
 
                 <Modal 
                     visible={this.state.visible} 
-                    onClose={this.hide.bind(this)}
+                    onClose={this.hide}
                     width={60}
                     height={50}
                     measure={'%'}
+                    showCloseButton={false}
+                    closeOnEsc={false}
+                    closeMaskOnClick={false}
                 >
-                    <IndicatorSelector />
+                    <IndicatorSelector 
+                        handleOkCancel={this.handleOkCancel}
+                        availableIndicators={this.state.availableIndicators}
+                        usedIndicators={this.state.usedIndicators}
+                    />
                 </Modal>
             </div>
         )

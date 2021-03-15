@@ -8,15 +8,8 @@ class IndicatorSelector extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            availableIndicators: [
-                {name: 'SMA', id: 0, selected: false}, 
-                {name: 'EMA', id: 1, selected: false}, 
-                {name: 'Open', id: 2, selected: true},
-                {name: 'Close', id: 3, selected: false}
-            ],
-            usedIndicators: [],
-            availableIndicatorsSelected: [],
-            usedIndicatorsSelected: []
+            availableIndicators: this.props.availableIndicators,
+            usedIndicators: this.props.usedIndicators
         }
     }
 
@@ -67,31 +60,31 @@ class IndicatorSelector extends React.Component {
         });
     }
 
-    onAdd = e => {
-        this.setState(prevState => {            
-            return {
-                availableIndicators: 
-                    prevState.availableIndicators.filter(item => !item.selected),
-                usedIndicators: 
-                [...prevState.usedIndicators,
-                    ...prevState.availableIndicators.filter(item => item.selected).map(item => ({...item, selected: false}))
-                ]
-            }
-        })
-    }
+    // onAdd = e => {
+    //     this.setState(prevState => {            
+    //         return {
+    //             availableIndicators: 
+    //                 prevState.availableIndicators.filter(item => !item.selected),
+    //             usedIndicators: 
+    //             [...prevState.usedIndicators,
+    //                 ...prevState.availableIndicators.filter(item => item.selected).map(item => ({...item, selected: false}))
+    //             ]
+    //         }
+    //     })
+    // }
 
-    onRemove = e => {
-        this.setState(prevState => {            
-            return {
-                usedIndicators: 
-                    prevState.usedIndicators.filter(item => !item.selected),
-                availableIndicators: 
-                [...prevState.availableIndicators,
-                    ...prevState.usedIndicators.filter(item => item.selected).map(item => ({...item, selected: false}))
-                ]
-            }
-        })
-    }
+    // onRemove = e => {
+    //     this.setState(prevState => {            
+    //         return {
+    //             usedIndicators: 
+    //                 prevState.usedIndicators.filter(item => !item.selected),
+    //             availableIndicators: 
+    //             [...prevState.availableIndicators,
+    //                 ...prevState.usedIndicators.filter(item => item.selected).map(item => ({...item, selected: false}))
+    //             ]
+    //         }
+    //     })
+    // }
 
     handleClick = event => {
         const type = event.target.className;
@@ -110,6 +103,28 @@ class IndicatorSelector extends React.Component {
                     ]
             }
         })
+    }
+    
+    unSelect() {
+        this.setState({
+            availableIndicators: this.state.availableIndicators.map(item => ({...item, selected: false})),
+            usedIndicators: this.state.usedIndicators.map(item => ({...item, selected: false}))
+        })
+    }
+
+    handleOk = () => {
+        // console.log(this.state)
+        this.unSelect();
+        this.props.handleOkCancel('ok',this.state);
+    }
+
+    handleCancel = () => {
+        const { handleOkCancel, ...priorState} = this.props;
+        // console.log(priorState, this.state)
+
+        this.setState(priorState);
+        this.unSelect();
+        this.props.handleOkCancel('cancel');
     }
 
     render() {
@@ -142,6 +157,21 @@ class IndicatorSelector extends React.Component {
                     onToggle={this.onToggle}
                     className="usedIndicators"
                 />
+
+                <div className="ok-cancel">
+                    <button 
+                        className="cancel"
+                        onClick={this.handleCancel}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        className="ok"
+                        onClick={this.handleOk}
+                    >
+                        Okay
+                    </button>  
+                </div>
                 
                 
             </div>
