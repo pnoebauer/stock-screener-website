@@ -93,20 +93,21 @@ class IndicatorSelector extends React.Component {
         })
     }
 
-    onAddRemove = e => {
-        let type = 'ADD';
+    handleClick = event => {
+        const type = event.target.className;
         
-        const moveFrom = type === 'ADD' ? 'availableIndicators' : 'usedIndicators';
-        const moveTo = type === 'ADD' ? 'usedIndicators' : 'availableIndicators';
+        const moveFrom = type === 'add' ? 'availableIndicators' : 'usedIndicators';
+        const moveTo = type === 'add' ? 'usedIndicators' : 'availableIndicators';
 
         this.setState(prevState => {            
             return {
                 [moveFrom]: 
                     prevState[moveFrom].filter(item => !item.selected).map(item => ({...item, selected: false})),
                 [moveTo]: 
-                [...prevState[moveTo],
-                    ...prevState[moveFrom].filter(item => item.selected).map(item => ({...item, selected: false}))
-                ]
+                    [
+                        ...prevState[moveTo],
+                        ...prevState[moveFrom].filter(item => item.selected).map(item => ({...item, selected: false}))
+                    ]
             }
         })
     }
@@ -114,6 +115,7 @@ class IndicatorSelector extends React.Component {
     render() {
         return (
             <div className="indicator-selector">
+                
                 <IndicatorsList 
                     displayedIndicators={this.state.availableIndicators}
                     onToggle={this.onToggle}
@@ -121,8 +123,18 @@ class IndicatorSelector extends React.Component {
                 />
                 
                 <div className="add-remove">
-                    <button onClick={this.onAdd}>ADD</button>
-                    <button onClick={this.onRemove}>REMOVE</button>
+                    <button 
+                        onClick={this.handleClick}
+                        className='add'
+                    >
+                        ADD
+                    </button>
+                    <button 
+                        onClick={this.handleClick}
+                        className='remove'
+                    >
+                        REMOVE
+                    </button>
                 </div>
                 
                 <IndicatorsList 
@@ -130,6 +142,8 @@ class IndicatorSelector extends React.Component {
                     onToggle={this.onToggle}
                     className="usedIndicators"
                 />
+                
+                
             </div>
             
         )
