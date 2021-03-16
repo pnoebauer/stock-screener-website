@@ -4,6 +4,8 @@ import React from 'react';
 
 import Dialog from './dialog.component';
 
+import './modal.styles.css';
+
 // env
 const IN_BROWSER = typeof window !== 'undefined';
 const UA = IN_BROWSER && window.navigator.userAgent.toLowerCase();

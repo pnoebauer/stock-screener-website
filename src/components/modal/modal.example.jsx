@@ -3,8 +3,8 @@ import Modal from './modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
-// include styles
-import './modal.styles.css';
+// // include styles
+// import './modal.styles.css';
 
 class ModalExample extends React.Component {
 
