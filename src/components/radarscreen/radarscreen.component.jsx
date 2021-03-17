@@ -8,18 +8,30 @@ import { INTERVALS, SYMBOLS } from '../../assets/constants';
 
 import './radarscreen.styles.css';
 
-const headerTitle = ['Symbol', 'Interval', 'Price']
+// const headerTitle = ['Symbol', 'Interval', 'Price']
 
 
 class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			header: headerTitle,
+			// header: headerTitle,
 			Symbol: SYMBOLS.slice(0,8),
 			Interval: Array(8).fill(INTERVALS[0]),
 			Price: Array(8).fill(0)
 		}
+
+		this.state.header = Object.keys(this.state);
+
+		// console.log(this.state)
+		this.setHeaderTitle();
+	}
+
+	setHeaderTitle = () => {
+		const { header, ...rest } = this.state;
+		
+		const headerTitle = Object.keys(rest);
+		// console.log(headerTitle);
 	}
 
 	componentDidMount() {
@@ -66,6 +78,37 @@ class RadarScreen extends React.Component {
 		const direction = sortConfig.direction === 1 ? 'ascending' : 'descending'; 
 		return sortConfig.sortedField === name ? direction : undefined;
 	};
+
+	handleColumnUpdate = names => {
+		console.log(names);
+
+		const stateClone = JSON.parse(JSON.stringify(this.state));
+		const headerList = stateClone.header;
+		delete stateClone.header;
+
+		headerList.forEach(header => {
+			if(names.includes(header)) {
+				console.log(header, 'included')
+			}
+			else {
+				console.log(header, 'not included')
+			}
+
+		})
+
+		names.forEach((value,index) => {
+			// console.log(value in stateClone, value, 'exists')
+			// console.log(!(value in stateClone), value, 'does not exist')
+
+			if(stateClone.hasOwnProperty(value)) {
+				console.log(value, 'hasOwnProperty exists');
+			}
+			if(!stateClone.hasOwnProperty(value)) {
+				console.log(value, 'hasOwnProperty does not exist');
+			}
+		})
+
+	}
 	
 	render() {
 		const { header, Symbol } = this.state;
@@ -74,13 +117,20 @@ class RadarScreen extends React.Component {
 
 		return (
 			<div className="radarscreen">
-				<div id="grid-container">
+				<div id="grid-container" 
+					style={{gridTemplateColumns: `repeat(${header.length}, 1fr) 0`}}
+				>
 					<ScreenHeader 
 						header={header}
 						sortTable={this.sortTable}
 						sortConfig={sortConfig}
 					/>
-					<AddColumnButton />
+					<AddColumnButton 
+						style={{
+                            gridColumn: `${header.length}+1`
+                        }}
+						handleColumnUpdate={this.handleColumnUpdate}
+					/>
 					<GenerateGrid 
 						{...this.state}
 						onChange={this.onChange}
