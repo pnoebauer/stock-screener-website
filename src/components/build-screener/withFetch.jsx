@@ -34,17 +34,30 @@ function withFetch(WrappedComponent, urlRealTime, apikey) {
                 }
             
                 const data = await response.json();
+                // console.log(data);
                 
-                const prices = symbol.map((symbolName, index) => {
-                    return data[symbolName][indicator];
-                });
+                let indicatorObject = {};
+                indicator.forEach(indicatorName => indicatorObject = {
+                        ...indicatorObject,
+                        [indicatorName]: symbol.map(symbolName => 
+                            data[symbolName][indicatorName]
+                        )
+                    }
+                )
+
+                // console.log(indicatorObject,'indicatorObject');
+                
+                // const prices = symbol.map((symbolName, index) => {
+                //     return data[symbolName][indicator];
+                // });
 
                 this.setState({
                     isLoading: false,
                     isError: false
                 });
 
-                return prices;
+                // return prices;
+                return indicatorObject;
 
             }
             catch (err) {
