@@ -107,7 +107,7 @@ class RadarScreen extends React.Component {
 			permanentHeaders.includes(item) ? [] : [indicatorsMap[item]]
 		)
 
-		console.log('mappedIndicators',mappedIndicators)
+		// console.log('mappedIndicators',mappedIndicators)
 
 		this.props.fetchRealTimeData(Symbol, mappedIndicators)
 		.then(indicatorObject => {
@@ -118,7 +118,7 @@ class RadarScreen extends React.Component {
 					[key]: indicatorObject[indicator]
 				}
 					,
-					() => console.log(this.state)
+					// () => console.log(this.state)
 				)
 			}
 			)
@@ -173,15 +173,15 @@ class RadarScreen extends React.Component {
 	};
 
 	handleColumnUpdate = names => {
-		// console.log(names);
+		console.log(names, 'names');
 
 		const headerTitles = [...permanentHeaders, ...names];
 
-		// console.log(headerTitles,'headerTitles');
+		console.log(headerTitles,'headerTitles');
 
-		this.setState({
-			header: headerTitles
-		});
+		// this.setState({
+		// 	header: headerTitles
+		// });
 
 		// const stateClone = JSON.parse(JSON.stringify(this.state));
 		// const headerList = stateClone.header;
@@ -215,6 +215,12 @@ class RadarScreen extends React.Component {
 		const { sortConfig } = this.props;
 		// console.log('rend',this.state,this.props)
 
+		const usedIndicators = header.flatMap(item => 
+			permanentHeaders.includes(item) ? [] : [item]
+		);
+
+		// console.log(usedIndicators,'usedIndicators')
+
 		return (
 			<div className="radarscreen">
 				<div id="grid-container" 
@@ -230,11 +236,12 @@ class RadarScreen extends React.Component {
                             gridColumn: `${header.length}+1`
                         }}
 						handleColumnUpdate={this.handleColumnUpdate}
+						usedIndicators={usedIndicators}
 					/>
-					{/* <GenerateGrid 
+					<GenerateGrid 
 						{...this.state}
 						onChange={this.onChange}
-					/> */}
+					/>
 				</div>
 		</div>
 		)

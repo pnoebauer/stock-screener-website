@@ -120,14 +120,15 @@ class IndicatorSelector extends React.Component {
 
     handleCancel = () => {
         const { handleOkCancel, ...priorState} = this.props;
-        // console.log(priorState, this.state)
+        console.log(priorState, this.state)
 
-        this.setState(priorState);
+        this.setState(priorState,()=>console.log(this.state,'s'));
         this.unSelect();
         this.props.handleOkCancel('cancel');
     }
 
     render() {
+            // console.log(this.props.usedIndicators)
         return (
             <div className="indicator-selector">
                 

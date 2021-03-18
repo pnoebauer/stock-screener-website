@@ -4,6 +4,35 @@ import Modal from '../modal/modal.component';
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
 
+const indicatorsMap = {
+	'52 Week High': '52WkHigh',
+	'52 Week Low': '52WkLow',
+	'Ask Price': 'askPrice',
+	'Ask Size': 'askSize',
+	'Asset Type': 'assetType',
+	'Bid Price': 'bidPrice',
+	'Bid Size': 'bidSize',
+	'Close Price': 'closePrice',
+	'Dividend Amount': 'divAmount',
+	'Dividend Date': 'divDate',
+	'Dividend Yield': 'divYield',
+	'Exchange': 'exchangeName',
+	'High Price': 'highPrice',
+	'Last Price': 'lastPrice',
+	'Last Size': 'lastSize',
+	'Low Price': 'lowPrice',
+	'Mark': 'mark',
+	'Mark Change': 'markChangeInDouble',
+	'Mark Change (%)': 'markPercentChangeInDouble',
+	'Net Asset Value': 'nAV',
+	'Net Change': 'netChange',
+	'Net Change (%)': 'netPercentChangeInDouble',
+	'Open Price': 'openPrice',
+	'PE Ratio': 'peRatio',
+	'Volume': 'totalVolume',
+	'Volatility': 'volatility' 
+};
+
 class AddColumnButton extends React.Component {
 
     constructor(props) {
@@ -30,10 +59,20 @@ class AddColumnButton extends React.Component {
         this.setState({ visible: false });
     }
 
+    deriveIndicatorsArr = indicators => indicators.map((indicator, index) => ({
+            name: indicator, id: index, selected: false
+        })
+    )
+    
+
     //TEMPORARY METHOD TO TEST PASSING OF STATE - REMOVE AFTERWARDS
     handleOkCancel = (type, updatedState) => {
         this.hide();
         if(type === 'ok') {
+            //USE THIS, REMOVE BELOW
+            // const columnNames = updatedState.usedIndicators.map(item => item.name);
+            // this.props.handleColumnUpdate(columnNames);
+
             this.setState(updatedState
                 ,
                 () => {
@@ -46,6 +85,12 @@ class AddColumnButton extends React.Component {
     }
 
     render() {
+        const { usedIndicators } = this.props;
+        // console.log(this.deriveIndicatorsArr(usedIndicators))
+
+        const availableIndicators = Object.keys(indicatorsMap).filter(value => !usedIndicators.includes(value));
+        // console.log(availableIndicators,'k')
+
         return (
             <>
                 <button 
@@ -68,8 +113,8 @@ class AddColumnButton extends React.Component {
                 >
                     <IndicatorSelector 
                         handleOkCancel={this.handleOkCancel}
-                        availableIndicators={this.state.availableIndicators}
-                        usedIndicators={this.state.usedIndicators}
+                        availableIndicators={this.deriveIndicatorsArr(availableIndicators)}
+                        usedIndicators={this.deriveIndicatorsArr(usedIndicators)}
                     />
                 </Modal>
             </>
