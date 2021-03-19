@@ -40,14 +40,14 @@ class AddColumnButton extends React.Component {
         this.state = { 
             visible: false,
             //TEMPORARY TO TEST PASSING OF STATE - REMOVE AFTERWARDS
-            availableIndicators: [
-                {name: 'Price', id: 0, selected: false},
-                {name: 'SMA', id: 1, selected: false}, 
-                {name: 'EMA', id: 2, selected: false}, 
-                {name: 'Open', id: 3, selected: true},
-                {name: 'Close', id: 4, selected: false}
-            ],
-            usedIndicators: []
+            // availableIndicators: [
+            //     {name: 'Price', id: 0, selected: false},
+            //     {name: 'SMA', id: 1, selected: false}, 
+            //     {name: 'EMA', id: 2, selected: false}, 
+            //     {name: 'Open', id: 3, selected: true},
+            //     {name: 'Close', id: 4, selected: false}
+            // ],
+            // usedIndicators: []
         };
     }
 
@@ -60,7 +60,7 @@ class AddColumnButton extends React.Component {
     }
 
     deriveIndicatorsArr = indicators => indicators.map((indicator, index) => ({
-            name: indicator, id: index, selected: false
+            name: indicator, id: indicator, selected: false
         })
     )
     
@@ -70,17 +70,17 @@ class AddColumnButton extends React.Component {
         this.hide();
         if(type === 'ok') {
             //USE THIS, REMOVE BELOW
-            // const columnNames = updatedState.usedIndicators.map(item => item.name);
-            // this.props.handleColumnUpdate(columnNames);
+            const columnNames = updatedState.usedIndicators.map(item => item.name);
+            this.props.handleColumnUpdate(columnNames);
 
-            this.setState(updatedState
-                ,
-                () => {
-                    const columnNames = this.state.usedIndicators.map(item => item.name)
-                    // console.log(columnNames)
-                    this.props.handleColumnUpdate(columnNames);
-                }
-            );
+            // this.setState(updatedState
+            //     ,
+            //     () => {
+            //         const columnNames = this.state.usedIndicators.map(item => item.name)
+            //         // console.log(columnNames)
+            //         this.props.handleColumnUpdate(columnNames);
+            //     }
+            // );
         }
     }
 

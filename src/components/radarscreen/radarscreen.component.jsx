@@ -99,35 +99,38 @@ class RadarScreen extends React.Component {
 		// console.log(headerTitle);
 	}
 
+	fetchAndSetState = (apiIndicators) => {
+		
+		const { Symbol} = this.state;
+
+		this.props.fetchRealTimeData(Symbol, apiIndicators)
+		.then(indicatorObject => {
+			// Object.keys(indicatorObject).forEach(indicator => {
+			apiIndicators.forEach(apiIndicator => {
+				const indicatorColumn = indicatorsMapRev[apiIndicator];
+				this.setState({
+					[indicatorColumn]: indicatorObject[apiIndicator]
+				}
+					,
+					() => console.log(this.state,'s')
+				)
+			}
+			)
+		});
+	}
+
 	componentDidMount() {
 		const { Symbol, header } = this.state;
 		// console.log('mount')
 
-		const mappedIndicators = header.flatMap(item => 
+		const apiIndicators = header.flatMap(item => 
 			permanentHeaders.includes(item) ? [] : [indicatorsMap[item]]
 		)
 
-		// console.log('mappedIndicators',mappedIndicators)
-
-		this.props.fetchRealTimeData(Symbol, mappedIndicators)
-		.then(indicatorObject => {
-			// Object.keys(indicatorObject).forEach(indicator => {
-			mappedIndicators.forEach(indicator => {
-				const key = indicatorsMapRev[indicator];
-				this.setState({
-					[key]: indicatorObject[indicator]
-				}
-					,
-					// () => console.log(this.state)
-				)
-			}
-			)
-			// this.setState({
-			// 		Price: data
-			// 	})	
-		});
-
-		// console.log(this.state)
+		// console.log('apiIndicators',apiIndicators)
+		
+		this.fetchAndSetState(apiIndicators);
+		
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
@@ -173,40 +176,30 @@ class RadarScreen extends React.Component {
 	};
 
 	handleColumnUpdate = names => {
-		console.log(names, 'names');
+		// console.log(names, 'names');
 
 		const headerTitles = [...permanentHeaders, ...names];
 
-		console.log(headerTitles,'headerTitles');
+		// console.log(headerTitles,'headerTitles');
 
-		// this.setState({
-		// 	header: headerTitles
-		// });
+		// const clearState = JSON.parse(JSON.stringify(this.state));
 
-		// const stateClone = JSON.parse(JSON.stringify(this.state));
-		// const headerList = stateClone.header;
-		// delete stateClone.header;
+		
+		Object.keys(this.state).forEach(key => {
+			if(!headerTitles.includes(key)) {
+				this.setState({[key]: null})
+			}
+		})
 
-		// headerList.forEach(header => {
-		// 	if(names.includes(header)) {
-		// 		console.log(header, 'included')
-		// 	}
-		// 	else {
-		// 		console.log(header, 'not included')
-		// 	}
+		this.setState({
+			header: headerTitles
+		});
 
-		// })
+		const apiIndicators = names.map(item => indicatorsMap[item]);
 
-		// names.forEach((value,index) => {
-		// 	// console.log(value in stateClone, value, 'exists')
-		// 	// console.log(!(value in stateClone), value, 'does not exist')
-		// 	if(stateClone.hasOwnProperty(value)) {
-		// 		console.log(value, 'hasOwnProperty exists');
-		// 	}
-		// 	if(!stateClone.hasOwnProperty(value)) {
-		// 		console.log(value, 'hasOwnProperty does not exist');
-		// 	}
-		// })
+		console.log('apiIndicators',apiIndicators)
+
+		this.fetchAndSetState(apiIndicators);
 
 	}
 	
@@ -238,10 +231,10 @@ class RadarScreen extends React.Component {
 						handleColumnUpdate={this.handleColumnUpdate}
 						usedIndicators={usedIndicators}
 					/>
-					<GenerateGrid 
+					{/* <GenerateGrid 
 						{...this.state}
 						onChange={this.onChange}
-					/>
+					/> */}
 				</div>
 		</div>
 		)

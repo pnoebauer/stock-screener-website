@@ -22,24 +22,6 @@ class IndicatorSelector extends React.Component {
 
         // console.log(className.includes('available-indicators'))
 
-        //  METHOD 1 ------------------
-        // this.setState(prevState => {
-        //     const updatedIndicator = {
-        //         ...prevState.availableIndicators[updatedIndex],
-        //         selected: newSelect
-        //     };
-        //     return {
-        //         availableIndicators: Object.assign([], prevState.availableIndicators, {[updatedIndex]: updatedIndicator})
-        //     }
-        // });
-        // const updatedIndicator = {
-        //     ...prevState.availableIndicators[updatedIndex],
-        //     selected: newSelect
-        // };
-        // return {
-        //     availableIndicators: Object.assign([], prevState.availableIndicators, {[updatedIndex]: updatedIndicator})
-        // }
-        //  METHOD 2 ------------------
         this.setState(prevState => {
             const updated = prevState[indicatorListName].map((value, index) => {
                 if(updatedIndex==index) {
@@ -60,32 +42,6 @@ class IndicatorSelector extends React.Component {
         });
     }
 
-    // onAdd = e => {
-    //     this.setState(prevState => {            
-    //         return {
-    //             availableIndicators: 
-    //                 prevState.availableIndicators.filter(item => !item.selected),
-    //             usedIndicators: 
-    //             [...prevState.usedIndicators,
-    //                 ...prevState.availableIndicators.filter(item => item.selected).map(item => ({...item, selected: false}))
-    //             ]
-    //         }
-    //     })
-    // }
-
-    // onRemove = e => {
-    //     this.setState(prevState => {            
-    //         return {
-    //             usedIndicators: 
-    //                 prevState.usedIndicators.filter(item => !item.selected),
-    //             availableIndicators: 
-    //             [...prevState.availableIndicators,
-    //                 ...prevState.usedIndicators.filter(item => item.selected).map(item => ({...item, selected: false}))
-    //             ]
-    //         }
-    //     })
-    // }
-
     handleClick = event => {
         const type = event.target.className;
         
@@ -102,7 +58,10 @@ class IndicatorSelector extends React.Component {
                         ...prevState[moveFrom].filter(item => item.selected).map(item => ({...item, selected: false}))
                     ]
             }
-        })
+        }
+        ,
+        // () => console.log()
+        )
     }
     
     unSelect() {
