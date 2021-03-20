@@ -14,7 +14,7 @@ function withSorting(WrappedComponent) {
             // console.log('sort')
 	
             const stateClone = JSON.parse(JSON.stringify(tableObject));
-            delete stateClone.header;
+            
             delete stateClone.sortConfig;
             
             // console.log(stateClone,'stateClone orig');
@@ -65,7 +65,6 @@ function withSorting(WrappedComponent) {
 
         onSort = (event, state) => {
             const { sortConfig } = this.state;
-            // console.log('click',event.target.id)
             // console.log('click',event.target.id, list)
             
             const sortedField = event.target.id;
@@ -90,13 +89,7 @@ function withSorting(WrappedComponent) {
                 }
             });
 
-            // console.log({
-            //     sortedField,
-            //     direction
-            // });
-
             return sortedData;
-    
         }
 
         render() {

@@ -45,18 +45,11 @@ function withFetch(WrappedComponent, urlRealTime, apikey) {
                     }
                 )
 
-                // console.log(indicatorObject,'indicatorObject');
-                
-                // const prices = symbol.map((symbolName, index) => {
-                //     return data[symbolName][indicator];
-                // });
-
                 this.setState({
                     isLoading: false,
                     isError: false
                 });
 
-                // return prices;
                 return indicatorObject;
 
             }

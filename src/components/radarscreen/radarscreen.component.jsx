@@ -80,23 +80,16 @@ class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			// header: headerTitle,
 			Symbol: SYMBOLS.slice(0,8),
 			Interval: Array(8).fill(INTERVALS[0]),
 			'Last Price': Array(8).fill(0),
 			'Volume': Array(8).fill(0)
 		}
-
-		this.state.header = Object.keys(this.state);
-
-		// console.log(this.state)
-		this.setHeaderTitle();
 	}
 
-	setHeaderTitle = () => {
-		const { header, ...rest } = this.state;
-		const headerTitle = Object.keys(rest);
-		// console.log(headerTitle);
+	getHeaderTitle = () => {
+		const headerTitle = Object.keys(this.state).filter(key => this.state[key] !== null);
+		return headerTitle;
 	}
 
 	fetchAndSetState = (apiIndicators, clearedState) => {
@@ -123,8 +116,10 @@ class RadarScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		const { Symbol, header } = this.state;
+		const { Symbol } = this.state;
 		// console.log('mount')
+
+		const header = this.getHeaderTitle();
 
 		const apiIndicators = header.flatMap(item => 
 			permanentHeaders.includes(item) ? [] : [indicatorsMap[item]]
@@ -138,23 +133,36 @@ class RadarScreen extends React.Component {
 	onChange = (updatedValue, headerCol, valueRow) => {
 
 		const {fetchRealTimeData} = this.props;
+		const header = this.getHeaderTitle();
+
+		const apiIndicators = header.flatMap(item => 
+			permanentHeaders.includes(item) ? [] : [indicatorsMap[item]]
+		)
+
+		let fetchedDataRow = {};
+
 		this.setState(prevState => {
-			const columnName = prevState.header[headerCol];	//which column changed (Symbol, Interval)
+			const columnName = header[headerCol]; //which column changed (Symbol, Interval)
 			return {
 				[columnName]: Object.assign([], prevState[columnName], {[valueRow]: updatedValue})
 			}
 		}
 		,
 		() => {
-			fetchRealTimeData(new Array(this.state.Symbol[valueRow]), ['lastPrice', 'highPrice'])
+			fetchRealTimeData(new Array(this.state.Symbol[valueRow]), apiIndicators)
 			.then(indicatorObject => {
-				Object.keys(indicatorObject).forEach(indicator => 
-					this.setState(prevState => ({
-							[indicator]: Object.assign([], prevState[indicator], {[valueRow]: indicatorObject[indicator][0]})
-						})
-					)
-				)
-			});
+				apiIndicators.forEach(apiIndicator => {
+					const indicatorColumn = indicatorsMapRev[apiIndicator];
+
+					fetchedDataRow = {
+						...fetchedDataRow,
+						[indicatorColumn]: Object.assign([], this.state[indicatorColumn], {[valueRow]: indicatorObject[apiIndicator][0]})
+					}
+				});
+				
+				return fetchedDataRow;
+			})
+			.then(fetchedDataRow => this.setState(fetchedDataRow))
 		})
 	}
 
@@ -173,7 +181,7 @@ class RadarScreen extends React.Component {
 	};
 
 	handleColumnUpdate = names => {
-		console.log(names, 'names');
+		// console.log(names, 'names');
 
 		const headerTitles = [...permanentHeaders, ...names];
 		// console.log(headerTitles,'headerTitles');
@@ -190,16 +198,15 @@ class RadarScreen extends React.Component {
 					[key]: null
 				}
 			}
-		})
-
-		clearedState.header = headerTitles;
-
+		});
+		
 		this.fetchAndSetState(apiIndicators,clearedState);
-
 	}
 	
 	render() {
-		const { header } = this.state;
+		const header = this.getHeaderTitle();
+		// console.log(header,'header')
+
 		const { sortConfig } = this.props;
 		// console.log('rend',this.state,this.props)
 
@@ -228,6 +235,7 @@ class RadarScreen extends React.Component {
 					/>
 					<GenerateGrid 
 						{...this.state}
+						header={header}
 						onChange={this.onChange}
 					/>
 				</div>
