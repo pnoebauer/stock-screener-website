@@ -3,7 +3,7 @@ import React from 'react';
 import GenerateGridCell from '../generate-grid-cell/generate-grid-cell.component';
 
 const GenerateGrid = ( { onChange, header, ...props} ) => {
-    console.log('map',header, props)
+    // console.log('map',header, props)
     return (
         <>
         {   

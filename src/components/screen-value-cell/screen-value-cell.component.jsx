@@ -20,6 +20,7 @@ class ValueCell extends React.PureComponent {
         const { gridColumn, gridRow, children } = this.props;
 
         // console.log('render',gridColumn, gridRow,children)
+        // console.log('render',children, typeof(children),children.toLocaleDateString())
         return (
             <div 
                 className='value-cell'
@@ -28,7 +29,7 @@ class ValueCell extends React.PureComponent {
                     gridRow
                 }}
             >
-                {children.toFixed(2)}
+                {children.toLocaleString({maximumFractionDigits:2})}
             </div>
         )
     }

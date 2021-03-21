@@ -3,77 +3,13 @@ import ScreenHeader from '../screen-header/screen-header.component';
 import GenerateGrid from '../generate-grid/generate-grid.component';
 import AddColumnButton from '../add-column-button/add-column-button.component';
 
-import { INTERVALS, SYMBOLS } from '../../assets/constants';
+import { INTERVALS, SYMBOLS, API_TO_INDICATORS, INDICATORS_TO_API } from '../../assets/constants';
 
 import './radarscreen.styles.css';
 
-// const headerTitle = ['Symbol', 'Interval', 'Price']
-
-// generate-grid-cell
-// const dropdownOptions = {
-// 	Symbol: SYMBOLS,
-// 	Interval: INTERVALS
-// }
 const permanentHeaders = ['Symbol', 'Interval'];
 
 
-const indicatorsMapRev = {
-	'52WkHigh': '52 Week High',
-	'52WkLow': '52 Week Low',
-	askPrice: 'Ask Price',
-	askSize: 'Ask Size',
-	assetType: 'Asset Type',
-	bidPrice: 'Bid Price',
-	bidSize: 'Bid Size',
-	closePrice: 'Close Price',
-	divAmount: 'Dividend Amount',
-	divDate: 'Dividend Date',
-	divYield: 'Dividend Yield',
-	exchangeName: 'Exchange',
-	highPrice: 'High Price',
-	lastPrice: 'Last Price',
-	lastSize: 'Last Size',
-	lowPrice: 'Low Price',
-	mark: 'Mark',
-	markChangeInDouble: 'Mark Change',
-	markPercentChangeInDouble: 'Mark Change (%)',
-	nAV: 'Net Asset Value',
-	netChange: 'Net Change',
-	netPercentChangeInDouble: 'Net Change (%)',
-	openPrice: 'Open Price',
-	peRatio: 'PE Ratio',
-	totalVolume: 'Volume',
-	volatility: 'Volatility'
-};
-
-const indicatorsMap = {
-	'52 Week High': '52WkHigh',
-	'52 Week Low': '52WkLow',
-	'Ask Price': 'askPrice',
-	'Ask Size': 'askSize',
-	'Asset Type': 'assetType',
-	'Bid Price': 'bidPrice',
-	'Bid Size': 'bidSize',
-	'Close Price': 'closePrice',
-	'Dividend Amount': 'divAmount',
-	'Dividend Date': 'divDate',
-	'Dividend Yield': 'divYield',
-	'Exchange': 'exchangeName',
-	'High Price': 'highPrice',
-	'Last Price': 'lastPrice',
-	'Last Size': 'lastSize',
-	'Low Price': 'lowPrice',
-	'Mark': 'mark',
-	'Mark Change': 'markChangeInDouble',
-	'Mark Change (%)': 'markPercentChangeInDouble',
-	'Net Asset Value': 'nAV',
-	'Net Change': 'netChange',
-	'Net Change (%)': 'netPercentChangeInDouble',
-	'Open Price': 'openPrice',
-	'PE Ratio': 'peRatio',
-	'Volume': 'totalVolume',
-	'Volatility': 'volatility' 
-};
 
 
 class RadarScreen extends React.Component {
@@ -82,8 +18,7 @@ class RadarScreen extends React.Component {
 		this.state = {
 			Symbol: SYMBOLS.slice(0,8),
 			Interval: Array(8).fill(INTERVALS[0]),
-			'Last Price': Array(8).fill(0),
-			'Volume': Array(8).fill(0)
+			'Last Price': Array(8).fill(0)
 		}
 	}
 
@@ -92,54 +27,89 @@ class RadarScreen extends React.Component {
 		return headerTitle;
 	}
 
-	fetchAndSetState = (apiIndicators, clearedState) => {
-		
-		const { Symbol } = this.state;
+	
+	fetchAndSetState = (Symbol, apiIndicators, clearedState, valueRow) => {
 
+		const { fetchRealTimeData } = this.props;
+		
 		let stateUpdates = {};
 
-		this.props.fetchRealTimeData(Symbol, apiIndicators)
+		//fetch for all symbols and the apiIndicators
+		fetchRealTimeData(Symbol, apiIndicators)
 		.then(indicatorObject => {
-			// Object.keys(indicatorObject).forEach(indicator => {
+			// loop over all apiIndicators
 			apiIndicators.forEach(apiIndicator => {
-				const indicatorColumn = indicatorsMapRev[apiIndicator];
+				// look up the name used for the column header (and state key)
+				const indicatorColumn = API_TO_INDICATORS[apiIndicator];
+
+				const updatedRow = valueRow!==undefined ? Object.assign([], this.state[indicatorColumn], {[valueRow]: indicatorObject[apiIndicator][0]}) : indicatorObject[apiIndicator]
+
+				// merge the result of the current indicator column with the temp state object
 				stateUpdates = {
 					...stateUpdates,
-					[indicatorColumn]: indicatorObject[apiIndicator]
+					// [indicatorColumn]: indicatorObject[apiIndicator]
+					[indicatorColumn]: updatedRow
 				};
-
-				// console.log(stateUpdates,'stateUpdates')
 			});
 			return stateUpdates
 		})
-		.then(stateUpdates => this.setState({...stateUpdates,...clearedState}, () => console.log(this.state,'s')))
+		// update state to the updated indicators and the clearedState (all unused indicators set to null)
+		.then(stateUpdates => this.setState({...stateUpdates,...clearedState}
+			,
+			() => {
+				// console.log(this.getHeaderTitle())
+				localStorage.setItem('header', this.getHeaderTitle());
+				localStorage.setItem('Symbol', this.state.Symbol);
+				localStorage.setItem('Interval', this.state.Interval);
+			}
+		))
 	}
 
 	componentDidMount() {
-		const { Symbol } = this.state;
-		// console.log('mount')
+		let { Symbol, Interval } = this.state;
 
-		const header = this.getHeaderTitle();
+		let rehydrate = {};
 
+		let header;
+		try {
+			header = localStorage.getItem('header').split(',');
+			Symbol = localStorage.getItem('Symbol').split(',');
+			Interval = localStorage.getItem('Interval').split(',');
+
+			rehydrate = {...rehydrate, Symbol, Interval}
+			// console.log('rehydrate',rehydrate)
+		}
+		catch {
+			header = this.getHeaderTitle();
+		}
+
+
+		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
 		const apiIndicators = header.flatMap(item => 
-			permanentHeaders.includes(item) ? [] : [indicatorsMap[item]]
+			permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
 		)
-		// console.log('apiIndicators',apiIndicators)
 		
-		this.fetchAndSetState(apiIndicators);
+		this.setState(rehydrate
+			,
+			() => {
+				// console.log('reh', this.state)
+				this.fetchAndSetState(Symbol, apiIndicators)
+			}
+		)
 		
+
+		// this.fetchAndSetState(Symbol, apiIndicators);
+
+
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
 
-		const {fetchRealTimeData} = this.props;
 		const header = this.getHeaderTitle();
 
 		const apiIndicators = header.flatMap(item => 
-			permanentHeaders.includes(item) ? [] : [indicatorsMap[item]]
+			permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
 		)
-
-		let fetchedDataRow = {};
 
 		this.setState(prevState => {
 			const columnName = header[headerCol]; //which column changed (Symbol, Interval)
@@ -149,26 +119,16 @@ class RadarScreen extends React.Component {
 		}
 		,
 		() => {
-			fetchRealTimeData(new Array(this.state.Symbol[valueRow]), apiIndicators)
-			.then(indicatorObject => {
-				apiIndicators.forEach(apiIndicator => {
-					const indicatorColumn = indicatorsMapRev[apiIndicator];
-
-					fetchedDataRow = {
-						...fetchedDataRow,
-						[indicatorColumn]: Object.assign([], this.state[indicatorColumn], {[valueRow]: indicatorObject[apiIndicator][0]})
-					}
-				});
-				
-				return fetchedDataRow;
-			})
-			.then(fetchedDataRow => this.setState(fetchedDataRow))
+			const Symbol = new Array(this.state.Symbol[valueRow]);
+			this.fetchAndSetState(Symbol, apiIndicators, {}, valueRow);
 		})
 	}
 
 	sortTable = (event) => {
-		const sortedTable = this.props.onSort(event, this.state);
-		this.setState(sortedTable);
+		this.setState((prevState, props) => {
+			const sortedTable = props.onSort(event, prevState);
+			return sortedTable;
+		});
 	}
 
 	getClassNameForHeader = name => {
@@ -181,13 +141,11 @@ class RadarScreen extends React.Component {
 	};
 
 	handleColumnUpdate = names => {
-		// console.log(names, 'names');
-
+		const { Symbol } = this.state;
+		// merge permanentHeaders with the updated column names
 		const headerTitles = [...permanentHeaders, ...names];
-		// console.log(headerTitles,'headerTitles');
 
-		const apiIndicators = names.map(item => indicatorsMap[item]);
-
+		const apiIndicators = names.map(item => INDICATORS_TO_API[item]);
 
 		let clearedState = JSON.parse(JSON.stringify(this.state));
 
@@ -200,21 +158,17 @@ class RadarScreen extends React.Component {
 			}
 		});
 		
-		this.fetchAndSetState(apiIndicators,clearedState);
+		this.fetchAndSetState(Symbol,apiIndicators,clearedState);
 	}
 	
 	render() {
 		const header = this.getHeaderTitle();
-		// console.log(header,'header')
-
+		// passed from the withSort HOC
 		const { sortConfig } = this.props;
-		// console.log('rend',this.state,this.props)
 
 		const usedIndicators = header.flatMap(item => 
 			permanentHeaders.includes(item) ? [] : [item]
 		);
-
-		// console.log(usedIndicators,'usedIndicators')
 
 		return (
 			<div className="radarscreen">

@@ -95,6 +95,7 @@ class IndicatorSelector extends React.Component {
                     displayedIndicators={this.state.availableIndicators}
                     onToggle={this.onToggle}
                     className="availableIndicators"
+                    headerName='Available Indicators'
                 />
                 
                 <div className="add-remove">
@@ -116,6 +117,7 @@ class IndicatorSelector extends React.Component {
                     displayedIndicators={this.state.usedIndicators}
                     onToggle={this.onToggle}
                     className="usedIndicators"
+                    headerName='Used Indicators'
                 />
 
                 <div className="ok-cancel">
