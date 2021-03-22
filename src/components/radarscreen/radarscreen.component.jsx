@@ -9,7 +9,7 @@ import './radarscreen.styles.css';
 
 const permanentHeaders = ['Symbol', 'Interval'];
 
-
+let updateKey = null;
 
 
 class RadarScreen extends React.Component {
@@ -17,8 +17,8 @@ class RadarScreen extends React.Component {
 		super(props);
 		this.state = {
 			Symbol: SYMBOLS.slice(0,8),
-			Interval: Array(8).fill(INTERVALS[0]),
-			'Last Price': Array(8).fill(0)
+			Interval: Array(8).fill(INTERVALS[0])
+			// 'Last Price': Array(8).fill(0)
 		}
 	}
 
@@ -28,9 +28,15 @@ class RadarScreen extends React.Component {
 	}
 
 	
-	fetchAndSetState = (Symbol, apiIndicators, clearedState, valueRow) => {
+	// fetchAndSetState = (Symbol, apiIndicators, clearedState, valueRow) => {
+	fetchAndSetState = (Symbol, header, clearedState, valueRow) => {
 
 		const { fetchRealTimeData } = this.props;
+
+		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
+		const apiIndicators = header.flatMap(item => 
+			permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
+		)
 		
 		let stateUpdates = {};
 
@@ -61,11 +67,16 @@ class RadarScreen extends React.Component {
 				localStorage.setItem('header', this.getHeaderTitle());
 				localStorage.setItem('Symbol', this.state.Symbol);
 				localStorage.setItem('Interval', this.state.Interval);
+
+				// updateKey = '1'
+				// console.log('mounted set', updateKey, this.state)
 			}
 		))
 	}
 
 	componentDidMount() {
+
+		// console.log(updateKey,'key')
 		let { Symbol, Interval } = this.state;
 
 		let rehydrate = {};
@@ -83,34 +94,21 @@ class RadarScreen extends React.Component {
 			header = this.getHeaderTitle();
 		}
 
-
-		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
-		const apiIndicators = header.flatMap(item => 
-			permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
-		)
-		
 		this.setState(rehydrate
 			,
 			() => {
-				// console.log('reh', this.state)
-				this.fetchAndSetState(Symbol, apiIndicators)
+				console.log('mount h', header)
+				this.fetchAndSetState(Symbol, header)
 			}
-		)
-		
-
-		// this.fetchAndSetState(Symbol, apiIndicators);
-
+		);
 
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
 
 		const header = this.getHeaderTitle();
-
-		const apiIndicators = header.flatMap(item => 
-			permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
-		)
-
+		
+		//update the changed cell (Symbol, Interval)
 		this.setState(prevState => {
 			const columnName = header[headerCol]; //which column changed (Symbol, Interval)
 			return {
@@ -118,9 +116,10 @@ class RadarScreen extends React.Component {
 			}
 		}
 		,
+		//fetch the data for the entire row based on Symbol, Interval
 		() => {
 			const Symbol = new Array(this.state.Symbol[valueRow]);
-			this.fetchAndSetState(Symbol, apiIndicators, {}, valueRow);
+			this.fetchAndSetState(Symbol, header, {}, valueRow);
 		})
 	}
 
@@ -143,14 +142,12 @@ class RadarScreen extends React.Component {
 	handleColumnUpdate = names => {
 		const { Symbol } = this.state;
 		// merge permanentHeaders with the updated column names
-		const headerTitles = [...permanentHeaders, ...names];
-
-		const apiIndicators = names.map(item => INDICATORS_TO_API[item]);
+		const header = [...permanentHeaders, ...names];
 
 		let clearedState = JSON.parse(JSON.stringify(this.state));
 
 		Object.keys(clearedState).forEach(key => {
-			if(!headerTitles.includes(key)) {
+			if(!header.includes(key)) {
 				clearedState = {
 					...clearedState,
 					[key]: null
@@ -158,7 +155,7 @@ class RadarScreen extends React.Component {
 			}
 		});
 		
-		this.fetchAndSetState(Symbol,apiIndicators,clearedState);
+		this.fetchAndSetState(Symbol, header, clearedState);
 	}
 	
 	render() {
@@ -169,6 +166,11 @@ class RadarScreen extends React.Component {
 		const usedIndicators = header.flatMap(item => 
 			permanentHeaders.includes(item) ? [] : [item]
 		);
+
+		// updateKey=header.length;
+		updateKey=header;
+		// console.log(updateKey,'key render',header)
+		
 
 		return (
 			<div className="radarscreen">
@@ -185,7 +187,9 @@ class RadarScreen extends React.Component {
                             gridColumn: `${header.length}+1`
                         }}
 						handleColumnUpdate={this.handleColumnUpdate}
-						usedIndicators={usedIndicators}
+						usedIndicatorsDefault={usedIndicators}
+						// updateKey={updateKey}
+						key={updateKey}
 					/>
 					<GenerateGrid 
 						{...this.state}

@@ -6,12 +6,20 @@ import './indicator-selector.styles.css';
 
 class IndicatorSelector extends React.Component {
     constructor(props) {
+        // console.log('constructor IndicatorSelector')
         super(props);
         this.state = {
-            availableIndicators: this.props.availableIndicators,
-            usedIndicators: this.props.usedIndicators
+            availableIndicators: this.props.availableIndicatorsDefault,
+            usedIndicators: this.props.usedIndicatorsDefault
         }
     }
+
+    // componentWillMount() {
+    //     this.setState({
+    //         availableIndicators: this.props.availableIndicators,
+    //         usedIndicators: this.props.usedIndicators
+    //     });
+    // }
 
     onToggle = event => {
         const updatedIndex = event.target.id;
@@ -87,7 +95,7 @@ class IndicatorSelector extends React.Component {
     }
 
     render() {
-            // console.log(this.props.usedIndicators)
+            // console.log(this.props.usedIndicatorsDefault, this.state.usedIndicators)
         return (
             <div className="indicator-selector">
                 

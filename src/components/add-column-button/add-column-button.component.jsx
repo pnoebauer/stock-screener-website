@@ -8,6 +8,7 @@ import { INDICATORS_TO_API } from '../../assets/constants';
 class AddColumnButton extends React.Component {
 
     constructor(props) {
+        // console.log('constructor add')
         super(props);
         this.state = { 
             visible: false
@@ -37,10 +38,11 @@ class AddColumnButton extends React.Component {
     }
 
     render() {
-        const { usedIndicators } = this.props;
-        // console.log(this.deriveIndicatorsArr(usedIndicators))
+        // console.log('ab',this.props)
+        const { usedIndicatorsDefault } = this.props;
+        // console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
 
-        const availableIndicators = Object.keys(INDICATORS_TO_API).filter(value => !usedIndicators.includes(value));
+        const availableIndicatorsDefault = Object.keys(INDICATORS_TO_API).filter(value => !usedIndicatorsDefault.includes(value));
         // console.log(availableIndicators,'k')
 
         return (
@@ -65,8 +67,9 @@ class AddColumnButton extends React.Component {
                 >
                     <IndicatorSelector 
                         handleOkCancel={this.handleOkCancel}
-                        availableIndicators={this.deriveIndicatorsArr(availableIndicators)}
-                        usedIndicators={this.deriveIndicatorsArr(usedIndicators)}
+                        availableIndicatorsDefault={this.deriveIndicatorsArr(availableIndicatorsDefault)}
+                        usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicatorsDefault)}
+                        // key={this.props.updateKey}
                     />
                 </Modal>
             </>
