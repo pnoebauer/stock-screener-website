@@ -6,29 +6,18 @@ import './indicator-selector.styles.css';
 
 class IndicatorSelector extends React.Component {
     constructor(props) {
-        // console.log('constructor IndicatorSelector')
         super(props);
+        // console.log('constructor IndicatorSelector', this.props)
         this.state = {
             availableIndicators: this.props.availableIndicatorsDefault,
             usedIndicators: this.props.usedIndicatorsDefault
         }
     }
 
-    // componentWillMount() {
-    //     this.setState({
-    //         availableIndicators: this.props.availableIndicators,
-    //         usedIndicators: this.props.usedIndicators
-    //     });
-    // }
-
     onToggle = event => {
         const updatedIndex = event.target.id;
         const className = event.target.className;
         const indicatorListName = className.replace('selected', '').trim()
-
-        // console.log(indicatorListName);
-
-        // console.log(className.includes('available-indicators'))
 
         this.setState(prevState => {
             const updated = prevState[indicatorListName].map((value, index) => {
@@ -87,9 +76,24 @@ class IndicatorSelector extends React.Component {
 
     handleCancel = () => {
         const { handleOkCancel, ...priorState} = this.props;
-        console.log(priorState, this.state)
 
-        this.setState(priorState,()=>console.log(this.state,'s'));
+        // console.log(priorState, this.state)
+        const { availableIndicatorsDefault, usedIndicatorsDefault } = priorState;
+
+        this.setState({
+            availableIndicators: [
+                ...this.state.availableIndicators.flatMap(item => ([])),
+                ...availableIndicatorsDefault
+            ],
+            usedIndicators: [
+                ...this.state.usedIndicators.flatMap(item => ([])),
+                ...usedIndicatorsDefault
+            ]
+        }
+            // ,
+            // ()=>console.log(this.state,'s')
+        );
+
         this.unSelect();
         this.props.handleOkCancel('cancel');
     }

@@ -9,6 +9,8 @@ class Dropdown extends React.Component {
       this.container = React.createRef();
       this.selectionDisplay = React.createRef();
 
+      // if(this.props.id==='Search') console.log(this.props.options)
+
       this.state = {
           showList: false,
           displayedOptions: this.props.options,
@@ -24,6 +26,7 @@ class Dropdown extends React.Component {
       const headerCol = gridColumn-1;
       const valueRow = gridRow-2;
 
+      // container exists and the click (event.target) occurs outside that container 
       if(this.container.current && !this.container.current.contains(event.target)) {
         let insertValue;
 
@@ -80,6 +83,11 @@ class Dropdown extends React.Component {
       });
 
       if(this.selectionDisplay.current.innerText !== event.target.innerText) {
+        // occurs when we type in, the text is not completed and then click on the same value that was in before
+        // i.e. current value: Monthly,
+        //      type in: Mon
+        //      click on Monthly
+        //  Because the state has not changed Mon will remain in the cell
         this.selectionDisplay.current.innerText = event.target.innerText;
       }
 
@@ -157,7 +165,7 @@ class Dropdown extends React.Component {
     }
 
     render() {
-      const { gridRow, gridColumn, children } = this.props;
+      const { gridRow, gridColumn, customStyles, optionStyle, selectionStyle, children } = this.props;
       const { showList, displayedOptions, activeItem } = this.state;
       
       let number = displayedOptions.length;
@@ -165,11 +173,14 @@ class Dropdown extends React.Component {
       
       const dropDownHeight = `${number*100}%`;
       const liHeight = `calc(${1/number*100}% - 1px)`;
+      
+      if(this.props.id==='Search') console.log(displayedOptions,showList,dropDownHeight)
 
       return (
         <div 
           className={'dropdown-container'}
           style={{
+            ...customStyles,
             gridRow,
             gridColumn
           }}
@@ -183,12 +194,16 @@ class Dropdown extends React.Component {
             suppressContentEditableWarning={true}
             onInput={this.onTextChange}
             ref = {this.selectionDisplay}
+            style={selectionStyle}
           >
             {children}
           </div>
 
             {showList && (<ul className='options-list' style={{height: dropDownHeight}}>
               {displayedOptions.map((value, index) => {
+
+              // if(this.props.id==='Search') console.log(value, index)
+
                 // exclude the selectedValue from dropdown list options 
                 // except if the shownValue is different to the selectedValue (happens if user types into search field)
                 // if(value !== selectedValue || shownValue !== selectedValue) {
@@ -199,6 +214,7 @@ class Dropdown extends React.Component {
                       value={value} 
                       key={index}
                       onClick={e => this.handleOptionClick(e, gridColumn-1, gridRow-2)}
+                      style={optionStyle}
                     >
                       {value}
                     </li>
@@ -210,6 +226,13 @@ class Dropdown extends React.Component {
         </div>
       );
     }
-  }
+}
+
+Dropdown.defaultProps = {
+  className: '',
+  customStyles: {},
+  optionStyle: {},
+  selectionStyle: {}
+};
 
 export default Dropdown;

@@ -3,6 +3,8 @@ import ScreenHeader from '../screen-header/screen-header.component';
 import GenerateGrid from '../generate-grid/generate-grid.component';
 import AddColumnButton from '../add-column-button/add-column-button.component';
 
+import Dropdown from '../dropdown/dropdown.component';
+
 import { INTERVALS, SYMBOLS, API_TO_INDICATORS, INDICATORS_TO_API } from '../../assets/constants';
 
 import './radarscreen.styles.css';
@@ -16,21 +18,19 @@ class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			Symbol: SYMBOLS.slice(0,8),
-			Interval: Array(8).fill(INTERVALS[0])
+			Symbol: SYMBOLS.slice(0,3),
+			Interval: Array(3).fill(INTERVALS[0])
 			// 'Last Price': Array(8).fill(0)
 		}
 	}
 
+	// Returns all the headers based on state object keys
 	getHeaderTitle = () => {
 		const headerTitle = Object.keys(this.state).filter(key => this.state[key] !== null);
 		return headerTitle;
 	}
 
-	
-	// fetchAndSetState = (Symbol, apiIndicators, clearedState, valueRow) => {
 	fetchAndSetState = (Symbol, header, clearedState, valueRow) => {
-
 		const { fetchRealTimeData } = this.props;
 
 		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
@@ -47,14 +47,13 @@ class RadarScreen extends React.Component {
 			apiIndicators.forEach(apiIndicator => {
 				// look up the name used for the column header (and state key)
 				const indicatorColumn = API_TO_INDICATORS[apiIndicator];
-
-				const updatedRow = valueRow!==undefined ? Object.assign([], this.state[indicatorColumn], {[valueRow]: indicatorObject[apiIndicator][0]}) : indicatorObject[apiIndicator]
+				const updatedRows = valueRow!==undefined ? Object.assign([], this.state[indicatorColumn], {[valueRow]: indicatorObject[apiIndicator][0]}) : indicatorObject[apiIndicator]
 
 				// merge the result of the current indicator column with the temp state object
 				stateUpdates = {
 					...stateUpdates,
 					// [indicatorColumn]: indicatorObject[apiIndicator]
-					[indicatorColumn]: updatedRow
+					[indicatorColumn]: updatedRows
 				};
 			});
 			return stateUpdates
@@ -75,12 +74,8 @@ class RadarScreen extends React.Component {
 	}
 
 	componentDidMount() {
-
-		// console.log(updateKey,'key')
 		let { Symbol, Interval } = this.state;
-
 		let rehydrate = {};
-
 		let header;
 		try {
 			header = localStorage.getItem('header').split(',');
@@ -97,7 +92,7 @@ class RadarScreen extends React.Component {
 		this.setState(rehydrate
 			,
 			() => {
-				console.log('mount h', header)
+				// console.log('mount h', header)
 				this.fetchAndSetState(Symbol, header)
 			}
 		);
@@ -167,15 +162,16 @@ class RadarScreen extends React.Component {
 			permanentHeaders.includes(item) ? [] : [item]
 		);
 
-		// updateKey=header.length;
 		updateKey=header;
-		// console.log(updateKey,'key render',header)
+		// console.log('r',`${this.state.Symbol.length}+1`)
 		
-
 		return (
 			<div className="radarscreen">
 				<div id="grid-container" 
-					style={{gridTemplateColumns: `repeat(${header.length}, 1fr) 0`}}
+					style={{
+						gridTemplateColumns: `repeat(${header.length}, 1fr) 0`,
+						gridTemplateRows: `repeat(${this.state.Symbol.length+1}, 1fr) 0`
+					}}
 				>
 					<ScreenHeader 
 						header={header}
@@ -184,11 +180,10 @@ class RadarScreen extends React.Component {
 					/>
 					<AddColumnButton 
 						style={{
-                            gridColumn: `${header.length}+1`
+                            gridColumn: `${header.length+1}`
                         }}
 						handleColumnUpdate={this.handleColumnUpdate}
 						usedIndicatorsDefault={usedIndicators}
-						// updateKey={updateKey}
 						key={updateKey}
 					/>
 					<GenerateGrid 
@@ -196,6 +191,36 @@ class RadarScreen extends React.Component {
 						header={header}
 						onChange={this.onChange}
 					/>
+
+					{/* <div
+						style={{
+                            gridRow: `${this.state.Symbol.length+2}`,
+							gridColumn: '1',
+							height: '20px',
+							
+                        }}
+					>
+						abs
+					</div> */}
+
+					<Dropdown 
+						options={SYMBOLS}
+						gridRow={this.state.Symbol.length+2}
+						gridColumn={1}
+						// key={colIdx.toString()+rowIdx.toString()} 
+						// onChange={onChange}
+						customStyles={{
+							height: '20px', 
+							borderBottom: '1px solid black',
+							borderLeft: '1px solid black',
+							marginLeft: '-1px'
+						}}
+						// optionStyle={{backgroundColor: 'Orange'}}
+						// selectionStyle={{backgroundColor: 'Purple'}}
+						id={'Search'}
+                	>
+						MMM
+                	</Dropdown> 
 				</div>
 		</div>
 		)
