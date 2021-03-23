@@ -9,13 +9,12 @@ class Dropdown extends React.Component {
       this.container = React.createRef();
       this.selectionDisplay = React.createRef();
 
-      // if(this.props.id==='Search') console.log(this.props.options)
-
       this.state = {
           showList: false,
           displayedOptions: this.props.options,
           shownValue: children,
-          activeItem: 0
+          activeItem: 0,
+          key: 0
       };
     }
 
@@ -44,7 +43,8 @@ class Dropdown extends React.Component {
           () => {
               if(this.selectionDisplay.current.innerText !== insertValue) {
                 //happens if typed in text does not match anything
-                this.selectionDisplay.current.innerText = insertValue;
+                // this.selectionDisplay.current.innerText = insertValue;
+                this.setState(prevState => ({key: prevState.key+1}))
               };
               document.removeEventListener('mousedown', this.handleClickOutside);
               return onChange(insertValue, headerCol, valueRow);
@@ -88,7 +88,8 @@ class Dropdown extends React.Component {
         //      type in: Mon
         //      click on Monthly
         //  Because the state has not changed Mon will remain in the cell
-        this.selectionDisplay.current.innerText = event.target.innerText;
+        // this.selectionDisplay.current.innerText = event.target.innerText;
+        this.setState(prevState => ({key: prevState.key+1}))
       }
 
       document.removeEventListener('mousedown', this.handleClickOutside);
@@ -151,7 +152,8 @@ class Dropdown extends React.Component {
           ,
           () => {
             if(this.selectionDisplay.current.innerText !== this.state.shownValue) {
-              this.selectionDisplay.current.innerText = this.state.shownValue;
+              // this.selectionDisplay.current.innerText = this.state.shownValue;
+              this.setState(prevState => ({key: prevState.key+1}))
             }
             return onChange(this.state.shownValue, headerCol, valueRow);
           }
@@ -165,7 +167,7 @@ class Dropdown extends React.Component {
     }
 
     render() {
-      const { gridRow, gridColumn, customStyles, optionStyle, selectionStyle, children } = this.props;
+      const { gridRow, gridColumn, customStyles, className, children } = this.props;
       const { showList, displayedOptions, activeItem } = this.state;
       
       let number = displayedOptions.length;
@@ -174,7 +176,7 @@ class Dropdown extends React.Component {
       const dropDownHeight = `${number*100}%`;
       const liHeight = `calc(${1/number*100}% - 1px)`;
       
-      if(this.props.id==='Search') console.log(displayedOptions,showList,dropDownHeight)
+      // if(this.props.id==='Search') console.log(displayedOptions,showList,dropDownHeight)
 
       return (
         <div 
@@ -187,34 +189,31 @@ class Dropdown extends React.Component {
           ref = {this.container}
         >
           <div 
-            className={showList ? 'selected-value active' : 'selected-value'}
+            // className={showList ? `selected-value active ${this.props.className}` : `selected-value ${this.props.className}`}
+            className={`selected-value ${this.props.className} ${showList ? 'active' : ''}`}
             onClick={clickEvent => this.handleDisplay(clickEvent, gridColumn-1, gridRow-2)} 
             onKeyDown={e => this.onKeyDown(e, gridColumn-1, gridRow-2)}
             contentEditable='true'
             suppressContentEditableWarning={true}
             onInput={this.onTextChange}
             ref = {this.selectionDisplay}
-            style={selectionStyle}
+            key={this.state.key}
           >
             {children}
           </div>
 
-            {showList && (<ul className='options-list' style={{height: dropDownHeight}}>
+            {showList && (<ul className={`options-list`} style={{height: dropDownHeight}}>
               {displayedOptions.map((value, index) => {
-
-              // if(this.props.id==='Search') console.log(value, index)
-
                 // exclude the selectedValue from dropdown list options 
                 // except if the shownValue is different to the selectedValue (happens if user types into search field)
                 // if(value !== selectedValue || shownValue !== selectedValue) {
                   return (
                     <li 
                       style={{height: liHeight}}
-                      className={`dropdown-option ${index === activeItem ? 'active' : ''}`}
+                      className={`dropdown-option ${className} ${index === activeItem ? 'active' : ''}`}
                       value={value} 
                       key={index}
                       onClick={e => this.handleOptionClick(e, gridColumn-1, gridRow-2)}
-                      style={optionStyle}
                     >
                       {value}
                     </li>
@@ -230,9 +229,7 @@ class Dropdown extends React.Component {
 
 Dropdown.defaultProps = {
   className: '',
-  customStyles: {},
-  optionStyle: {},
-  selectionStyle: {}
+  customStyles: {}
 };
 
 export default Dropdown;

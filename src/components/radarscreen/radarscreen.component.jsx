@@ -99,7 +99,7 @@ class RadarScreen extends React.Component {
 
 	}
 
-	onChange = (updatedValue, headerCol, valueRow) => {
+	onChange = (updatedValue, headerCol, valueRow, rowAdded) => {
 
 		const header = this.getHeaderTitle();
 		
@@ -107,7 +107,8 @@ class RadarScreen extends React.Component {
 		this.setState(prevState => {
 			const columnName = header[headerCol]; //which column changed (Symbol, Interval)
 			return {
-				[columnName]: Object.assign([], prevState[columnName], {[valueRow]: updatedValue})
+				[columnName]: Object.assign([], prevState[columnName], {[valueRow]: updatedValue}),
+				Interval: rowAdded ? Object.assign([], prevState.Interval, {[valueRow]: 'Daily'}) : prevState.Interval
 			}
 		}
 		,
@@ -152,6 +153,10 @@ class RadarScreen extends React.Component {
 		
 		this.fetchAndSetState(Symbol, header, clearedState);
 	}
+
+
+	onRowAdd = (updatedValue, headerCol, valueRow) => this.onChange(updatedValue, headerCol, valueRow, true);
+	
 	
 	render() {
 		const header = this.getHeaderTitle();
@@ -163,7 +168,6 @@ class RadarScreen extends React.Component {
 		);
 
 		updateKey=header;
-		// console.log('r',`${this.state.Symbol.length}+1`)
 		
 		return (
 			<div className="radarscreen">
@@ -192,31 +196,19 @@ class RadarScreen extends React.Component {
 						onChange={this.onChange}
 					/>
 
-					{/* <div
-						style={{
-                            gridRow: `${this.state.Symbol.length+2}`,
-							gridColumn: '1',
-							height: '20px',
-							
-                        }}
-					>
-						abs
-					</div> */}
-
 					<Dropdown 
 						options={SYMBOLS}
 						gridRow={this.state.Symbol.length+2}
 						gridColumn={1}
 						// key={colIdx.toString()+rowIdx.toString()} 
-						// onChange={onChange}
+						onChange={this.onRowAdd}
 						customStyles={{
-							height: '20px', 
+							height: '30px', 
 							borderBottom: '1px solid black',
 							borderLeft: '1px solid black',
 							marginLeft: '-1px'
 						}}
-						// optionStyle={{backgroundColor: 'Orange'}}
-						// selectionStyle={{backgroundColor: 'Purple'}}
+						className={'add-row'}
 						id={'Search'}
                 	>
 						MMM

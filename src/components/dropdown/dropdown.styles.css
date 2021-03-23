@@ -29,6 +29,13 @@
   background-color: grey;
 }
 
+.selected-value.add-row {
+  background-color: purple;
+}
+.selected-value.active.add-row {
+  background-color: yellow;
+}
+
 
 /* down arrow */
 .selected-value::after {
@@ -56,7 +63,7 @@
   /* width: calc(100% - 1px);  */
   /* height: 100%; */
   /* height: 500%; */
-  background-color: green;
+  /* background-color: green; */
   z-index: 100;
   box-sizing: border-box;
   /* border-left: 1px solid black; */
@@ -65,6 +72,7 @@
 
   overflow: auto;
 }
+
 
 .dropdown-option {
   list-style-type: none;
@@ -93,6 +101,10 @@
   /* box-sizing: border-box; */
 }
 
+.dropdown-option.add-row {
+  background-color: orange;
+}
+
 .options-list .dropdown-option:last-child {
   border-bottom: 1px solid black;
 }
@@ -101,4 +113,8 @@
   background-color: blue;
   /* opacity: 0.8; */
   color: #ffffff;
+}
+
+.dropdown-option.add-row:hover, .dropdown-option.add-row.active {
+  background-color: grey;
 }
