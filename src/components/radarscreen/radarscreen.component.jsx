@@ -162,6 +162,7 @@ class RadarScreen extends React.Component {
 		const header = this.getHeaderTitle();
 		// passed from the withSort HOC
 		const { sortConfig } = this.props;
+		const { Symbol } = this.state;
 
 		const usedIndicators = header.flatMap(item => 
 			permanentHeaders.includes(item) ? [] : [item]
@@ -174,7 +175,7 @@ class RadarScreen extends React.Component {
 				<div id="grid-container" 
 					style={{
 						gridTemplateColumns: `repeat(${header.length}, 1fr) 0`,
-						gridTemplateRows: `repeat(${this.state.Symbol.length+1}, 1fr) 0`
+						gridTemplateRows: `repeat(${Symbol.length+1}, 1fr) 0`
 					}}
 				>
 					<ScreenHeader 
@@ -198,7 +199,7 @@ class RadarScreen extends React.Component {
 
 					<Dropdown 
 						options={SYMBOLS}
-						gridRow={this.state.Symbol.length+2}
+						gridRow={Symbol.length+2}
 						gridColumn={1}
 						// key={colIdx.toString()+rowIdx.toString()} 
 						onChange={this.onRowAdd}
@@ -209,9 +210,8 @@ class RadarScreen extends React.Component {
 							marginLeft: '-1px'
 						}}
 						className={'add-row'}
-						id={'Search'}
                 	>
-						MMM
+						{SYMBOLS[Symbol.length]}
                 	</Dropdown> 
 				</div>
 		</div>

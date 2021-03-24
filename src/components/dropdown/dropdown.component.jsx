@@ -14,7 +14,7 @@ class Dropdown extends React.Component {
           displayedOptions: this.props.options,
           shownValue: children,
           activeItem: 0,
-          key: 0
+          // key: 0
       };
     }
 
@@ -43,8 +43,8 @@ class Dropdown extends React.Component {
           () => {
               if(this.selectionDisplay.current.innerText !== insertValue) {
                 //happens if typed in text does not match anything
-                // this.selectionDisplay.current.innerText = insertValue;
-                this.setState(prevState => ({key: prevState.key+1}))
+                this.selectionDisplay.current.innerText = insertValue;
+                // this.setState(prevState => ({key: prevState.key+1}))
               };
               document.removeEventListener('mousedown', this.handleClickOutside);
               return onChange(insertValue, headerCol, valueRow);
@@ -82,18 +82,20 @@ class Dropdown extends React.Component {
         shownValue: event.target.innerText
       });
 
+      onChange(event.target.innerText, headerCol, valueRow);
+
       if(this.selectionDisplay.current.innerText !== event.target.innerText) {
         // occurs when we type in, the text is not completed and then click on the same value that was in before
         // i.e. current value: Monthly,
         //      type in: Mon
         //      click on Monthly
         //  Because the state has not changed Mon will remain in the cell
-        // this.selectionDisplay.current.innerText = event.target.innerText;
-        this.setState(prevState => ({key: prevState.key+1}))
+        this.selectionDisplay.current.innerText = event.target.innerText;
+        // this.setState(prevState => ({key: prevState.key+1}));
       }
 
       document.removeEventListener('mousedown', this.handleClickOutside);
-      onChange(event.target.innerText, headerCol, valueRow);
+      // onChange(event.target.innerText, headerCol, valueRow);
     };
 
     onTextChange = event => {
@@ -152,8 +154,8 @@ class Dropdown extends React.Component {
           ,
           () => {
             if(this.selectionDisplay.current.innerText !== this.state.shownValue) {
-              // this.selectionDisplay.current.innerText = this.state.shownValue;
-              this.setState(prevState => ({key: prevState.key+1}))
+              this.selectionDisplay.current.innerText = this.state.shownValue;
+              // this.setState(prevState => ({key: prevState.key+1}));
             }
             return onChange(this.state.shownValue, headerCol, valueRow);
           }
@@ -168,15 +170,13 @@ class Dropdown extends React.Component {
 
     render() {
       const { gridRow, gridColumn, customStyles, className, children } = this.props;
-      const { showList, displayedOptions, activeItem } = this.state;
+      const { showList, displayedOptions, activeItem, key } = this.state;
       
       let number = displayedOptions.length;
       number = number > 5 ? 5 : number < 1 ? 1 : number;
       
       const dropDownHeight = `${number*100}%`;
       const liHeight = `calc(${1/number*100}% - 1px)`;
-      
-      // if(this.props.id==='Search') console.log(displayedOptions,showList,dropDownHeight)
 
       return (
         <div 
@@ -189,7 +189,6 @@ class Dropdown extends React.Component {
           ref = {this.container}
         >
           <div 
-            // className={showList ? `selected-value active ${this.props.className}` : `selected-value ${this.props.className}`}
             className={`selected-value ${this.props.className} ${showList ? 'active' : ''}`}
             onClick={clickEvent => this.handleDisplay(clickEvent, gridColumn-1, gridRow-2)} 
             onKeyDown={e => this.onKeyDown(e, gridColumn-1, gridRow-2)}
@@ -197,7 +196,7 @@ class Dropdown extends React.Component {
             suppressContentEditableWarning={true}
             onInput={this.onTextChange}
             ref = {this.selectionDisplay}
-            key={this.state.key}
+            // key={key}
           >
             {children}
           </div>
