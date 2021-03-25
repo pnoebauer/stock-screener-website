@@ -16,7 +16,7 @@ const ScreenHeader = ( { header, sortTable, sortConfig } ) => {
                 header.map((type, colIdx) => (
                         <ScreenHeaderItem 
                             key={colIdx.toString()} 
-                            gridColumn={colIdx+1}
+                            gridColumn={colIdx+2}
                             onSort={sortTable}
                             id={type}
                             className={`screen-header ${getClassNameForHeader(type)}`}

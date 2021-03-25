@@ -11,7 +11,7 @@ class ValueCell extends React.PureComponent {
             <div 
                 className='value-cell'
                 style={{
-                    gridColumn,
+                    gridColumn: `${gridColumn+1}`,
                     gridRow
                 }}
             >

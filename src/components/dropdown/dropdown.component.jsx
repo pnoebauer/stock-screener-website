@@ -170,7 +170,7 @@ class Dropdown extends React.Component {
 
     render() {
       const { gridRow, gridColumn, customStyles, className, children } = this.props;
-      const { showList, displayedOptions, activeItem, key } = this.state;
+      const { showList, displayedOptions, activeItem } = this.state;
       
       let number = displayedOptions.length;
       number = number > 5 ? 5 : number < 1 ? 1 : number;
@@ -184,7 +184,7 @@ class Dropdown extends React.Component {
           style={{
             ...customStyles,
             gridRow,
-            gridColumn
+            gridColumn: `${gridColumn+1}`
           }}
           ref = {this.container}
         >

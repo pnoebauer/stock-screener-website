@@ -5,7 +5,7 @@ const ScreenHeaderItem = ( { gridColumn, onSort, id, className, children } ) => 
     <div 
         // className='screen-header'
         style={{gridColumn}}
-        onClick={e=>onSort(e)}
+        onClick={onSort}
         id={id}
         className={className}
     >

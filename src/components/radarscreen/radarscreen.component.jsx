@@ -9,7 +9,7 @@ import { INTERVALS, SYMBOLS, API_TO_INDICATORS, INDICATORS_TO_API } from '../../
 
 import './radarscreen.styles.css';
 
-const permanentHeaders = ['Symbol', 'Interval'];
+const permanentHeaders = ['ID', 'Symbol', 'Interval'];
 
 let updateKey = null;
 
@@ -18,15 +18,18 @@ class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			Symbol: SYMBOLS.slice(0,3),
-			Interval: Array(3).fill(INTERVALS[0])
+			Symbol: SYMBOLS.slice(0,5),
+			Interval: Array(5).fill(INTERVALS[0]),
+			ID: [...Array(5)].map((a, idx) => idx)
 			// 'Last Price': Array(8).fill(0)
 		}
 	}
 
 	// Returns all the headers based on state object keys
 	getHeaderTitle = () => {
-		const headerTitle = Object.keys(this.state).filter(key => this.state[key] !== null);
+		let headerTitle = Object.keys(this.state).filter(key => this.state[key] !== null);
+		// console.log(headerTitle)
+		headerTitle = headerTitle.filter(item => item !== 'ID')
 		return headerTitle;
 	}
 
@@ -66,6 +69,7 @@ class RadarScreen extends React.Component {
 				localStorage.setItem('header', this.getHeaderTitle());
 				localStorage.setItem('Symbol', this.state.Symbol);
 				localStorage.setItem('Interval', this.state.Interval);
+				localStorage.setItem('ID', this.state.ID);
 
 				// updateKey = '1'
 				// console.log('mounted set', updateKey, this.state)
@@ -74,15 +78,16 @@ class RadarScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		let { Symbol, Interval } = this.state;
+		let { Symbol, Interval, ID } = this.state;
 		let rehydrate = {};
 		let header;
 		try {
 			header = localStorage.getItem('header').split(',');
 			Symbol = localStorage.getItem('Symbol').split(',');
 			Interval = localStorage.getItem('Interval').split(',');
+			ID = localStorage.getItem('ID').split(',');
 
-			rehydrate = {...rehydrate, Symbol, Interval}
+			rehydrate = {...rehydrate, Symbol, Interval, ID}
 			// console.log('rehydrate',rehydrate)
 		}
 		catch {
@@ -106,9 +111,12 @@ class RadarScreen extends React.Component {
 		//update the changed cell (Symbol, Interval)
 		this.setState(prevState => {
 			const columnName = header[headerCol]; //which column changed (Symbol, Interval)
+			// console.log(prevState.ID,'prevState.ID')
+			const maxID = Math.max(...prevState.ID);
 			return {
 				[columnName]: Object.assign([], prevState[columnName], {[valueRow]: updatedValue}),
-				Interval: rowAdded ? Object.assign([], prevState.Interval, {[valueRow]: 'Daily'}) : prevState.Interval
+				Interval: rowAdded ? Object.assign([], prevState.Interval, {[valueRow]: 'Daily'}) : prevState.Interval,
+				ID: rowAdded ? Object.assign([], prevState.ID, {[valueRow]: maxID+1}) : prevState.ID
 			}
 		}
 		,
@@ -123,17 +131,10 @@ class RadarScreen extends React.Component {
 		this.setState((prevState, props) => {
 			const sortedTable = props.onSort(event, prevState);
 			return sortedTable;
-		});
-	}
-
-	getClassNameForHeader = name => {
-		const { sortConfig } = this.props;
-		if (!sortConfig) {
-			return;
 		}
-		const direction = sortConfig.direction === 1 ? 'ascending' : 'descending'; 
-		return sortConfig.sortedField === name ? direction : undefined;
-	};
+		// , () => console.log(this.state,'sort')
+		);
+	}
 
 	handleColumnUpdate = names => {
 		const { Symbol } = this.state;
@@ -174,7 +175,7 @@ class RadarScreen extends React.Component {
 			<div className="radarscreen">
 				<div id="grid-container" 
 					style={{
-						gridTemplateColumns: `repeat(${header.length}, 1fr) 0`,
+						gridTemplateColumns: `20px repeat(${header.length}, 1fr) 0`,
 						gridTemplateRows: `repeat(${Symbol.length+1}, 1fr) 0`
 					}}
 				>
@@ -185,7 +186,7 @@ class RadarScreen extends React.Component {
 					/>
 					<AddColumnButton 
 						style={{
-                            gridColumn: `${header.length+1}`
+                            gridColumn: `${header.length+2}`
                         }}
 						handleColumnUpdate={this.handleColumnUpdate}
 						usedIndicatorsDefault={usedIndicators}
@@ -213,6 +214,34 @@ class RadarScreen extends React.Component {
                 	>
 						{SYMBOLS[Symbol.length]}
                 	</Dropdown> 
+
+					<div className='Remove'
+						style={{
+                            gridColumn: '1',
+							gridRow: '1',
+							// width: '10px',
+							// height: '40px',
+							backgroundColor: 'Blue',
+							borderRight: '1px solid black',
+							borderTop: '1px solid black'
+                        }}
+					>
+						T
+					</div>
+
+					<div className='Remove'
+						style={{
+                            gridColumn: '1',
+							gridRow: '2',
+							// width: '10px',
+							// height: '40px',
+							backgroundColor: 'Blue',
+							borderRight: '1px solid black',
+							borderTop: '1px solid black'
+                        }}
+					>
+						Te
+					</div>
 				</div>
 		</div>
 		)
