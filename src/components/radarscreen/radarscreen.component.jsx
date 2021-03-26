@@ -1,8 +1,8 @@
 import React from 'react';
+
 import ScreenHeader from '../screen-header/screen-header.component';
 import GenerateGrid from '../generate-grid/generate-grid.component';
 import AddColumnButton from '../add-column-button/add-column-button.component';
-
 import Dropdown from '../dropdown/dropdown.component';
 
 import { INTERVALS, SYMBOLS, API_TO_INDICATORS, INDICATORS_TO_API } from '../../assets/constants';
@@ -141,18 +141,44 @@ class RadarScreen extends React.Component {
 		// merge permanentHeaders with the updated column names
 		const header = [...permanentHeaders, ...names];
 
-		let clearedState = JSON.parse(JSON.stringify(this.state));
+		const clearedState = JSON.parse(JSON.stringify(this.state));
 
 		Object.keys(clearedState).forEach(key => {
 			if(!header.includes(key)) {
-				clearedState = {
-					...clearedState,
-					[key]: null
-				}
+				// clearedState = {
+				// 	...clearedState,
+				// 	[key]: null
+				// }
+				clearedState[key] = null;
 			}
 		});
+
+		// console.log(clearedState,'cl')
 		
 		this.fetchAndSetState(Symbol, header, clearedState);
+	}
+
+	handleRowDelete = e => {
+		const rowIdx = Number(e.target.id)
+		const stateClone = JSON.parse(JSON.stringify(this.state));
+
+		Object.keys(stateClone).forEach(key => (
+			// stateClone = {
+			// 	...stateClone,
+			// 	[key]: stateClone[key].flatMap((item, index) => 
+			// 		index === rowIdx ? [] : [item]
+			// 	)
+			// }
+
+			// stateClone[key] = stateClone[key].flatMap((item, index) => 
+			// 		index === rowIdx ? [] : [item]
+			// 	)
+
+			stateClone[key].splice(rowIdx, 1)
+			
+		));
+
+		this.setState(stateClone);
 	}
 
 
@@ -196,6 +222,7 @@ class RadarScreen extends React.Component {
 						{...this.state}
 						header={header}
 						onChange={this.onChange}
+						handleRowDelete={this.handleRowDelete}
 					/>
 
 					<Dropdown 
@@ -219,29 +246,10 @@ class RadarScreen extends React.Component {
 						style={{
                             gridColumn: '1',
 							gridRow: '1',
-							// width: '10px',
-							// height: '40px',
-							backgroundColor: 'Blue',
 							borderRight: '1px solid black',
 							borderTop: '1px solid black'
                         }}
-					>
-						T
-					</div>
-
-					<div className='Remove'
-						style={{
-                            gridColumn: '1',
-							gridRow: '2',
-							// width: '10px',
-							// height: '40px',
-							backgroundColor: 'Blue',
-							borderRight: '1px solid black',
-							borderTop: '1px solid black'
-                        }}
-					>
-						Te
-					</div>
+					/>
 				</div>
 		</div>
 		)

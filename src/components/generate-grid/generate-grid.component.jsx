@@ -2,7 +2,7 @@ import React from 'react';
 
 import GridRow from './grid-row.component';
 
-const GenerateGrid = ( { onChange, header, ...props} ) => {
+const GenerateGrid = ( { onChange, handleRowDelete, header, ...props} ) => {
     
     const { Symbol } = props;
     const itemNum = Symbol.length;
@@ -20,6 +20,7 @@ const GenerateGrid = ( { onChange, header, ...props} ) => {
                             rowIdx={rowIdx} 
                             header={header}
                             onChange={onChange}
+                            handleRowDelete={handleRowDelete}
                             key={props.ID[rowIdx]}
                         />
                     )

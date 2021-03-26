@@ -1,9 +1,9 @@
 import React from 'react';
 
 import GenerateGridCell from '../generate-grid-cell/generate-grid-cell.component';
+import DeleteRowButton from '../delete-row-button/delete-row-button.component';
 
-
-const GridRow = ( { rowValues, rowIdx, header, onChange } ) => {
+const GridRow = ( { rowValues, rowIdx, header, onChange, handleRowDelete } ) => {
     // console.log(rowValues, rowIdx)
     return (
         <>
@@ -22,6 +22,14 @@ const GridRow = ( { rowValues, rowIdx, header, onChange } ) => {
                     )
                 })
             }
+
+            <DeleteRowButton
+                rowIdx={rowIdx}
+                handleRowDelete={handleRowDelete}
+            >
+                X
+            </DeleteRowButton>
+            
         </>
     )
 }
