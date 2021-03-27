@@ -2,9 +2,9 @@ import React from 'react';
 
 import './indicators-list.styles.css';
 
-const IndicatorsList = ( { displayedIndicators, onToggle, className, headerName }) => {
+const IndicatorsList = ( { displayedIndicators, onToggle, className, headerName, style }) => {
     return (
-        <div className="indicators-list-container">
+        <div className="indicators-list-container" style={style}>
             <span>{headerName}</span>
             
         
@@ -13,7 +13,7 @@ const IndicatorsList = ( { displayedIndicators, onToggle, className, headerName 
                 return (
                     <li 
                         key={item.id}
-                        id={index}
+                        id={item.id}
                         onClick={onToggle}
                         className={`${className} ${item.selected ? 'selected' : ''}`}
                     >

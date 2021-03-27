@@ -15,13 +15,13 @@ class IndicatorSelector extends React.Component {
     }
 
     onToggle = event => {
-        const updatedIndex = Number(event.target.id);
+        const updatedID = event.target.id;
         const className = event.target.className;
-        const indicatorListName = className.replace('selected', '').trim()
+        const indicatorListName = className.replace('selected', '').trim();
 
         this.setState(prevState => {
-            const updated = prevState[indicatorListName].map((value, index) => {
-                if(updatedIndex === index) {
+            const updated = prevState[indicatorListName].map(value => {
+                if(updatedID === value.id) {
                     return {
                         ...value,
                         selected: !value.selected

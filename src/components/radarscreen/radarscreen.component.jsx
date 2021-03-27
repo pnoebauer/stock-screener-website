@@ -4,6 +4,7 @@ import ScreenHeader from '../screen-header/screen-header.component';
 import GenerateGrid from '../generate-grid/generate-grid.component';
 import AddColumnButton from '../add-column-button/add-column-button.component';
 import Dropdown from '../dropdown/dropdown.component';
+import AddStockUniverseButton from '../add-stock-universe-button/add-stock-universe-button.component';
 
 import { INTERVALS, SYMBOLS, API_TO_INDICATORS, INDICATORS_TO_API } from '../../assets/constants';
 
@@ -242,12 +243,10 @@ class RadarScreen extends React.Component {
 						{SYMBOLS[Symbol.length]}
                 	</Dropdown> 
 
-					<div className='Remove'
+					<AddStockUniverseButton
 						style={{
                             gridColumn: '1',
-							gridRow: '1',
-							borderRight: '1px solid black',
-							borderTop: '1px solid black'
+							gridRow: '1'
                         }}
 					/>
 				</div>

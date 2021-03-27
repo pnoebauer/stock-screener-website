@@ -36,3 +36,7 @@ ul.indicators-list > li:hover {
 .selected {
     background-color: blue;
 }
+
+/* li.universes {
+    height: 20px;
+} */
