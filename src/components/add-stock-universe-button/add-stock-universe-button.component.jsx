@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from '../modal/modal.component';
 
-import IndicatorsList from '../indicators-list/indicators-list.component';
+import List from '../list/list.component';
 
 import { INDICATORS_TO_API } from '../../assets/constants';
 
@@ -96,8 +96,8 @@ class AddStockUniverseButton extends React.Component {
                     leaveAnimation={'zoom'}
                     duration={500}
                 >
-                    <IndicatorsList 
-                        displayedIndicators={
+                    <List 
+                        displayedItems={
                             this.state.universes
                         }
                         onToggle={this.onToggle}

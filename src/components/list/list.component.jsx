@@ -1,15 +1,15 @@
 import React from 'react';
 
-import './indicators-list.styles.css';
+import './list.styles.css';
 
-const IndicatorsList = ( { displayedIndicators, onToggle, className, headerName, style }) => {
+const List = ( { displayedItems, onToggle, className, headerName, style }) => {
     return (
-        <div className="indicators-list-container" style={style}>
+        <div className="list-container" style={style}>
             <span>{headerName}</span>
             
         
-        <ul className="indicators-list">
-            {displayedIndicators.map((item,index) => {
+        <ul className="list">
+            {displayedItems.map((item,index) => {
                 return (
                     <li 
                         key={item.id}
@@ -28,4 +28,4 @@ const IndicatorsList = ( { displayedIndicators, onToggle, className, headerName,
     )
 }
 
-export default IndicatorsList;
+export default List;

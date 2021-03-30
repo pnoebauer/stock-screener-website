@@ -1,6 +1,6 @@
 import React from 'react';
 
-import IndicatorsList from '../indicators-list/indicators-list.component';
+import List from '../list/list.component';
 
 import './indicator-selector.styles.css';
 
@@ -103,8 +103,8 @@ class IndicatorSelector extends React.Component {
         return (
             <div className="indicator-selector">
                 
-                <IndicatorsList 
-                    displayedIndicators={this.state.availableIndicators}
+                <List 
+                    displayedItems={this.state.availableIndicators}
                     onToggle={this.onToggle}
                     className="availableIndicators"
                     headerName='Available Indicators'
@@ -125,8 +125,8 @@ class IndicatorSelector extends React.Component {
                     </button>
                 </div>
                 
-                <IndicatorsList 
-                    displayedIndicators={this.state.usedIndicators}
+                <List 
+                    displayedItems={this.state.usedIndicators}
                     onToggle={this.onToggle}
                     className="usedIndicators"
                     headerName='Used Indicators'
