@@ -24,7 +24,12 @@ function withSorting(WrappedComponent) {
         
             // temporary array holds objects with position and sort-value
             const mapped = list.map((value, index) => {
-                if(typeof(value) ==='string') value = value.toLowerCase();
+                if(typeof(value) ==='string') {
+                    value = value.toLowerCase();
+                }
+                if(sortedField === 'ID') {
+                    value = Number(value);
+                }
                   
                 return { 
                       index, 
@@ -33,7 +38,7 @@ function withSorting(WrappedComponent) {
                 }
             );
         
-            // console.log(mapped);
+            // console.log(mapped,'mapped');
         
             // sorting the mapped array containing the reduced values
             mapped.sort((a, b) => {
@@ -46,7 +51,7 @@ function withSorting(WrappedComponent) {
                 return 0;
             });
         
-            // console.log(mapped);
+            // console.log(mapped,'map sort');
             // table headers (Symbol, Interval, Price, ...)
             const columnHeaders = Object.keys(stateClone);
         
@@ -65,9 +70,9 @@ function withSorting(WrappedComponent) {
 
         onSort = (event, state) => {
             const { sortConfig } = this.state;
-            // console.log('click',event.target.id, list)
+            // console.log('click',event.target.id, state)
             
-            const sortedField = event.target.id;
+            let sortedField = event.target.id;
             // // const list = [...this.state[sortedField]]
     
             let direction = 1;
@@ -76,10 +81,18 @@ function withSorting(WrappedComponent) {
                 if(sortConfig.direction === direction) {
                     direction = -1;
                 }
+
+                else if(sortConfig.direction === -direction) {
+                    // direction = 0;
+                    // direction = 1;
+                    sortedField = 'ID';
+                }
             }
     
             // const sortedData = sortTable(this.state, sortedField, direction);
             const sortedData = this.sortTable(state, sortedField, direction);
+
+            // console.log('sortedData',sortedData)
             // this.setState(sortedData);
         
             this.setState({

@@ -28,7 +28,7 @@ class RadarScreen extends React.Component {
 
 	// Returns all the headers based on state object keys
 	getHeaderTitle = () => {
-		let headerTitle = Object.keys(this.state).filter(key => this.state[key] !== null);
+		let headerTitle = Object.keys(this.state).filter(key => this.state[key] !== undefined);
 		// console.log(headerTitle)
 		headerTitle = headerTitle.filter(item => item !== 'ID')
 		return headerTitle;
@@ -63,17 +63,15 @@ class RadarScreen extends React.Component {
 			return stateUpdates
 		})
 		// update state to the updated indicators and the clearedState (all unused indicators set to null)
-		.then(stateUpdates => this.setState({...stateUpdates,...clearedState}
+		.then(stateUpdates => this.setState({...clearedState,...stateUpdates}
 			,
 			() => {
+				// console.log(stateUpdates,clearedState,'c',{...stateUpdates,...clearedState})
 				// console.log(this.getHeaderTitle())
 				localStorage.setItem('header', this.getHeaderTitle());
 				localStorage.setItem('Symbol', this.state.Symbol);
 				localStorage.setItem('Interval', this.state.Interval);
 				localStorage.setItem('ID', this.state.ID);
-
-				// updateKey = '1'
-				// console.log('mounted set', updateKey, this.state)
 			}
 		))
 	}
@@ -105,8 +103,8 @@ class RadarScreen extends React.Component {
 
 	}
 
+	//used for dropdowns - updates one row
 	onChange = (updatedValue, headerCol, valueRow, rowAdded) => {
-
 		const header = this.getHeaderTitle();
 		
 		//update the changed cell (Symbol, Interval)
@@ -132,9 +130,7 @@ class RadarScreen extends React.Component {
 		this.setState((prevState, props) => {
 			const sortedTable = props.onSort(event, prevState);
 			return sortedTable;
-		}
-		// , () => console.log(this.state,'sort')
-		);
+		});
 	}
 
 	handleColumnUpdate = names => {
@@ -148,9 +144,9 @@ class RadarScreen extends React.Component {
 			if(!header.includes(key)) {
 				// clearedState = {
 				// 	...clearedState,
-				// 	[key]: null
+				// 	[key]: undefined
 				// }
-				clearedState[key] = null;
+				clearedState[key] = undefined;
 			}
 		});
 
@@ -163,7 +159,10 @@ class RadarScreen extends React.Component {
 		const rowIdx = Number(e.target.id)
 		const stateClone = JSON.parse(JSON.stringify(this.state));
 
-		Object.keys(stateClone).forEach(key => (
+		// console.log(stateClone, rowIdx)
+
+		Object.keys(stateClone).forEach(key => {
+			// console.log(key, stateClone[key], 'k')
 			// stateClone = {
 			// 	...stateClone,
 			// 	[key]: stateClone[key].flatMap((item, index) => 
@@ -177,7 +176,7 @@ class RadarScreen extends React.Component {
 
 			stateClone[key].splice(rowIdx, 1)
 			
-		));
+		});
 
 		this.setState(stateClone);
 	}
@@ -185,7 +184,22 @@ class RadarScreen extends React.Component {
 
 	onRowAdd = (updatedValue, headerCol, valueRow) => this.onChange(updatedValue, headerCol, valueRow, true);
 	
-	
+	handleUniverseAdd = symbols => {
+		const numberAddedSymbols = symbols.length;
+		
+		const stateClone = JSON.parse(JSON.stringify(this.state));
+		const maxID = Math.max(...stateClone.ID);
+		// console.log(maxID,'maxID');
+
+		stateClone.Symbol = [...stateClone.Symbol, ...symbols];
+		stateClone.Interval = [...stateClone.Interval, ...Array(numberAddedSymbols).fill(INTERVALS[0])];
+		stateClone.ID = [...stateClone.ID, ...[...Array(numberAddedSymbols)].map((a, idx) => idx+maxID+1)];
+
+		const header = this.getHeaderTitle();
+		
+		this.fetchAndSetState(stateClone.Symbol, header, stateClone);
+	}
+
 	render() {
 		const header = this.getHeaderTitle();
 		// passed from the withSort HOC
@@ -248,6 +262,7 @@ class RadarScreen extends React.Component {
                             gridColumn: '1',
 							gridRow: '1'
                         }}
+						handleUniverseAdd={this.handleUniverseAdd}
 					/>
 				</div>
 		</div>

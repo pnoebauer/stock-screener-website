@@ -57,6 +57,7 @@ button.add-column-button {
   grid-row: 1;
   box-sizing: border-box;
   height: 40px;
+  user-select: none;
 }
 
 .screen-header.ascending::after {

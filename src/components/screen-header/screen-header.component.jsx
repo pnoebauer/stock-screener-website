@@ -6,7 +6,16 @@ const ScreenHeader = ( { header, sortTable, sortConfig } ) => {
         if (!sortConfig) {
             return;
         }
-        const direction = sortConfig.direction === 1 ? 'ascending' : 'descending'; 
+        // const direction = sortConfig.direction === 1 ? 'ascending' : 'descending'; 
+        let direction;
+
+        if(sortConfig.direction === 1) {
+            direction = 'ascending';
+        }
+        else if(sortConfig.direction === -1) {
+            direction = 'descending';
+        }
+        
         return sortConfig.sortedField === name ? direction : undefined;
     };
 

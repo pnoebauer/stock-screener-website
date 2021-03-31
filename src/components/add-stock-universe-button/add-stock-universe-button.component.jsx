@@ -3,7 +3,9 @@ import Modal from '../modal/modal.component';
 
 import List from '../list/list.component';
 
-import { INDICATORS_TO_API } from '../../assets/constants';
+import UniverseSelector from '../stock-universe-selector/stock-universe-selector.coponent';
+
+import { UNIVERSES } from '../../assets/constants';
 
 import './add-stock-universe-button.styles.css';
 
@@ -18,13 +20,38 @@ class AddStockUniverseButton extends React.Component {
                 {
                     id: 'SP500',
                     name: 'SP500',
-                    selected: true
+                    selected: false
                 },
                 {
                     id: 'NAS100',
                     name: 'NAS100',
                     selected: false
-                }
+                },
+                {
+                    id: 'DJ30',
+                    name: 'DJ30',
+                    selected: false
+                },
+                // {
+                //     id: 'NAS1003',
+                //     name: 'NAS100',
+                //     selected: false
+                // },
+                // {
+                //     id: 'NAS1004',
+                //     name: 'NAS100',
+                //     selected: false
+                // },
+                // {
+                //     id: 'NAS1005',
+                //     name: 'NAS100',
+                //     selected: false
+                // },
+                // {
+                //     id: 'NAS1006',
+                //     name: 'NAS100',
+                //     selected: false
+                // }
             ]
         };
     }
@@ -63,13 +90,18 @@ class AddStockUniverseButton extends React.Component {
         })
     }
 
-    // handleOkCancel = (type, updatedState) => {
-    //     this.hide();
-    //     if(type === 'ok') {
-    //         const columnNames = updatedState.usedIndicators.map(item => item.name);
-    //         this.props.handleColumnUpdate(columnNames);
-    //     }
-    // }
+    handleAddClick = e => {
+        this.hide();
+        // const selectedUniverses = this.state.universes.filter(universe => universe.selected).map(universe => universe.name);
+        const selectedUniverses = this.state.universes.flatMap(universe => universe.selected ? [universe.name] : []);
+        // console.log(selectedUniverses,'selectedUniverses');
+
+        const extractedSymbols = selectedUniverses.flatMap(universe => UNIVERSES[universe]);
+        // console.log(extractedSymbols, 'extractedSymbols')
+
+        this.props.handleUniverseAdd(extractedSymbols);
+
+    }
 
     render() {
 
@@ -87,7 +119,7 @@ class AddStockUniverseButton extends React.Component {
                     visible={this.state.visible} 
                     onClose={this.hide}
                     width={40}
-                    height={30}
+                    height={40}
                     measure={'%'}
                     showCloseButton={true}
                     closeOnEsc={true}
@@ -96,14 +128,12 @@ class AddStockUniverseButton extends React.Component {
                     leaveAnimation={'zoom'}
                     duration={500}
                 >
-                    <List 
+                    <UniverseSelector 
                         displayedItems={
                             this.state.universes
                         }
                         onToggle={this.onToggle}
-                        className={'universes'}
-                        headerName={'Universe'}
-                        style={{width: '80%',marginTop: '20px'}}
+                        onAdd={this.handleAddClick}
                     />
                 </Modal>
             </>
