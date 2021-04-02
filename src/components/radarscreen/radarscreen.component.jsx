@@ -50,7 +50,7 @@ class RadarScreen extends React.Component {
 
 		let stateUpdates = {};
 
-		//fetch for all symbols and the apiIndicators
+		//fetch all symbols and apiIndicators
 		fetchRealTimeData(Symbol, apiIndicators)
 			.then(indicatorObject => {
 				console.log(indicatorObject, 'in');
