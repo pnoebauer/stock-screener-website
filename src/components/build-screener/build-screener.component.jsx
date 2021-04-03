@@ -1,7 +1,7 @@
 // import React from 'react';
 
-// import Test from './test';
-// import TestFetch from './testFetch.component';
+import Test from './test';
+import TestFetch from './testFetch.component';
 
 import withFetch from './withFetch';
 import withSorting from './withSorting';
@@ -20,8 +20,12 @@ const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 // 	Test
 // );
 
-// const BuildScreener = withFetch(TestFetch, urlRealTime, apikey);
+const BuildScreener = withFetch(TestFetch, urlRealTime, apikey);
 
-const BuildScreener = withSorting(withFetch(RadarScreen, urlRealTime, apikey));
+// const BuildScreener = withSorting(withFetch(
+// 	RadarScreen,
+// 	urlRealTime,
+//  	apikey
+// ));
 
 export default BuildScreener;

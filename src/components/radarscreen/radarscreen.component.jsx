@@ -41,7 +41,7 @@ class RadarScreen extends React.Component {
 	};
 
 	fetchAndSetState = (Symbol, header, clearedState, valueRow) => {
-		const {fetchRealTimeData} = this.props;
+		const { fetchRealTimeData } = this.props;
 
 		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
 		const apiIndicators = header.flatMap(item =>
@@ -53,17 +53,28 @@ class RadarScreen extends React.Component {
 		//fetch all symbols and apiIndicators
 		fetchRealTimeData(Symbol, apiIndicators)
 			.then(indicatorObject => {
+				console.log(indicatorObject, 'in');
 				// loop over all apiIndicators
 				apiIndicators.forEach(apiIndicator => {
+					console.log(apiIndicator, 'apiIndicator');
+
 					// look up the name used for the column header (and state key)
 					const indicatorColumn = API_TO_INDICATORS[apiIndicator];
-
-					const updatedRows =
+					let updatedRows = this.state[indicatorColumn];
+					let updatedValuesFromFetch;
+					if (indicatorObject) {
+						updatedValuesFromFetch = indicatorObject[apiIndicator];
+					} else {
+						updatedValuesFromFetch = ['NA'];
+					}
+					updatedRows =
 						valueRow !== undefined
 							? Object.assign([], this.state[indicatorColumn], {
-									[valueRow]: indicatorObject[apiIndicator][0],
+									[valueRow]: updatedValuesFromFetch[0],
 							  })
-							: indicatorObject[apiIndicator];
+							: updatedValuesFromFetch;
+
+					// console.log(updatedRows, 'upr');
 
 					// merge the result of the current indicator column with the temp state object
 					stateUpdates = {
@@ -73,10 +84,10 @@ class RadarScreen extends React.Component {
 				});
 				return stateUpdates;
 			})
-			.catch(e => console.log(e, 'error during fetching'))
+			.catch(e => console.log(e, 'error'))
 			// update state to the updated indicators and the clearedState (all unused indicators set to null)
 			.then(stateUpdates =>
-				this.setState({...clearedState, ...stateUpdates}, () => {
+				this.setState({ ...clearedState, ...stateUpdates }, () => {
 					// console.log(stateUpdates,clearedState,'c',{...stateUpdates,...clearedState})
 					// console.log(this.getHeaderTitle())
 					localStorage.setItem('header', this.getHeaderTitle());
@@ -88,7 +99,7 @@ class RadarScreen extends React.Component {
 	};
 
 	componentDidMount() {
-		let {Symbol, Interval, ID} = this.state;
+		let { Symbol, Interval, ID } = this.state;
 		let rehydrate = {};
 		let header;
 		try {
@@ -97,7 +108,7 @@ class RadarScreen extends React.Component {
 			Interval = localStorage.getItem('Interval').split(',');
 			ID = localStorage.getItem('ID').split(',');
 
-			rehydrate = {...rehydrate, Symbol, Interval, ID};
+			rehydrate = { ...rehydrate, Symbol, Interval, ID };
 			// console.log('rehydrate',rehydrate)
 		} catch {
 			header = this.getHeaderTitle();
@@ -124,10 +135,10 @@ class RadarScreen extends React.Component {
 						[valueRow]: updatedValue,
 					}),
 					Interval: rowAdded
-						? Object.assign([], prevState.Interval, {[valueRow]: 'Daily'})
+						? Object.assign([], prevState.Interval, { [valueRow]: 'Daily' })
 						: prevState.Interval,
 					ID: rowAdded
-						? Object.assign([], prevState.ID, {[valueRow]: maxID + 1})
+						? Object.assign([], prevState.ID, { [valueRow]: maxID + 1 })
 						: prevState.ID,
 				};
 			},
@@ -147,7 +158,7 @@ class RadarScreen extends React.Component {
 	};
 
 	handleColumnUpdate = names => {
-		const {Symbol} = this.state;
+		const { Symbol } = this.state;
 		// merge permanentHeaders with the updated column names
 		const header = [...permanentHeaders, ...names];
 
@@ -155,6 +166,10 @@ class RadarScreen extends React.Component {
 
 		Object.keys(clearedState).forEach(key => {
 			if (!header.includes(key)) {
+				// clearedState = {
+				// 	...clearedState,
+				// 	[key]: undefined
+				// }
 				clearedState[key] = undefined;
 			}
 		});
@@ -171,21 +186,22 @@ class RadarScreen extends React.Component {
 		// console.log(stateClone, rowIdx)
 
 		Object.keys(stateClone).forEach(key => {
+			// console.log(key, stateClone[key], 'k')
+			// stateClone = {
+			// 	...stateClone,
+			// 	[key]: stateClone[key].flatMap((item, index) =>
+			// 		index === rowIdx ? [] : [item]
+			// 	)
+			// }
+
+			// stateClone[key] = stateClone[key].flatMap((item, index) =>
+			// 		index === rowIdx ? [] : [item]
+			// 	)
+
 			stateClone[key].splice(rowIdx, 1);
 		});
 
-		this.setState(stateClone, () => {
-			localStorage.setItem('header', this.getHeaderTitle());
-			localStorage.setItem('Symbol', this.state.Symbol);
-			localStorage.setItem('Interval', this.state.Interval);
-			localStorage.setItem('ID', this.state.ID);
-		});
-	};
-
-	handleDeleteAllRows = e => {
-		Object.keys(this.state).forEach(key => {
-			this.setState({[key]: []});
-		});
+		this.setState(stateClone);
 	};
 
 	onRowAdd = (updatedValue, headerCol, valueRow) =>
@@ -195,8 +211,8 @@ class RadarScreen extends React.Component {
 		const numberAddedSymbols = symbols.length;
 
 		const stateClone = JSON.parse(JSON.stringify(this.state));
-		const maxID = Math.max(...stateClone.ID, 0);
-		// console.log(maxID, 'maxID');
+		const maxID = Math.max(...stateClone.ID);
+		// console.log(maxID,'maxID');
 
 		stateClone.Symbol = [...stateClone.Symbol, ...symbols];
 		stateClone.Interval = [
@@ -210,14 +226,57 @@ class RadarScreen extends React.Component {
 
 		const header = this.getHeaderTitle();
 
-		this.fetchAndSetState(stateClone.Symbol, header, stateClone);
+		// this.fetchAndSetState(stateClone.Symbol, header, stateClone);
+		console.log(stateClone.Symbol, 'sym');
+		this.props
+			.fetchRealTimeData(
+				[
+					'AOS',
+					'MMM',
+					'ABT',
+					'ABBV',
+					'ABMD',
+					'AAPL',
+					'CSCO',
+					'INTC',
+					'MSFT',
+					'WBA',
+					'AXP',
+					'BA',
+					'CAT',
+					'CVX',
+					'DIS',
+					'DOW',
+					'GS',
+					'HD',
+					'IBM',
+					'JNJ',
+					'JPM',
+					'KO',
+					'MCD',
+					'MMM',
+					'MRK',
+					'NKE',
+					'PFE',
+					'PG',
+					'TRV',
+					'UNH',
+					'UTX',
+					'V',
+					'VZ',
+					'WMT',
+					'XOM',
+				],
+				['closePrice']
+			)
+			.then(obj => console.log(obj));
 	};
 
 	render() {
 		const header = this.getHeaderTitle();
 		// passed from the withSort HOC
-		const {sortConfig} = this.props;
-		const {Symbol} = this.state;
+		const { sortConfig } = this.props;
+		const { Symbol } = this.state;
 
 		const usedIndicators = header.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]
@@ -278,22 +337,6 @@ class RadarScreen extends React.Component {
 						}}
 						handleUniverseAdd={this.handleUniverseAdd}
 					/>
-
-					<button
-						style={{
-							border: 'none',
-							gridColumn: '1',
-							gridRow: `${Symbol.length} + 2`,
-							height: '31px',
-							borderBottom: '1px solid black',
-							borderLeft: '1px solid black',
-							borderTop: '1px solid black',
-							marginLeft: '-1px',
-						}}
-						onClick={this.handleDeleteAllRows}
-					>
-						XX
-					</button>
 				</div>
 			</div>
 		);

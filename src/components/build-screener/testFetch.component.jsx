@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-	SYMBOLS,
-	// , SP500, NAS100, DJ30
-} from '../../assets/constants';
+import { SYMBOLS, SP500, NAS100, DJ30 } from '../../assets/constants';
 
 // function sleep(milliseconds) {
 // 	const date = Date.now();
@@ -29,18 +26,40 @@ class TestFetch extends React.Component {
 			// for (let index = 0; index < SYMBOLS.slice(0, 60).length; index++) {
 			const symbol = SYMBOLS[index];
 			const obj = await this.props.fetchRealTimeData([symbol], ['closePrice']);
+
 			console.log('obj', obj, symbol, index);
+
 			if (!obj) {
 				this.setState(prevState => ({
 					unavailableSymbols: [...prevState.unavailableSymbols, symbol],
 				}));
 				console.log('NA', symbol, index);
 			}
+
 			const sleepTime = (index + 1) % 20 === 0 ? 30000 : 0;
 			// console.log(sleepTime, index, index % 5, 'sleep set');
+
 			if (sleepTime > 0) console.log('waited', sleepTime, index);
-			await sleep(sleepTime);
+			const u = await sleep(sleepTime);
 		}
+
+		// // sleep(sleepTime).then(() => {
+		// // 	// Do something after the sleep!
+		// // 	console.log(sleepTime, index, 'sleep');
+
+		// SYMBOLS.slice(0, 15).forEach((symbol, index) => {
+		// 	// SYMBOLS.forEach((symbol, index) => {
+		// 	// console.log('symbol', symbol);
+
+		// 	this.props.fetchRealTimeData([symbol], ['closePrice']).then(obj => {
+		// 		if (!obj) {
+		// 			this.setState(prevState => ({
+		// 				unavailableSymbols: [...prevState.unavailableSymbols, symbol],
+		// 			}));
+		// 		}
+		// 		console.log('obj', obj, symbol, index);
+		// 	});
+		// });
 	}
 
 	render() {
