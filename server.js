@@ -5,8 +5,16 @@ const path = require('path');
 const compression = require('compression');
 const enforce = require('express-sslify');
 
+const fetchData = require('./fetchData');
+const url = 'https://api.tdameritrade.com/v1/marketdata/quotes';
+
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
+
+// console.log(process.env.API_SECRET_KEY);
+const apiKey = process.env.API_SECRET_KEY;
+
+fetchData.fetchData(url, apiKey);
 
 const app = express(); //instantiate new express application
 const port = process.env.PORT || 4000; //heroku sets up process port; during development use port 5000
