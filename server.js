@@ -6,13 +6,15 @@ const compression = require('compression');
 const enforce = require('express-sslify');
 
 const fetchData = require('./fetchData');
+const processData = require('./processData');
 
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
 const apiKey = process.env.API_SECRET_KEY;
 
-fetchData.fetchLiveData('SPY');
+// fetchData.fetchLiveData('SPY');
+fetchData.fetchHistoricalData('SPY').then(data => processData.processData(data));
 
 const app = express(); //instantiate new express application
 const port = process.env.PORT || 4000; //heroku sets up process port; during development use port 5000

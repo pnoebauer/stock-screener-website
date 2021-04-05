@@ -1,42 +1,86 @@
 const fetch = require('node-fetch');
 
-const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
+const urlEndPoint = 'https://api.tdameritrade.com/v1/marketdata';
 
-const fetchData = (url, symbol) => {
-	const apiKey = process.env.API_SECRET_KEY;
+const fetchData = async (url, queryParams) => {
+	const apikey = process.env.API_SECRET_KEY;
 
 	const params = {
-		apikey: apiKey,
-		symbol: symbol,
+		apikey,
+		...queryParams,
 	};
 
 	const queryExt = new URLSearchParams(params).toString();
 
-	const queryString = url.concat('?', queryExt);
+	const queryString = `${url}?${queryExt}`;
 
-	fetch(queryString)
-		.then(res => res.json())
-		.then(data => console.log(data));
+	const response = await fetch(queryString);
+	const data = await response.json();
+	// console.log(data);
+
+	return data;
 };
 
 const fetchLiveData = symbol => {
-	fetchData(urlRealTime, symbol);
+	const urlRealTime = `${urlEndPoint}/quotes`;
+	const queryParams = {symbol};
+	fetchData(urlRealTime, queryParams);
 };
 
-function addDays(date, days) {
-	const copy = new Date(Number(date));
-	copy.setDate(date.getDate() + days);
-	return copy;
-}
-
-const fetchHistoricalData = symbol => {
+const fetchHistoricalData = async symbol => {
 	// fetchData(urlRealTime, symbol);
 	// /v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true
-	const startDate = new Date(2020, 0, 1);
+	const startDate = new Date(2010, 0, 1);
 	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000;
 
 	const endDate = addDays(startDate, 60);
 	const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
+
+	// Valid periods by periodType:
+	// day: 1, 2, 3, 4, 5, 10*
+	// month: 1*, 2, 3, 6
+	// year: 1*, 2, 3, 5, 10, 15, 20
+	// ytd: 1*
+	const period = 10; //not required if start and end date are used
+	// Valid values are day, month, year, or ytd (year to date). Default is day.
+	const periodType = 'year';
+
+	// 	Valid frequencyTypes by periodType (defaults marked with an asterisk):
+	// day: minute*
+	// month: daily, weekly*
+	// year: daily, weekly, monthly*
+	// ytd: daily, weekly*
+	const frequencyType = 'daily';
+	// Valid frequencies by frequencyType:
+	// minute: 1*, 5, 10, 15, 30
+	// daily: 1*
+	// weekly: 1*
+	// monthly: 1*
+	const frequency = 1;
+	const needExtendedHoursData = true;
+
+	const urlHistorical = `${urlEndPoint}/${symbol}/pricehistory`;
+	const queryParams = {
+		startDateUnix,
+		// endDateUnix,
+		period,
+		periodType,
+		frequencyType,
+		frequency,
+		needExtendedHoursData,
+	};
+
+	const data = await fetchData(urlHistorical, queryParams);
+
+	// console.log(data);
+
+	return data;
+};
+
+const addDays = (date, days) => {
+	const copy = new Date(Number(date));
+	copy.setDate(date.getDate() + days);
+	return copy;
 };
 
 const convertDateToUnix = (...dateArgs) => {
@@ -51,4 +95,5 @@ const convertDateToUnix = (...dateArgs) => {
 
 module.exports = {
 	fetchLiveData,
+	fetchHistoricalData,
 };
