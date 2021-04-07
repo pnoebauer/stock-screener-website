@@ -14,6 +14,8 @@ const fetchData = async (url, queryParams) => {
 
 	const queryString = `${url}?${queryExt}`;
 
+	console.log(queryExt);
+
 	const response = await fetch(queryString);
 	const data = await response.json();
 	// console.log(data);
@@ -30,20 +32,23 @@ const fetchLiveData = symbol => {
 const fetchHistoricalData = async symbol => {
 	// fetchData(urlRealTime, symbol);
 	// /v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true
-	const startDate = new Date(2010, 0, 1);
-	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000;
+	const startDate = new Date(2015, 0, 1, 0, 0);
+	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
 
-	const endDate = addDays(startDate, 60);
+	// const endDate = addDays(startDate, 10);
+	const endDate = new Date(2015, 1, 1, 0, 0);
 	const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
+
+	// console.log(startDateUnix, endDateUnix);
 
 	// Valid periods by periodType:
 	// day: 1, 2, 3, 4, 5, 10*
 	// month: 1*, 2, 3, 6
 	// year: 1*, 2, 3, 5, 10, 15, 20
 	// ytd: 1*
-	const period = 10; //not required if start and end date are used
+	const period = 1; //not required if start and end date are used
 	// Valid values are day, month, year, or ytd (year to date). Default is day.
-	const periodType = 'year';
+	const periodType = 'month';
 
 	// 	Valid frequencyTypes by periodType (defaults marked with an asterisk):
 	// day: minute*
@@ -61,13 +66,13 @@ const fetchHistoricalData = async symbol => {
 
 	const urlHistorical = `${urlEndPoint}/${symbol}/pricehistory`;
 	const queryParams = {
-		startDateUnix,
-		// endDateUnix,
-		period,
 		periodType,
+		period,
 		frequencyType,
 		frequency,
-		needExtendedHoursData,
+		endDate: endDateUnix,
+		// startDate: startDateUnix,
+		// needExtendedHoursData,
 	};
 
 	const data = await fetchData(urlHistorical, queryParams);
