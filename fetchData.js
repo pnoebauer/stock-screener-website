@@ -14,7 +14,7 @@ const fetchData = async (url, queryParams) => {
 
 	const queryString = `${url}?${queryExt}`;
 
-	console.log(queryExt);
+	// console.log(queryExt);
 
 	const response = await fetch(queryString);
 	const data = await response.json();
@@ -36,7 +36,7 @@ const fetchHistoricalData = async symbol => {
 	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
 
 	// const endDate = addDays(startDate, 10);
-	const endDate = new Date(2015, 1, 1, 0, 0);
+	const endDate = new Date(2015, 1, 1, 0, 0); //default: prior trading day
 	const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
 
 	// console.log(startDateUnix, endDateUnix);
@@ -46,7 +46,7 @@ const fetchHistoricalData = async symbol => {
 	// month: 1*, 2, 3, 6
 	// year: 1*, 2, 3, 5, 10, 15, 20
 	// ytd: 1*
-	const period = 1; //not required if start and end date are used
+	const period = 1; //not required if start date are used
 	// Valid values are day, month, year, or ytd (year to date). Default is day.
 	const periodType = 'month';
 

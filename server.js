@@ -34,11 +34,15 @@ if (process.env.NODE_ENV === 'production') {
 // 	res.send('Hello World!');
 // });
 
-// fetchData.fetchLiveData('SPY');
-fetchData.fetchHistoricalData('SPY').then(data => processData.processData(data));
+dbConnect.createTable();
 
-// dbConnect.createTable();
-// dbConnect.insertIntoTable();
+// fetchData.fetchLiveData('SPY');
+fetchData.fetchHistoricalData('GOOGL').then(data => processData.processData(data));
+// .then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
+// .then(convertedCandles => console.log(convertedCandles));
+
+// dbConnect.retrieveData();
+// dbConnect.ins();
 
 app.listen(port, error => {
 	if (error) throw error;
