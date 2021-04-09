@@ -86,18 +86,25 @@ const processData = data => {
 			// console.log(sma, 'sma');
 		}
 
-		// convertedCandle = {...convertedCandle, sma, ema};
+		convertedCandle = {...convertedCandle, sma, ema};
+
+		if (index == 5) {
+			console.log(currentDataSeries, '---before convert');
+		}
 		currentDataSeries[currentDataSeries.length - 1] = {
 			...currentDataSeries[currentDataSeries.length - 1],
 			sma,
 			ema,
 		};
+		if (index == 5) {
+			console.log(currentDataSeries, '---after convert');
+		}
 		// console.log(currentDataSeries, '-----', convertedCandle, index);
 		// currentDataSeries[currentDataSeries.length - 1] = 'test';
 		// console.log(
 		// 	currentDataSeries[currentDataSeries.length - 1],
 		// 	'-----',
-		// 	convertedCandle,
+		// 	// convertedCandle,
 		// 	index
 		// );
 		// console.log(currentDataSeries[0], index, '-------------AFTER');

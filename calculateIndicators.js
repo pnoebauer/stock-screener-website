@@ -49,7 +49,7 @@ const ema = (dataRaw, time_period, parameter) => {
 	// return +currentEma.toFixed(2)
 	const currentCandle = dataRaw[0];
 	const priorCandle = dataRaw[1];
-	// console.log(currentCandle, priorCandle, '------------');
+	// console.log(currentCandle, priorCandle, 'cc pc------------');
 	// console.log(dataRaw, '------------');
 	const parameterValue = currentCandle[parameter];
 	const priorEma = priorCandle.ema;
