@@ -33,7 +33,7 @@ const sma = (dataRaw, timePeriod, parameter) => {
 //      y=yesterday
 //      N=number of days in EMA
 //      k=2÷(N+1)
-const ema = (dataRaw, time_period, parameter) => {
+const ema = (dataRaw, time_period, parameter, index) => {
 	// let data = extractData(dataRaw, parameter)
 	const k = 2 / (time_period + 1);
 	// let emaData = []
@@ -47,12 +47,16 @@ const ema = (dataRaw, time_period, parameter) => {
 	// }
 	// let currentEma = [...emaData].pop()
 	// return +currentEma.toFixed(2)
-	const currentCandle = dataRaw[0];
-	const priorCandle = dataRaw[1];
+	const currentCandle = dataRaw[dataRaw.length - 1];
+	const priorCandle = dataRaw[dataRaw.length - 2];
 	// console.log(currentCandle, priorCandle, 'cc pc------------');
 	// console.log(dataRaw, '------------');
 	const parameterValue = currentCandle[parameter];
 	const priorEma = priorCandle.ema;
+	// if (index === 4) {
+	// 	console.log(parameterValue, 'pv', currentCandle, 'cc', priorEma, 'pema');
+	// 	// console.log('---', dataRaw, 'raw');
+	// }
 	const ema = parameterValue * k + priorEma * (1 - k);
 
 	return ema;
