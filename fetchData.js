@@ -1,6 +1,19 @@
+const e = require('express');
 const fetch = require('node-fetch');
 
 const urlEndPoint = 'https://api.tdameritrade.com/v1/marketdata';
+
+const addDays = (date, days) => {
+	const copy = new Date(Number(date));
+	copy.setDate(date.getDate() + days);
+	return copy;
+};
+
+const convertDateToUnix = (...dateArgs) => {
+	// new Date(year, month, day, hours, minutes, seconds, milliseconds)
+	// Note: months range from 0 to 11
+	new Date(...dateArgs).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
+};
 
 const fetchData = async (url, queryParams) => {
 	const apikey = process.env.API_SECRET_KEY;
@@ -14,13 +27,20 @@ const fetchData = async (url, queryParams) => {
 
 	const queryString = `${url}?${queryExt}`;
 
+	// throw new Error();
+
 	// console.log(queryExt);
 
-	const response = await fetch(queryString);
-	const data = await response.json();
-	// console.log(data);
+	try {
+		const response = await fetch(queryString);
+		const data = await response.json();
+		// console.log(data, 'main');
 
-	return data;
+		return data;
+	} catch (e) {
+		console.log('error fetch data', e);
+		// return false;
+	}
 };
 
 const fetchLiveData = symbol => {
@@ -75,27 +95,14 @@ const fetchHistoricalData = async symbol => {
 		// needExtendedHoursData,
 	};
 
-	const data = await fetchData(urlHistorical, queryParams);
+	try {
+		const data = await fetchData(urlHistorical, queryParams);
+		// console.log(data);
 
-	// console.log(data);
-
-	return data;
-};
-
-const addDays = (date, days) => {
-	const copy = new Date(Number(date));
-	copy.setDate(date.getDate() + days);
-	return copy;
-};
-
-const convertDateToUnix = (...dateArgs) => {
-	// new Date(year, month, day, hours, minutes, seconds, milliseconds)
-	// Note: months range from 0 to 11
-	new Date(...dateArgs).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
-
-	//add days
-	// const date = new Date();
-	// date.setDate(date.getDate() + 10);
+		return data;
+	} catch (e) {
+		console.log('error fetching historical data', e);
+	}
 };
 
 module.exports = {

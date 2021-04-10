@@ -34,12 +34,14 @@ if (process.env.NODE_ENV === 'production') {
 // 	res.send('Hello World!');
 // });
 
-dbConnect.createTable();
+// dbConnect.createTable();
 
 // fetchData.fetchLiveData('SPY');
-fetchData.fetchHistoricalData('GOOGL').then(data => processData.processData(data));
+fetchData
+	.fetchHistoricalData('GOOGLA')
+	.then(data => processData.processData(data))
+	.catch(e => console.log('error fetching and processing data', e));
 // .then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
-// .then(convertedCandles => console.log(convertedCandles));
 
 // dbConnect.retrieveData();
 // dbConnect.ins();

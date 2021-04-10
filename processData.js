@@ -42,20 +42,9 @@ const processData = data => {
 	const convertedCandles = candles.map((candle, index) => {
 		const {open, high, low, close, volume, datetime} = candle;
 		const currentRow = index + 1;
-		const lookBack = 2;
+		const lookBack = 10;
 
 		// candles.slice(0,currentRow)
-		// currentDataSeries.push(candle);
-
-		// if (currentRow > lookBack) {
-		// 	//both operations take the same time (slicing beforehand has no benefit) - choose option 2 due to simplicity
-		// 	// calculateIndicators.sma(
-		// 	// 	currentDataSeries.slice(currentRow - lookBack, currentRow),
-		// 	// 	lookBack,
-		// 	// 	'close'
-		// 	// );
-		// 	calculateIndicators.sma(currentDataSeries, lookBack, 'close');
-		// }
 
 		let convertedCandle = {
 			stock_id: symbol,
@@ -67,14 +56,13 @@ const processData = data => {
 			date_time: convertToTimestamp(datetime),
 		};
 
-		// currentDataSeries.push(convertedCandle);
 		currentDataSeries = [...currentDataSeries, convertedCandle];
-		// console.log(currentDataSeries[0], index, '-------------BEFORE');
 
-		let sma;
+		let sma = 0;
 		let ema = 0;
 
-		if (currentRow > lookBack) {
+		// if (currentRow > lookBack)
+		if (currentRow > 2) {
 			//both operations take the same time (slicing beforehand has no benefit) - choose option 2 due to simplicity
 			// calculateIndicators.sma(
 			// 	currentDataSeries.slice(currentRow - lookBack, currentRow),
@@ -82,31 +70,24 @@ const processData = data => {
 			// 	'close'
 			// );
 			sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
-			ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price', index);
+			ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
 			// console.log(sma, 'sma');
 		}
 
 		convertedCandle = {...convertedCandle, sma, ema};
 
-		// if (index == 4) {
-		// 	console.log('bc----', currentDataSeries, '---before convert');
-		// }
 		currentDataSeries[currentDataSeries.length - 1] = {
 			...currentDataSeries[currentDataSeries.length - 1],
 			sma,
 			ema,
 		};
-		// if (index == 4) {
-		// 	console.log(currentDataSeries, '---after convert');
-		// }
-		// console.log(currentDataSeries, '-----', convertedCandle, index);
-		// currentDataSeries[currentDataSeries.length - 1] = 'test';
-		console.log(
-			currentDataSeries[currentDataSeries.length - 1],
-			'-----',
-			// convertedCandle,
-			index
-		);
+
+		// console.log(
+		// 	currentDataSeries[currentDataSeries.length - 1],
+		// 	'-----',
+		// 	// convertedCandle,
+		// 	index
+		// );
 		// console.log(currentDataSeries[0], index, '-------------AFTER');
 
 		return convertedCandle;
