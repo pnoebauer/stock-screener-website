@@ -34,16 +34,16 @@ if (process.env.NODE_ENV === 'production') {
 // 	res.send('Hello World!');
 // });
 
-// dbConnect.createTable();
+dbConnect.createTable();
 
 // fetchData.fetchLiveData('SPY');
 fetchData
-	.fetchHistoricalData('GOOGLA')
+	.fetchHistoricalData('GOOGL')
 	.then(data => processData.processData(data))
-	.catch(e => console.log('error fetching and processing data', e));
-// .then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
+	.catch(e => console.log('error fetching and processing data', e))
+	.then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
 
-// dbConnect.retrieveData();
+dbConnect.retrieveData();
 // dbConnect.ins();
 
 app.listen(port, error => {

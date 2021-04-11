@@ -64,6 +64,10 @@ const createTable = () => {
 					table.decimal('low_price');
 					table.decimal('close_price');
 					table.bigInteger('volume');
+
+					table.decimal('sma');
+					table.decimal('ema');
+
 					table.timestamps(true, true); //created_at and updated_at columns with default of now added
 
 					// table.foreign('stock_id').references('id').inTable('symbol');
@@ -99,8 +103,8 @@ const insertIntoTable = async data => {
 	try {
 		// await knex('daily_data').truncate(); //clear table
 
-		await knex('daily_data').insert(data);
-		// await knex('daily_data').insert(data).onConflict(['stock_id', 'date_time']).merge();
+		// await knex('daily_data').insert(data);
+		await knex('daily_data').insert(data).onConflict(['stock_id', 'date_time']).merge();
 
 		console.log('Successfully inserted the data');
 	} catch (error) {
@@ -120,7 +124,8 @@ const retrieveData = async () => {
 		.andWhere('date_time', '>', '2015-01-20')
 		.orderBy('date_time', 'desc')
 		.limit(3)
-		.select('date_time', 'open_price');
+		// .select('date_time', 'open_price');
+		.select('*');
 	console.log(selection);
 };
 
