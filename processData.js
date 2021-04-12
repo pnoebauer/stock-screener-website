@@ -42,7 +42,7 @@ const processData = data => {
 	const convertedCandles = candles.map((candle, index) => {
 		const {open, high, low, close, volume, datetime} = candle;
 		const currentRow = index + 1;
-		const lookBack = 10;
+		const lookBack = 200;
 
 		// candles.slice(0,currentRow)
 

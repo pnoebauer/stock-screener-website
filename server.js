@@ -49,29 +49,62 @@ if (process.env.NODE_ENV === 'production') {
 // 	}
 // };
 
-const historicalDataIntoDB = async symbols => {
+const historicalDataIntoDB = async (universes, symbols) => {
+	await dbConnect.createTables();
+
+	await dbConnect.insertIntoTableSymbols(universes);
+
 	for (let i = 0; i < symbols.length; i++) {
 		const symbol = symbols[i];
 		try {
 			const data = await fetchData.fetchHistoricalData(symbol);
 			// console.log(data);
 			const convertedCandles = processData.processData(data);
-			// console.log(convertedCandles);
-
+			// console.log(convertedCandles.length);
 			await dbConnect.insertIntoTable(convertedCandles);
+			console.log(`Inserted ${convertedCandles.length} candles for ${symbol}`);
 		} catch (e) {
-			console.log(e);
+			console.log('Error inserting data for', symbol, e);
 		}
 	}
 };
-
-dbConnect.createTable();
-
-dbConnect.insertIntoTableSymbols(constants.UNIVERSES);
-
+// dbConnect.createTables();
 // fetchData.fetchLiveData('SPY');
 
 // historicalDataIntoDB(['GOOGL', 'AAPL']);
+// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
+const knex = require('knex')({
+	client: 'pg',
+	connection: {
+		//     //--------heroku------
+		//   connectionString: process.env.DATABASE_URL, //heroku
+		//   ssl: {
+		//       rejectUnauthorized: false
+		//     },
+		//   //--------heroku------
+		host: '127.0.0.1', // host: '127.0.0.1' (localhost)
+		user: '',
+		password: '',
+		database: 'stockdata',
+		debug: true,
+	},
+});
+knex('daily_data')
+	.insert([
+		{stock_id: 'AMZN', date_time: '2020-01-01', open_price: 10, volume: 100},
+		// {stock_id: 'AAPL', date_time: '2020-01-02', open_price: 20, volume: 200},
+		// {stock_id: 'AAPL', date_time: '2020-01-03', open_price: 30, volume: 50},
+		// {
+		// 	stock_id: 'AAPL',
+		// 	date_time: '2020-01-04',
+		// 	open_price: 30,
+		// 	volume: 50,
+		// 	created_at: '2020-01-04 13:05:05',
+		// },
+	])
+	// .into('daily_data');
+	.then(s => console.log('success'))
+	.catch(e => console.log(e, 'error'));
 
 // dbConnect.retrieveData();
 // dbConnect.ins();

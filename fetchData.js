@@ -56,7 +56,7 @@ const fetchHistoricalData = async symbol => {
 	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
 
 	// const endDate = addDays(startDate, 10);
-	const endDate = new Date(2020, 1, 1, 0, 0); //default: prior trading day
+	const endDate = new Date(2021, 5, 11, 0, 0); //default: prior trading day
 	const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
 
 	// console.log(startDateUnix, endDateUnix);
@@ -66,9 +66,9 @@ const fetchHistoricalData = async symbol => {
 	// month: 1*, 2, 3, 6
 	// year: 1*, 2, 3, 5, 10, 15, 20
 	// ytd: 1*
-	const period = 1; //not required if start date are used
+	const period = 20; //not required if start date are used
 	// Valid values are day, month, year, or ytd (year to date). Default is day.
-	const periodType = 'month';
+	const periodType = 'year';
 
 	// 	Valid frequencyTypes by periodType (defaults marked with an asterisk):
 	// day: minute*
