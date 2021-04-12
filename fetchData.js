@@ -56,7 +56,7 @@ const fetchHistoricalData = async symbol => {
 	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
 
 	// const endDate = addDays(startDate, 10);
-	const endDate = new Date(2015, 1, 1, 0, 0); //default: prior trading day
+	const endDate = new Date(2020, 1, 1, 0, 0); //default: prior trading day
 	const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
 
 	// console.log(startDateUnix, endDateUnix);

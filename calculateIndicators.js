@@ -27,7 +27,7 @@ const ema = (dataRaw, time_period, parameter) => {
 	const priorCandle = dataRaw[dataRaw.length - 2];
 
 	const parameterValue = currentCandle[parameter];
-	const priorEma = priorCandle.ema;
+	const priorEma = priorCandle.ema || 0;
 
 	const ema = parameterValue * k + priorEma * (1 - k);
 

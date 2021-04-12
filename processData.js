@@ -56,10 +56,11 @@ const processData = data => {
 			date_time: convertToTimestamp(datetime),
 		};
 
-		currentDataSeries = [...currentDataSeries, convertedCandle];
+		// currentDataSeries = [...currentDataSeries, convertedCandle];
+		currentDataSeries.push(convertedCandle);
 
-		let sma = 0;
-		let ema = 0;
+		// let sma = 0;
+		// let ema = 0;
 
 		// if (currentRow > lookBack)
 		if (currentRow > 2) {
@@ -69,18 +70,34 @@ const processData = data => {
 			// 	lookBack,
 			// 	'close'
 			// );
-			sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
-			ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
+			// sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
+			// ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
 			// console.log(sma, 'sma');
+
+			// let {sma, ema} = convertedCandle;
+			convertedCandle.sma = calculateIndicators.sma(
+				currentDataSeries,
+				lookBack,
+				'close_price'
+			);
+			convertedCandle.ema = calculateIndicators.ema(
+				currentDataSeries,
+				lookBack,
+				'close_price'
+			);
+			// console.log(convertedCandle);
 		}
 
-		convertedCandle = {...convertedCandle, sma, ema};
+		// convertedCandle = {...convertedCandle, sma, ema};
+		// convertedCandle.sma = sma;
+		// convertedCandle.ema = ema;
 
-		currentDataSeries[currentDataSeries.length - 1] = {
-			...currentDataSeries[currentDataSeries.length - 1],
-			sma,
-			ema,
-		};
+		// currentDataSeries[currentDataSeries.length - 1] = {
+		// 	...currentDataSeries[currentDataSeries.length - 1],
+		// 	sma,
+		// 	ema,
+		// };
+		// currentDataSeries[currentDataSeries.length - 1] = convertedCandle;
 
 		// console.log(
 		// 	currentDataSeries[currentDataSeries.length - 1],

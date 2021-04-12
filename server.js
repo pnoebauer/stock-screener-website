@@ -34,16 +34,49 @@ if (process.env.NODE_ENV === 'production') {
 // 	res.send('Hello World!');
 // });
 
+// const historicalDataIntoDB = async symbol => {
+// 	try {
+// 		const data = await fetchData.fetchHistoricalData(symbol);
+// 		// console.log(data);
+// 		const convertedCandles = processData.processData(data);
+// 		// console.log(convertedCandles);
+
+// 		await dbConnect.insertIntoTable(convertedCandles);
+// 	} catch (e) {
+// 		console.log(e);
+// 	}
+// };
+
+const historicalDataIntoDB = async symbols => {
+	for (let i = 0; i < symbols.length; i++) {
+		const symbol = symbols[i];
+		try {
+			const data = await fetchData.fetchHistoricalData(symbol);
+			// console.log(data);
+			const convertedCandles = processData.processData(data);
+			// console.log(convertedCandles);
+
+			await dbConnect.insertIntoTable(convertedCandles);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+};
+
 dbConnect.createTable();
 
 // fetchData.fetchLiveData('SPY');
-fetchData
-	.fetchHistoricalData('GOOGL')
-	.then(data => processData.processData(data))
-	.catch(e => console.log('error fetching and processing data', e))
-	.then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
+// fetchData
+// 	.fetchHistoricalData('SPY')
+// 	.then(data => processData.processData(data))
+// 	.then(convertedCandles => console.log(convertedCandles))
+// 	.catch(e => console.log('error fetching and processing data', e));
+// // .then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
 
-dbConnect.retrieveData();
+// historicalDataIntoDB('GOOGL');
+historicalDataIntoDB(['GOOGL', 'AAPL']);
+
+// dbConnect.retrieveData();
 // dbConnect.ins();
 
 app.listen(port, error => {
