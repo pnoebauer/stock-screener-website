@@ -33,7 +33,11 @@ const createTable = () => {
 					table.string('ticker', 10).notNullable().primary();
 
 					// table.enu('stock_index', ['value1', 'value2']) //or: https://www.postgresql.org/docs/9.1/arrays.html
-					table.string('stock_index', 10);
+					// table.string('stock_index', 10);
+					table.boolean('DJ30').defaultTo(false);
+					table.boolean('NAS100').defaultTo(false);
+					table.boolean('SP500').defaultTo(false);
+
 					// table.time('created_at');
 					// table.timestamp('created_at').defaultTo(knex.fn.now());
 					// table.timestamp('created_at', {precision: 6}).defaultTo(knex.fn.now(6));
@@ -142,4 +146,34 @@ const ins = () => {
 		.catch(e => console.log('error', e));
 };
 
-module.exports = {createTable, insertIntoTable, retrieveData, ins};
+const insertIntoTableSymbols = async stockUniverses => {
+	// console.log(stockUniverses);
+
+	const universes = Object.keys(stockUniverses);
+
+	for (let i = 0; i < universes.length; i++) {
+		const universe = universes[i];
+		const stocks = stockUniverses[universe];
+		// console.log(universe, stocks);
+		const insertQuery = stocks.map(stock => ({ticker: stock, [universe]: true}));
+		// console.log(insertQuery);
+		try {
+			await knex('symbol')
+				.insert(insertQuery)
+				.onConflict('ticker')
+				.merge(['updated_at', universe]);
+
+			console.log('Successfully inserted the data for', universe);
+		} catch (error) {
+			console.log(error, 'error');
+		}
+	}
+};
+
+module.exports = {
+	createTable,
+	insertIntoTable,
+	retrieveData,
+	ins,
+	insertIntoTableSymbols,
+};

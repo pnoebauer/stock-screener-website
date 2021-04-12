@@ -10,6 +10,8 @@ const processData = require('./processData');
 
 const dbConnect = require('./dbConnect');
 
+const constants = require('./constants');
+
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
@@ -65,16 +67,11 @@ const historicalDataIntoDB = async symbols => {
 
 dbConnect.createTable();
 
-// fetchData.fetchLiveData('SPY');
-// fetchData
-// 	.fetchHistoricalData('SPY')
-// 	.then(data => processData.processData(data))
-// 	.then(convertedCandles => console.log(convertedCandles))
-// 	.catch(e => console.log('error fetching and processing data', e));
-// // .then(convertedCandles => dbConnect.insertIntoTable(convertedCandles));
+dbConnect.insertIntoTableSymbols(constants.UNIVERSES);
 
-// historicalDataIntoDB('GOOGL');
-historicalDataIntoDB(['GOOGL', 'AAPL']);
+// fetchData.fetchLiveData('SPY');
+
+// historicalDataIntoDB(['GOOGL', 'AAPL']);
 
 // dbConnect.retrieveData();
 // dbConnect.ins();
