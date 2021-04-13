@@ -1,16 +1,8 @@
 const sma = (dataRaw, timePeriod, parameter) => {
 	const sma =
 		dataRaw.reduce((accumulator, currentCandle, currentIndex) => {
-			const parameterValue = Number(currentCandle[parameter]);
+			const parameterValue = Number(currentCandle[parameter]); //retrieve O/H/L/C from candle object
 			if (currentIndex >= dataRaw.length - timePeriod) {
-				// console.log(
-				// 	currentIndex,
-				// 	dataRaw.length,
-				// 	'ac',
-				// 	accumulator,
-				// 	'pv',
-				// 	parameterValue
-				// );
 				return accumulator + parameterValue;
 			} else {
 				return accumulator;
@@ -31,7 +23,7 @@ const ema = (dataRaw, time_period, parameter) => {
 	const k = 2 / (time_period + 1);
 
 	const currentCandle = dataRaw[dataRaw.length - 1];
-	const priorCandle = dataRaw[dataRaw.length - 2];
+	const priorCandle = dataRaw[dataRaw.length - 2] || 0;
 
 	const parameterValue = currentCandle[parameter];
 	const priorEma = priorCandle.ema || 0;

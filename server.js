@@ -57,9 +57,9 @@ const historicalDataIntoDB = async (universes, symbols) => {
 	for (let i = 0; i < symbols.length; i++) {
 		const symbol = symbols[i];
 		try {
-			const data = await fetchData.fetchHistoricalData(symbol);
+			const data = await fetchData.fetchHistoricalData(symbol, 20, 'year', 1, 'daily');
 			// console.log(data);
-			const convertedCandles = processData.processData(data);
+			const convertedCandles = processData.processData(data, 200);
 			// console.log(convertedCandles.length);
 			await dbConnect.insertIntoTable(convertedCandles);
 			console.log(`Inserted ${convertedCandles.length} candles for ${symbol}`);
@@ -71,18 +71,54 @@ const historicalDataIntoDB = async (universes, symbols) => {
 // dbConnect.createTables();
 // fetchData.fetchLiveData('SPY');
 
-// historicalDataIntoDB(['GOOGL', 'AAPL']);
-// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
+// fetchData
+// 	.fetchHistoricalData('MMM', 5, 'year', 1, 'daily')
+// 	.then(data => processData.processData(data));
 
-const calculateIndicators = require('./calculateIndicators');
-dbConnect.retrieveData('MMM', 10, 'close_price').then(data => {
-	console.log(data);
-	const sma = calculateIndicators.sma(data, 5, 'close_price');
-	console.log(sma);
-});
-// dbConnect.ins();
+// historicalDataIntoDB(['GOOGL', 'AAPL']);
+historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
+
+// const calculateIndicators = require('./calculateIndicators');
+
+// dbConnect.retrieveData('MMM', 10, ['close_price']).then(data => {
+// 	console.log(data);
+// 	const sma = calculateIndicators.sma(data, 5, 'close_price');
+// 	console.log(sma);
+// });
+
+// dbConnect.retrieveData('MMM', 10, ['*']).then(data => {
+// 	console.log(data);
+// const unstablePeriod = 80;
+// data.forEach((candle, index) => {
+// 	if (currentRow > lookBack - unstablePeriod) {
+// 	}
+// });
+// 	const ema = calculateIndicators.ema(data, 5, 'close_price');
+// 	console.log(ema);
+// });
+
+// // dbConnect.ins();
 
 app.listen(port, error => {
 	if (error) throw error;
 	console.log('Server running on port', port);
 });
+
+/* -------------------- FETCHING API RULES -------------------- */
+/* symbol, period, periodType, frequency, frequencyType (shift-option-A)*/
+// periods by periodType:
+// day: 1, 2, 3, 4, 5, 10*
+// month: 1*, 2, 3, 6
+// year: 1*, 2, 3, 5, 10, 15, 20
+// ytd: 1*
+// frequencyTypes by periodType (defaults marked with an asterisk):
+// day: minute*				(only day has minute bars --> day only goes back 10 periods/days --> only viable is above daily)
+// month: daily, weekly*
+// year: daily, weekly, monthly*
+// ytd: daily, weekly*
+// frequencies by frequencyType:
+// minute: 1*, 5, 10, 15, 30
+// daily: 1*
+// weekly: 1*
+// monthly: 1*
+/* -------------------- FETCHING API RULES -------------------- */

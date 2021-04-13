@@ -1,3 +1,7 @@
+const calculateIndicators = require('./calculateIndicators');
+
+const unstablePeriod = 80;
+
 const convertToTimestamp = datetime => {
 	const dateObject = new Date(datetime);
 	const date = dateObject.toISOString().split('T')[0];
@@ -10,27 +14,7 @@ const convertToTimestamp = datetime => {
 	return timestamp;
 };
 
-// const processData = ({candles}) => {
-// 	// const dates = candles.map(candle => candle.datetime);
-// 	// const dates = candles.map(candle => new Date(candle.datetime).toDateString());
-// 	// console.log(candles);
-
-// 	const convertedCandles = candles.map(candle => {
-// 		return {
-// 			...candle,
-// 			// datetime: new Date(candle.datetime).getUTCHours(),
-// 			// datetime: new Date(candle.datetime).toLocaleTimeString('en-US'),
-// 			// datetime: new Date(candle.datetime).toDateString(),
-// 			datetime: convertToTimestamp(candle.datetime),
-// 		};
-// 	});
-
-// 	console.log(convertedCandles);
-// };
-
-const calculateIndicators = require('./calculateIndicators');
-
-const processData = data => {
+const processData = (data, lookBack) => {
 	console.time('time');
 	// console.log(data);
 	const {candles, symbol, empty} = data;
@@ -39,13 +23,14 @@ const processData = data => {
 
 	let currentDataSeries = [];
 
+	//converts all candles from API format to DB format, calculates and adds indicators to the converted candles
 	const convertedCandles = candles.map((candle, index) => {
+		//from API
 		const {open, high, low, close, volume, datetime} = candle;
 		const currentRow = index + 1;
-		const lookBack = 200;
+		// const lookBack = 200;
 
-		// candles.slice(0,currentRow)
-
+		//API to DB conversion
 		let convertedCandle = {
 			stock_id: symbol,
 			open_price: open,
@@ -56,25 +41,11 @@ const processData = data => {
 			date_time: convertToTimestamp(datetime),
 		};
 
-		// currentDataSeries = [...currentDataSeries, convertedCandle];
+		// add convertedCandle to the series
 		currentDataSeries.push(convertedCandle);
 
-		// let sma = 0;
-		// let ema = 0;
-
-		// if (currentRow > lookBack)
-		if (currentRow > 2) {
-			//both operations take the same time (slicing beforehand has no benefit) - choose option 2 due to simplicity
-			// calculateIndicators.sma(
-			// 	currentDataSeries.slice(currentRow - lookBack, currentRow),
-			// 	lookBack,
-			// 	'close'
-			// );
-			// sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
-			// ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
-			// console.log(sma, 'sma');
-
-			// let {sma, ema} = convertedCandle;
+		// if (currentRow > 1)
+		if (currentRow > lookBack - unstablePeriod) {
 			convertedCandle.sma = calculateIndicators.sma(
 				currentDataSeries,
 				lookBack,
@@ -87,31 +58,12 @@ const processData = data => {
 			);
 			// console.log(convertedCandle);
 		}
-
-		// convertedCandle = {...convertedCandle, sma, ema};
-		// convertedCandle.sma = sma;
-		// convertedCandle.ema = ema;
-
-		// currentDataSeries[currentDataSeries.length - 1] = {
-		// 	...currentDataSeries[currentDataSeries.length - 1],
-		// 	sma,
-		// 	ema,
-		// };
-		// currentDataSeries[currentDataSeries.length - 1] = convertedCandle;
-
-		// console.log(
-		// 	currentDataSeries[currentDataSeries.length - 1],
-		// 	'-----',
-		// 	// convertedCandle,
-		// 	index
-		// );
-		// console.log(currentDataSeries[0], index, '-------------AFTER');
+		// console.log(currentDataSeries[currentDataSeries.length - 1], '-----', currentRow);
 
 		return convertedCandle;
 	});
 
 	console.timeEnd('time');
-	// console.log(convertedCandles);
 
 	return convertedCandles;
 };

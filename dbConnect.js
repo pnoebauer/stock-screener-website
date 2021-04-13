@@ -20,9 +20,9 @@ const createTables = async () => {
 	// await knex('daily_data').truncate();
 
 	// await knex.schema.dropTableIfExists('daily_data');
-	// console.log('daily_data table created');
+	// console.log('daily_data table deleted');
 	// knex.schema.dropTableIfExists('symbol');
-	// console.log('symbol table created');
+	// console.log('symbol table deleted');
 
 	const symbolTblExists = await knex.schema.hasTable('symbol');
 
@@ -120,25 +120,13 @@ const insertIntoTable = async data => {
 // 	console.log(selection);
 // };
 
-const retrieveData = async (symbol, lookBack, parameter) => {
+const retrieveData = async (symbol, lookBack, parameters) => {
 	// const selection = await knex('daily_data').where('id', '>', '20');
 	// const selection = await knex('daily_data')
 	// 	.where('id', '>', '20')
 	// 	.select('date_time', 'open_price');
 	// console.log(selection);
 	// AOS, ABT
-
-	const selection = await knex('daily_data')
-		.where('stock_id', symbol)
-		// .andWhere('date_time', '>', '2015-01-20')
-		.orderBy('date_time', 'desc')
-		.limit(lookBack)
-		// .select(parameter);
-		.select('date_time', 'close_price');
-	// .orderBy('date_time', 'asc')
-	// .select('*');
-	// .whereIn('stock_id', ['MMM', 'AOS', 'ABT'])
-	// .select('*');
 
 	// const selection = await knex('daily_data')
 	// 	.where('stock_id', symbol)
@@ -147,6 +135,18 @@ const retrieveData = async (symbol, lookBack, parameter) => {
 	// 	.limit(lookBack)
 	// 	// .select(parameter);
 	// 	.select('date_time', 'close_price');
+	// // .orderBy('date_time', 'asc')
+	// // .select('*');
+	// // .whereIn('stock_id', ['MMM', 'AOS', 'ABT'])
+	// // .select('*');
+
+	const selection = await knex('daily_data')
+		.where('stock_id', symbol)
+		// .andWhere('date_time', '>', '2015-01-20')
+		.orderBy('date_time', 'desc')
+		.limit(lookBack)
+		.select(...parameters);
+	// .select('date_time', 'close_price');
 
 	// const selection = await knex('daily_data')
 	// 	.orderBy('date_time', 'desc')
