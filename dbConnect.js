@@ -103,21 +103,77 @@ const insertIntoTable = async data => {
 	}
 };
 
-const retrieveData = async () => {
+// const retrieveData = async () => {
+// 	// const selection = await knex('daily_data').where('id', '>', '20');
+// 	// const selection = await knex('daily_data')
+// 	// 	.where('id', '>', '20')
+// 	// 	.select('date_time', 'open_price');
+// 	// console.log(selection);
+
+// 	const selection = await knex('daily_data')
+// 		.where('stock_id', 'GOOGL')
+// 		.andWhere('date_time', '>', '2015-01-20')
+// 		.orderBy('date_time', 'desc')
+// 		.limit(3)
+// 		// .select('date_time', 'open_price');
+// 		.select('*');
+// 	console.log(selection);
+// };
+
+const retrieveData = async (symbol, lookBack, parameter) => {
 	// const selection = await knex('daily_data').where('id', '>', '20');
 	// const selection = await knex('daily_data')
 	// 	.where('id', '>', '20')
 	// 	.select('date_time', 'open_price');
 	// console.log(selection);
+	// AOS, ABT
 
 	const selection = await knex('daily_data')
-		.where('stock_id', 'GOOGL')
-		.andWhere('date_time', '>', '2015-01-20')
+		.where('stock_id', symbol)
+		// .andWhere('date_time', '>', '2015-01-20')
 		.orderBy('date_time', 'desc')
-		.limit(3)
-		// .select('date_time', 'open_price');
-		.select('*');
-	console.log(selection);
+		.limit(lookBack)
+		// .select(parameter);
+		.select('date_time', 'close_price');
+	// .orderBy('date_time', 'asc')
+	// .select('*');
+	// .whereIn('stock_id', ['MMM', 'AOS', 'ABT'])
+	// .select('*');
+
+	// const selection = await knex('daily_data')
+	// 	.where('stock_id', symbol)
+	// 	// .andWhere('date_time', '>', '2015-01-20')
+	// 	.orderBy('date_time', 'desc')
+	// 	.limit(lookBack)
+	// 	// .select(parameter);
+	// 	.select('date_time', 'close_price');
+
+	// const selection = await knex('daily_data')
+	// 	.orderBy('date_time', 'desc')
+	// 	.limit(5)
+	// 	// .select(parameter);
+	// 	.select('*');
+
+	// knex.select('*').from('users');
+	// (1)
+	// SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5;
+	// (2)
+	// SELECT *
+	// FROM (SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5)
+	// ORDER BY record_date ASC;
+	// OR
+	// WITH t AS (
+	// 	SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5
+	// )
+	// SELECT * FROM t ORDER BY record_date ASC;
+
+	// 	knex.with('with_alias', knex.raw('select * from "books" where "author" = ?', 'Test')).select('*').from('with_alias')
+	// Outputs:
+	// with `with_alias` as (select * from "books" where "author" = 'Test') select * from `with_alias`
+
+	// console.log(selection.reverse());
+
+	return selection.reverse();
 };
 
 const ins = () => {

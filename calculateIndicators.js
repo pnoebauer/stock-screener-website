@@ -1,9 +1,16 @@
 const sma = (dataRaw, timePeriod, parameter) => {
 	const sma =
 		dataRaw.reduce((accumulator, currentCandle, currentIndex) => {
-			const parameterValue = currentCandle[parameter];
+			const parameterValue = Number(currentCandle[parameter]);
 			if (currentIndex >= dataRaw.length - timePeriod) {
-				// console.log(currentIndex, dataRaw.length, accumulator, parameterValue);
+				// console.log(
+				// 	currentIndex,
+				// 	dataRaw.length,
+				// 	'ac',
+				// 	accumulator,
+				// 	'pv',
+				// 	parameterValue
+				// );
 				return accumulator + parameterValue;
 			} else {
 				return accumulator;

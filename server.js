@@ -73,40 +73,13 @@ const historicalDataIntoDB = async (universes, symbols) => {
 
 // historicalDataIntoDB(['GOOGL', 'AAPL']);
 // historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
-const knex = require('knex')({
-	client: 'pg',
-	connection: {
-		//     //--------heroku------
-		//   connectionString: process.env.DATABASE_URL, //heroku
-		//   ssl: {
-		//       rejectUnauthorized: false
-		//     },
-		//   //--------heroku------
-		host: '127.0.0.1', // host: '127.0.0.1' (localhost)
-		user: '',
-		password: '',
-		database: 'stockdata',
-		debug: true,
-	},
-});
-knex('daily_data')
-	.insert([
-		{stock_id: 'AMZN', date_time: '2020-01-01', open_price: 10, volume: 100},
-		// {stock_id: 'AAPL', date_time: '2020-01-02', open_price: 20, volume: 200},
-		// {stock_id: 'AAPL', date_time: '2020-01-03', open_price: 30, volume: 50},
-		// {
-		// 	stock_id: 'AAPL',
-		// 	date_time: '2020-01-04',
-		// 	open_price: 30,
-		// 	volume: 50,
-		// 	created_at: '2020-01-04 13:05:05',
-		// },
-	])
-	// .into('daily_data');
-	.then(s => console.log('success'))
-	.catch(e => console.log(e, 'error'));
 
-// dbConnect.retrieveData();
+const calculateIndicators = require('./calculateIndicators');
+dbConnect.retrieveData('MMM', 10, 'close_price').then(data => {
+	console.log(data);
+	const sma = calculateIndicators.sma(data, 5, 'close_price');
+	console.log(sma);
+});
 // dbConnect.ins();
 
 app.listen(port, error => {
