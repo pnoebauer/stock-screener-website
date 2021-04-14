@@ -36,19 +36,6 @@ if (process.env.NODE_ENV === 'production') {
 // 	res.send('Hello World!');
 // });
 
-// const historicalDataIntoDB = async symbol => {
-// 	try {
-// 		const data = await fetchData.fetchHistoricalData(symbol);
-// 		// console.log(data);
-// 		const convertedCandles = processData.processData(data);
-// 		// console.log(convertedCandles);
-
-// 		await dbConnect.insertIntoTable(convertedCandles);
-// 	} catch (e) {
-// 		console.log(e);
-// 	}
-// };
-
 const historicalDataIntoDB = async (universes, symbols) => {
 	await dbConnect.createTables();
 
@@ -76,26 +63,32 @@ const historicalDataIntoDB = async (universes, symbols) => {
 // 	.then(data => processData.processData(data));
 
 // historicalDataIntoDB(['GOOGL', 'AAPL']);
-historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
+// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
 
-// const calculateIndicators = require('./calculateIndicators');
+const calculateIndicators = require('./calculateIndicators');
 
-// dbConnect.retrieveData('MMM', 10, ['close_price']).then(data => {
-// 	console.log(data);
-// 	const sma = calculateIndicators.sma(data, 5, 'close_price');
-// 	console.log(sma);
-// });
+const unstablePeriod = 40;
+const lookBack = 25;
+dbConnect.retrieveData('MMM', unstablePeriod + lookBack, ['close_price']).then(data => {
+	// console.log(data);
+	const sma = calculateIndicators.sma(data, lookBack, 'close_price');
+	console.log(sma);
+});
 
 // dbConnect.retrieveData('MMM', 10, ['*']).then(data => {
-// 	console.log(data);
-// const unstablePeriod = 80;
-// data.forEach((candle, index) => {
-// 	if (currentRow > lookBack - unstablePeriod) {
-// 	}
-// });
-// 	const ema = calculateIndicators.ema(data, 5, 'close_price');
-// 	console.log(ema);
-// });
+dbConnect.retrieveData('MMM', unstablePeriod + lookBack, ['close_price']).then(data => {
+	// console.log(data);
+	let currentDataSeries = [];
+	let ema;
+	data.forEach((candle, index) => {
+		currentDataSeries.push(candle);
+		candle.ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
+		// console.log(candle, index);
+		ema = candle.ema;
+	});
+	// console.log(data, ema);
+	console.log(ema);
+});
 
 // // dbConnect.ins();
 
