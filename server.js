@@ -59,36 +59,48 @@ const historicalDataIntoDB = async (universes, symbols) => {
 // fetchData.fetchLiveData('SPY');
 
 // fetchData
-// 	.fetchHistoricalData('MMM', 5, 'year', 1, 'daily')
-// 	.then(data => processData.processData(data));
+// 	.fetchHistoricalData(['MMM'], 5, 'year', 1, 'daily')
+// 	.then(data => processData.processData(data))
+// 	.then(convertedCandles => console.log(convertedCandles));
 
 // historicalDataIntoDB(['GOOGL', 'AAPL']);
 // historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
 
 const calculateIndicators = require('./calculateIndicators');
 
-const unstablePeriod = 40;
-const lookBack = 25;
-dbConnect.retrieveData('MMM', unstablePeriod + lookBack, ['close_price']).then(data => {
-	// console.log(data);
-	const sma = calculateIndicators.sma(data, lookBack, 'close_price');
-	console.log(sma);
-});
+// const
 
-// dbConnect.retrieveData('MMM', 10, ['*']).then(data => {
-dbConnect.retrieveData('MMM', unstablePeriod + lookBack, ['close_price']).then(data => {
-	// console.log(data);
-	let currentDataSeries = [];
-	let ema;
-	data.forEach((candle, index) => {
-		currentDataSeries.push(candle);
-		candle.ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
-		// console.log(candle, index);
-		ema = candle.ema;
+const lookBack = 25;
+
+// BELOW REQUIRES VERSION 1 OF SMA CALCULATION THAT REDUCES ARRAY
+// dbConnect
+// 	.retrieveData('MMM', constants.UNSTABLEPERIOD + lookBack, ['close_price'])
+// 	.then(data => {
+// 		// console.log(data);
+// 		const sma = calculateIndicators.sma(data, lookBack, 'close_price');
+// 		console.log(sma, 'sma');
+// 	});
+
+// SMA WORKS WITH BOTH VERSION - VERSION 2 IS PREFERED AS IT ONLY REQUIRES PRIOR SMA AND NOT WHOLE SERIES (SAME AS EMA)
+dbConnect
+	.retrieveData('MMM', constants.UNSTABLEPERIOD + lookBack, ['close_price'])
+	.then(data => {
+		// console.log(data, data.length, 'l');
+		let currentDataSeries = [];
+		let ema;
+		let sma;
+		data.forEach((candle, index) => {
+			currentDataSeries.push(candle);
+			candle.ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
+			candle.sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
+			// console.log(candle, index);
+			ema = candle.ema;
+			sma = candle.sma;
+		});
+		// console.log(data, ema);
+		console.log(ema, 'ema');
+		console.log(sma, 'sma');
 	});
-	// console.log(data, ema);
-	console.log(ema);
-});
 
 // // dbConnect.ins();
 

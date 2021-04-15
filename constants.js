@@ -665,6 +665,8 @@ const UNIVERSES = {
 
 const SYMBOLS = Object.keys(UNIVERSES).flatMap(universe => [...UNIVERSES[universe]]); //[...SP500, ...NAS100, ...DJ30];
 
+const UNSTABLEPERIOD = 80;
+
 const API_TO_INDICATORS = {
 	'52WkHigh': '52 Week High',
 	'52WkLow': '52 Week Low',
@@ -726,4 +728,5 @@ const INDICATORS_TO_API = {
 module.exports = {
 	UNIVERSES,
 	SYMBOLS,
+	UNSTABLEPERIOD,
 };

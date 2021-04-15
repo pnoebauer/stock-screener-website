@@ -1,17 +1,17 @@
-const sma = (dataRaw, timePeriod, parameter) => {
-	const sma =
-		dataRaw.reduce((accumulator, currentCandle, currentIndex) => {
-			const parameterValue = Number(currentCandle[parameter]); //retrieve O/H/L/C from candle object
-			if (currentIndex >= dataRaw.length - timePeriod) {
-				return accumulator + parameterValue;
-			} else {
-				return accumulator;
-			}
-		}, 0) / timePeriod;
+// const sma = (dataRaw, timePeriod, parameter) => {
+// 	const sma =
+// 		dataRaw.reduce((accumulator, currentCandle, currentIndex) => {
+// 			const parameterValue = Number(currentCandle[parameter]); //retrieve O/H/L/C from candle object
+// 			if (currentIndex >= dataRaw.length - timePeriod) {
+// 				return accumulator + parameterValue;
+// 			} else {
+// 				return accumulator;
+// 			}
+// 		}, 0) / timePeriod;
 
-	// console.log(sma);
-	return sma.toFixed(2);
-};
+// 	// console.log(sma);
+// 	return sma; //.toFixed(2);
+// };
 
 // EMA=Price(t)×k+EMA(y)×(1−k)
 //   where:
@@ -31,6 +31,30 @@ const ema = (dataRaw, time_period, parameter) => {
 	const ema = parameterValue * k + priorEma * (1 - k);
 
 	return ema.toFixed(2);
+};
+
+// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
+//   where:
+//      t=today
+//      y=yesterday
+//      N=number of days in SMA
+//      k=1÷N
+const sma = (dataRaw, timePeriod, parameter) => {
+	// console.log(timePeriod);
+	const k = 1 / timePeriod;
+
+	const currentCandle = dataRaw[dataRaw.length - 1];
+	const priorCandle = dataRaw[dataRaw.length - 2] || 0;
+	const parameterValue = Number(currentCandle[parameter]);
+
+	const priorSma = Number(priorCandle.sma) || 0;
+
+	const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
+	const nBarsAgoPV = Number(nBarsAgoCandle[parameter]) || 0;
+	// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
+	const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
+
+	return sma.toFixed(2);
 };
 
 module.exports = {sma, ema};

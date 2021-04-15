@@ -1,6 +1,5 @@
 const calculateIndicators = require('./calculateIndicators');
-
-const unstablePeriod = 80;
+const constants = require('./constants');
 
 const convertToTimestamp = datetime => {
 	const dateObject = new Date(datetime);
@@ -45,7 +44,7 @@ const processData = (data, lookBack) => {
 		currentDataSeries.push(convertedCandle);
 
 		// if (currentRow > 1)
-		if (currentRow > lookBack - unstablePeriod) {
+		if (currentRow > lookBack - constants.UNSTABLEPERIOD) {
 			convertedCandle.sma = calculateIndicators.sma(
 				currentDataSeries,
 				lookBack,
