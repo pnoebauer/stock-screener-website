@@ -81,26 +81,72 @@ const lookBack = 25;
 // 		console.log(sma, 'sma');
 // 	});
 
-// SMA WORKS WITH BOTH VERSION - VERSION 2 IS PREFERED AS IT ONLY REQUIRES PRIOR SMA AND NOT WHOLE SERIES (SAME AS EMA)
-dbConnect
-	.retrieveData('MMM', constants.UNSTABLEPERIOD + lookBack, ['close_price'])
-	.then(data => {
-		// console.log(data, data.length, 'l');
-		let currentDataSeries = [];
-		let ema;
-		let sma;
-		data.forEach((candle, index) => {
-			currentDataSeries.push(candle);
-			candle.ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
-			candle.sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
-			// console.log(candle, index);
-			ema = candle.ema;
-			sma = candle.sma;
-		});
-		// console.log(data, ema);
-		console.log(ema, 'ema');
-		console.log(sma, 'sma');
-	});
+// // SMA WORKS WITH BOTH VERSIONS - VERSION 2 IS PREFERED AS IT ONLY REQUIRES PRIOR SMA AND NOT WHOLE SERIES (SAME AS EMA)
+// dbConnect
+// 	.retrieveData('MMM', constants.UNSTABLEPERIOD + lookBack, ['close_price'])
+// 	.then(data => {
+// 		// console.log(data, data.length, 'l');
+// 		let currentDataSeries = [];
+// 		let ema;
+// 		let sma;
+// 		data.forEach((candle, index) => {
+// 			currentDataSeries.push(candle);
+// 			candle.ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
+// 			candle.sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
+// 			// console.log(candle, index);
+// 			ema = candle.ema;
+// 			sma = candle.sma;
+// 		});
+// 		// console.log(data, ema);
+// 		console.log(ema, 'ema');
+// 		console.log(sma, 'sma');
+// 	});
+
+const queryObject = {
+	symbol: 'MMM',
+	interval: 'Day',
+	indicators: {
+		sma: {
+			parameter: 'close',
+			lookBack: 20,
+		},
+		ema: {
+			parameter: 'open',
+			lookBack: 50,
+		},
+	},
+};
+
+const queryParameters = new Set();
+let maxLookBack;
+Object.keys(queryObject.indicators).forEach(indicator => {
+	const {[indicator]: indObj} = queryObject.indicators;
+	// console.log(indObj, indicator);
+
+	queryParameters.add(indObj.parameter);
+	maxLookBack = Math.max(indObj.lookBack);
+});
+
+console.log(queryParameters, maxLookBack);
+
+// queryObject:
+/* 
+	{
+		symbol: 'MMM',
+		interval: 'Day',
+		indicators: {
+			sma: {
+				parameter: 'close',
+				lookBack: 20
+			},
+			ema: {
+				parameter: 'open',
+				lookBack: 50
+			}
+		}
+	}
+
+*/
 
 // // dbConnect.ins();
 

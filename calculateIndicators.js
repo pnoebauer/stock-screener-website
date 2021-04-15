@@ -30,7 +30,7 @@ const ema = (dataRaw, time_period, parameter) => {
 
 	const ema = parameterValue * k + priorEma * (1 - k);
 
-	return ema.toFixed(2);
+	return ema; //.toFixed(2);
 };
 
 // SMA=Price(t)×k-Price(t-N)×k+SMA(y)
@@ -54,7 +54,7 @@ const sma = (dataRaw, timePeriod, parameter) => {
 	// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
 	const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
 
-	return sma.toFixed(2);
+	return sma; //.toFixed(2);
 };
 
 module.exports = {sma, ema};
