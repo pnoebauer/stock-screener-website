@@ -102,32 +102,76 @@ const lookBack = 25;
 // 		console.log(sma, 'sma');
 // 	});
 
+const retrieveSymbolWithIndicators = async queryObject => {
+	const queryParameters = new Set();
+	let maxLookBack = 1;
+	Object.keys(queryObject.indicators).forEach(indicator => {
+		const {[indicator]: indObj} = queryObject.indicators;
+		// console.log(indObj, indicator);
+
+		queryParameters.add(indObj.parameter);
+		maxLookBack = Math.max(maxLookBack, indObj.lookBack);
+	});
+
+	// console.log(queryParameters, maxLookBack);
+
+	const data = await dbConnect.retrieveData(
+		queryObject.symbol,
+		constants.UNSTABLEPERIOD + maxLookBack,
+		Array.from(queryParameters)
+	);
+
+	// console.log(data);
+
+	let currentDataSeries = [];
+
+	data.forEach((candle, index) => {
+		currentDataSeries.push(candle);
+
+		Object.keys(queryObject.indicators).forEach(indicator => {
+			const {parameter, lookBack} = queryObject.indicators[indicator];
+			// console.log(
+			// 	indicator,
+			// 	parameter,
+			// 	lookBack,
+			// 	maxLookBack,
+			// 	index,
+			// 	maxLookBack - lookBack,
+			// 	index >= maxLookBack - lookBack
+			// );
+
+			if (index >= maxLookBack - lookBack) {
+				// console.log(indicator);
+				candle[indicator] = calculateIndicators[indicator](
+					currentDataSeries,
+					lookBack,
+					parameter
+				);
+			}
+		});
+
+		// console.log(candle, index);
+	});
+
+	console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
+};
+
 const queryObject = {
 	symbol: 'MMM',
 	interval: 'Day',
 	indicators: {
 		sma: {
-			parameter: 'close',
-			lookBack: 20,
+			parameter: 'close_price',
+			lookBack: 10,
 		},
 		ema: {
-			parameter: 'open',
-			lookBack: 50,
+			parameter: 'open_price',
+			lookBack: 10,
 		},
 	},
 };
 
-const queryParameters = new Set();
-let maxLookBack;
-Object.keys(queryObject.indicators).forEach(indicator => {
-	const {[indicator]: indObj} = queryObject.indicators;
-	// console.log(indObj, indicator);
-
-	queryParameters.add(indObj.parameter);
-	maxLookBack = Math.max(indObj.lookBack);
-});
-
-console.log(queryParameters, maxLookBack);
+retrieveSymbolWithIndicators(queryObject);
 
 // queryObject:
 /* 
