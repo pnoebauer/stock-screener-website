@@ -19,7 +19,7 @@ const app = express(); //instantiate new express application
 const port = process.env.PORT || 4000; //heroku sets up process port; during development use port 5000
 
 // app.use(compression()); //use gzip compression in the Express app to decrease size of response body
-// app.use(express.json()); //for any requests coming in, process their body tag and convert to json
+app.use(express.json()); //for any requests coming in, process their body tag and convert to json
 // app.use(express.urlencoded({ extended: true })); //url requests that contain incorrect characters (i.e. spaces) are converted to correct ones
 // app.use(enforce.HTTPS({ trustProtoHeader: true })); //always use HTTPS even if request comes from HTTP
 
@@ -32,9 +32,10 @@ if (process.env.NODE_ENV === 'production') {
 	});
 }
 
-// app.get('/', (req, res) => {
-// 	res.send('Hello World!');
-// });
+app.get('/', (req, res) => {
+	// res.send('Hello World!');
+	res.json('This is working');
+});
 
 const historicalDataIntoDB = async (universes, symbols) => {
 	await dbConnect.createTables();
@@ -67,8 +68,6 @@ const historicalDataIntoDB = async (universes, symbols) => {
 // historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
 
 const calculateIndicators = require('./calculateIndicators');
-
-// const
 
 const lookBack = 25;
 
@@ -147,13 +146,18 @@ const retrieveSymbolWithIndicators = async queryObject => {
 					lookBack,
 					parameter
 				);
+				if (index === data.length - 1) {
+					candle[indicator] = candle[indicator].toFixed(2);
+					// console.log(candle, 'last candle');
+				}
 			}
 		});
 
-		// console.log(candle, index);
+		console.log(candle, index);
 	});
 
-	console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
+	// console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
+	return currentDataSeries[currentDataSeries.length - 1];
 };
 
 const queryObject = {
@@ -162,16 +166,25 @@ const queryObject = {
 	indicators: {
 		sma: {
 			parameter: 'close_price',
-			lookBack: 10,
+			lookBack: 90,
 		},
 		ema: {
 			parameter: 'open_price',
-			lookBack: 10,
+			lookBack: 210,
 		},
 	},
 };
 
 retrieveSymbolWithIndicators(queryObject);
+
+app.get('/scanner', (req, res) => {
+	// const {symbol} = req.body;
+	// console.log(req.body, symbol);
+	const queryObject = req.body;
+
+	// retrieveSymbolWithIndicators(queryObject).then(data => res.send(data));
+	retrieveSymbolWithIndicators(queryObject).then(data => res.json(data));
+});
 
 // queryObject:
 /* 
