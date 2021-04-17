@@ -68,6 +68,7 @@ const historicalDataIntoDB = async (universes, symbols) => {
 // historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
 
 const calculateIndicators = require('./calculateIndicators');
+const {time} = require('console');
 
 const lookBack = 25;
 
@@ -153,10 +154,10 @@ const retrieveSymbolWithIndicators = async queryObject => {
 			}
 		});
 
-		console.log(candle, index);
+		// console.log(candle, index);
 	});
 
-	// console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
+	console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
 	return currentDataSeries[currentDataSeries.length - 1];
 };
 
@@ -166,11 +167,11 @@ const queryObject = {
 	indicators: {
 		sma: {
 			parameter: 'close_price',
-			lookBack: 90,
+			lookBack: 15,
 		},
 		ema: {
 			parameter: 'open_price',
-			lookBack: 210,
+			lookBack: 5,
 		},
 	},
 };

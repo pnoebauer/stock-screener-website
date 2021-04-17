@@ -50,7 +50,11 @@ const sma = (dataRaw, timePeriod, parameter) => {
 	const priorSma = Number(priorCandle.sma) || 0;
 
 	const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
-	const nBarsAgoPV = Number(nBarsAgoCandle[parameter]) || 0;
+
+	//check if the sma was calculated before lookBack (only true if the current index exceeds the lookback)
+	// if so, return the price from that bar, otherwise zero
+	const nBarsAgoPV = nBarsAgoCandle.sma ? Number(nBarsAgoCandle[parameter]) || 0 : 0;
+
 	// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
 	const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
 
