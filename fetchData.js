@@ -24,21 +24,21 @@ const fetchData = async (url, queryParams) => {
 
 	const queryExt = new URLSearchParams(params).toString();
 	const queryString = `${url}?${queryExt}`;
-	// console.log(queryExt);
+	// console.log(queryString);
 	try {
 		const response = await fetch(queryString);
 		const data = await response.json();
-
+		// console.log(data);
 		return data;
 	} catch (e) {
 		console.log('error fetch data', e);
 	}
 };
 
-const fetchLiveData = symbol => {
+const fetchLiveData = async symbol => {
 	const urlRealTime = `${urlEndPoint}/quotes`;
 	const queryParams = {symbol};
-	fetchData(urlRealTime, queryParams);
+	return fetchData(urlRealTime, queryParams);
 };
 
 const fetchHistoricalData = async (
@@ -50,7 +50,7 @@ const fetchHistoricalData = async (
 ) => {
 	// fetchData(urlRealTime, symbol);
 	// /v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true
-	const startDate = new Date(2000, 0, 1, 0, 0);
+	const startDate = new Date(1990, 0, 1, 0, 0);
 	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
 
 	// const endDate = addDays(startDate, 10);

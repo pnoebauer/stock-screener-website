@@ -45,16 +45,15 @@ const processData = (data, lookBack) => {
 
 		// if (currentRow > 1)
 		if (currentRow > lookBack - constants.UNSTABLEPERIOD) {
-			convertedCandle.sma = calculateIndicators.sma(
-				currentDataSeries,
-				lookBack,
-				'close_price'
-			);
-			convertedCandle.ema = calculateIndicators.ema(
-				currentDataSeries,
-				lookBack,
-				'close_price'
-			);
+			const parameter = 'close_price';
+			Object.keys(calculateIndicators).forEach(indicator => {
+				convertedCandle[indicator] = calculateIndicators[indicator](
+					currentDataSeries,
+					lookBack,
+					parameter
+				);
+			});
+
 			// console.log(convertedCandle);
 		}
 		// console.log(currentDataSeries[currentDataSeries.length - 1], '-----', currentRow);

@@ -5,14 +5,12 @@ const path = require('path');
 const compression = require('compression');
 const enforce = require('express-sslify');
 
-const fetchData = require('./fetchData');
-const processData = require('./processData');
+const fetchData = require('../fetchData');
+const processData = require('../processData');
 
-const dbConnect = require('./dbConnect');
+const dbConnect = require('../dbConnect');
 
-const constants = require('./constants');
-
-const calculateIndicators = require('./calculateIndicators');
+const constants = require('../constants');
 
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
@@ -41,6 +39,7 @@ app.get('/', (req, res) => {
 
 const historicalDataIntoDB = async (universes, symbols) => {
 	await dbConnect.createTables();
+
 	await dbConnect.insertIntoTableSymbols(universes);
 
 	for (let i = 0; i < symbols.length; i++) {
@@ -48,8 +47,6 @@ const historicalDataIntoDB = async (universes, symbols) => {
 		try {
 			const data = await fetchData.fetchHistoricalData(symbol, 20, 'year', 1, 'daily');
 			// console.log(data);
-
-			// IF NO LOOKBACK IS PROVIDED NO INDICATORS WILL BE ADDED BUT ONLY CANDLES CONVERTED FOR DB
 			const convertedCandles = processData.processData(data, 200);
 			// console.log(convertedCandles.length);
 			await dbConnect.insertIntoTable(convertedCandles);
@@ -59,32 +56,53 @@ const historicalDataIntoDB = async (universes, symbols) => {
 		}
 	}
 };
-// historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL']);
-// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
-
 // dbConnect.createTables();
-// fetchData.fetchLiveData('GOOGL').then(data => console.log(data.GOOGL.closePrice));
-// fetchData.fetchLiveData('SPY').then(data => console.log(data));
+// fetchData.fetchLiveData('SPY');
 
 // fetchData
 // 	.fetchHistoricalData(['MMM'], 5, 'year', 1, 'daily')
-// 	.then(data => processData.processData(data, 200))
-// 	.then(convertedCandles => console.log(convertedCandles[convertedCandles.length - 1]));
+// 	.then(data => processData.processData(data))
+// 	.then(convertedCandles => console.log(convertedCandles));
 
-// repeat with the interval of 2 seconds
-// let timerId = setInterval(() => console.log('tick'), 2000);
-// let timerId = setInterval(
-// 	() => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
-// 	10000
-// );
+// historicalDataIntoDB(['GOOGL', 'AAPL']);
+// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
 
-// // after 5 seconds stop
-// setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000);
+const calculateIndicators = require('../calculateIndicators');
+const {time} = require('console');
 
 const lookBack = 25;
 
+// BELOW REQUIRES VERSION 1 OF SMA CALCULATION THAT REDUCES ARRAY
+// dbConnect
+// 	.retrieveData('MMM', constants.UNSTABLEPERIOD + lookBack, ['close_price'])
+// 	.then(data => {
+// 		// console.log(data);
+// 		const sma = calculateIndicators.sma(data, lookBack, 'close_price');
+// 		console.log(sma, 'sma');
+// 	});
+
+// // SMA WORKS WITH BOTH VERSIONS - VERSION 2 IS PREFERED AS IT ONLY REQUIRES PRIOR SMA AND NOT WHOLE SERIES (SAME AS EMA)
+// dbConnect
+// 	.retrieveData('MMM', constants.UNSTABLEPERIOD + lookBack, ['close_price'])
+// 	.then(data => {
+// 		// console.log(data, data.length, 'l');
+// 		let currentDataSeries = [];
+// 		let ema;
+// 		let sma;
+// 		data.forEach((candle, index) => {
+// 			currentDataSeries.push(candle);
+// 			candle.ema = calculateIndicators.ema(currentDataSeries, lookBack, 'close_price');
+// 			candle.sma = calculateIndicators.sma(currentDataSeries, lookBack, 'close_price');
+// 			// console.log(candle, index);
+// 			ema = candle.ema;
+// 			sma = candle.sma;
+// 		});
+// 		// console.log(data, ema);
+// 		console.log(ema, 'ema');
+// 		console.log(sma, 'sma');
+// 	});
+
 const retrieveSymbolWithIndicators = async queryObject => {
-	console.log(queryObject);
 	const queryParameters = new Set();
 	let maxLookBack = 1;
 	Object.keys(queryObject.indicators).forEach(indicator => {
@@ -111,8 +129,16 @@ const retrieveSymbolWithIndicators = async queryObject => {
 		currentDataSeries.push(candle);
 
 		Object.keys(queryObject.indicators).forEach(indicator => {
-			let {parameter, lookBack} = queryObject.indicators[indicator];
-			lookBack = Number(lookBack);
+			const {parameter, lookBack} = queryObject.indicators[indicator];
+			// console.log(
+			// 	indicator,
+			// 	parameter,
+			// 	lookBack,
+			// 	maxLookBack,
+			// 	index,
+			// 	maxLookBack - lookBack,
+			// 	index >= maxLookBack - lookBack
+			// );
 
 			// start the calculation once the index is within the lookback of the current bar
 			if (index >= maxLookBack - lookBack) {
@@ -143,16 +169,16 @@ const queryObject = {
 	indicators: {
 		sma: {
 			parameter: 'close_price',
-			lookBack: 90,
+			lookBack: 15,
 		},
 		ema: {
 			parameter: 'open_price',
-			lookBack: 210,
+			lookBack: 5,
 		},
 	},
 };
 
-// retrieveSymbolWithIndicators(queryObject);
+retrieveSymbolWithIndicators(queryObject);
 
 app.get('/scanner', (req, res) => {
 	// const {symbol} = req.body;
@@ -188,45 +214,3 @@ app.listen(port, error => {
 // weekly: 1*
 // monthly: 1*
 /* -------------------- FETCHING API RULES -------------------- */
-
-/* 
-function every8am (yourcode) {
-    var now = new Date(),
-        start,
-        wait;
-
-    if (now.getHours() < 7) {
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0, 0);
-    } else {
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0, 0);
-    }
-
-    wait = start.getTime() - now.getTime();
-
-    if(wait <= 0) { //If missed 8am before going into the setTimeout
-        console.log('Oops, missed the hour');
-        every8am(yourcode); //Retry
-    } else {
-        setTimeout(function () { //Wait 8am
-            setInterval(function () {
-                yourcode();
-            }, 86400000); //Every day
-        },wait);
-    }
-}
-
-var yourcode = function () {
-        console.log('This will print evryday at 8am');
-    };
-every8am(yourcode);
-
-
-function at8am (yourcode) {
-    var now = new Date(),
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, 0, 0, 0);
-
-    if (now.getTime() >= start.getTime() - 2500 && now.getTime() < start.getTime() + 2500) {
-        yourcode();
-    }
-}
- */
