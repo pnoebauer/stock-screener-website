@@ -1,4 +1,5 @@
 const express = require('express');
+
 const cors = require('cors');
 // const bodyParser = require('body-parser');
 const path = require('path');
@@ -25,7 +26,7 @@ app.use(express.json()); //for any requests coming in, process their body tag an
 // app.use(express.urlencoded({ extended: true })); //url requests that contain incorrect characters (i.e. spaces) are converted to correct ones
 // app.use(enforce.HTTPS({ trustProtoHeader: true })); //always use HTTPS even if request comes from HTTP
 
-// app.use(cors()); //allow requests from port 3000 (frontend) to port 5000 (backend)
+app.use(cors()); //allow requests from port 3000 (frontend) to port 5000 (backend)
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.join(__dirname, 'client/build')));
@@ -35,6 +36,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.get('/', (req, res) => {
+	console.log('request received');
 	// res.send('Hello World!');
 	res.json('This is working');
 });
@@ -84,7 +86,8 @@ const historicalDataIntoDB = async (universes, symbols) => {
 const lookBack = 25;
 
 const retrieveSymbolWithIndicators = async queryObject => {
-	console.log(queryObject);
+	// console.log(queryObject);
+
 	const queryParameters = new Set();
 	let maxLookBack = 1;
 	Object.keys(queryObject.indicators).forEach(indicator => {
@@ -154,7 +157,7 @@ const queryObject = {
 
 // retrieveSymbolWithIndicators(queryObject);
 
-app.get('/scanner', (req, res) => {
+app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
 	// console.log(req.body, symbol);
 	const queryObject = req.body;

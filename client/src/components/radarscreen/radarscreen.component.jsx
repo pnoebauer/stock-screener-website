@@ -107,6 +107,53 @@ class RadarScreen extends React.Component {
 			// console.log('mount h', header)
 			this.fetchAndSetState(Symbol, header);
 		});
+
+		/* FETCH BACKEND TEST */
+
+		// {
+		// 	"symbol": "MMM",
+		// 	"interval": "Day",
+		// 	"indicators": {
+		// 		"sma": {
+		// 			"parameter": "close_price",
+		// 			"lookBack": "90"
+		// 		},
+		// 		"ema": {
+		// 			"parameter": "open_price",
+		// 			"lookBack": "210"
+		// 		}
+		// 	}
+		// }
+		const requestObj = {
+			symbol: 'MMM',
+			interval: 'Day',
+			indicators: {
+				sma: {
+					parameter: 'close_price',
+					lookBack: 90,
+				},
+				ema: {
+					parameter: 'open_price',
+					lookBack: 210,
+				},
+			},
+		};
+		fetch('http://localhost:4000/scanner', {
+			method: 'POST', // *GET, POST, PUT, DELETE, etc.
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
+		})
+			.then(res => res.json())
+			.then(data => console.log(data, 'data'))
+			.catch(e => console.log(e, 'e'));
+
+		// fetch('http://localhost:4000')
+		// 	.then(res => res.json())
+		// 	// .then(res => console.log(res, 'res'))
+		// 	.then(data => console.log(data, 'data', JSON.stringify(requestObj)))
+		// 	.catch(e => console.log(e, 'error'));
 	}
 
 	//used for dropdowns - updates one row
