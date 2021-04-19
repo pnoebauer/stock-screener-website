@@ -39,12 +39,26 @@ app.listen(PORT, error => {
 let cachedData = {};
 
 // const symbols = ['SPY', 'GOOGL'];
-const symbols = constants.SYMBOLS.slice(0, 100);
+const symbols = constants.SYMBOLS.slice(0, 2);
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 let timerId = setInterval(
 	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
 	async () => {
 		let data = await fetchData.fetchLiveData(symbols);
+		// Object.keys(data).forEach(symbol => console.log(symbol, 'part1'));
+		// console.log('fetching...', data);
+		console.log('part1', Object.keys(data));
+
+		await sleep(15000);
+		let data2 = await fetchData.fetchLiveData(constants.SYMBOLS.slice(2, 4));
+		data = {...data, ...data2};
+		// console.log('------', data, 'concat-----');
+		console.log('part2', Object.keys(data));
+		// Object.keys(data).forEach(symbol => console.log(symbol, 'part2'));
 
 		if (data.error) {
 			console.log('error during fetching', data.error);
@@ -94,6 +108,8 @@ let timerId = setInterval(
 			// console.log(symbol, 'symbol', data[symbol]);
 			if (!data[symbol]) {
 				console.log('fetching error for', symbol);
+				data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
+				continue;
 			}
 			for (const key in data[symbol]) {
 				// console.log(key, 'key');
@@ -105,6 +121,11 @@ let timerId = setInterval(
 					].includes(key)
 				) {
 					if (cachedData[symbol]) {
+						//if the new fetch request has no data for this symbol and key, then set it to the old one
+						if (!data[symbol][key]) {
+							data[symbol][key] = cachedData[symbol][key];
+							continue;
+						}
 						if (data[symbol][key] !== cachedData[symbol][key]) {
 							identical = false;
 							break;
@@ -123,7 +144,7 @@ let timerId = setInterval(
 		cachedData = data;
 		console.timeEnd('time');
 	},
-	3000
+	50000
 );
 
 // // after 5 seconds stop
