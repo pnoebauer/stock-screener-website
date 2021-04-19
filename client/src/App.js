@@ -1,41 +1,42 @@
-import React from 'react';
-
+import React, {useState, useEffect} from 'react';
 import './App.css';
-import Header from './components/header/header.component';
-
-import BuildScreener from './components/build-screener/build-screener.component';
 
 function App() {
+	const [facts, setFacts] = useState([]);
+	const [listening, setListening] = useState(false);
+
+	useEffect(() => {
+		if (!listening) {
+			const events = new EventSource('http://localhost:4000/events');
+
+			events.onmessage = event => {
+				const parsedData = JSON.parse(event.data);
+
+				setFacts(facts => facts.concat(parsedData));
+			};
+
+			setListening(true);
+		}
+	}, [listening, facts]);
+
 	return (
-		<div className='App'>
-			<Header />
-			<BuildScreener injectProp={'abcd'} />
-		</div>
+		<table className='stats-table'>
+			<thead>
+				<tr>
+					<th>Fact</th>
+					<th>Source</th>
+				</tr>
+			</thead>
+			<tbody>
+				{facts.map((fact, i) => (
+					<tr key={i}>
+						<td>{fact.info}</td>
+						<td>{fact.source}</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
 	);
 }
-
-// class App extends React.Component {
-// 	callAPI() {
-// 		fetch('http://localhost:4000')
-// 			.then(res => res.json())
-// 			// .then(res => console.log(res, 'res'))
-// 			.then(data => console.log(data, 'data'))
-// 			.catch(e => console.log(e, 'error'));
-
-// 		// fetch(
-// 		// 	'https://api.tdameritrade.com/v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true'
-// 		// )//.then(res => console.log(res, 'res'));
-// 		// 	.then(res => res.json())
-// 		// 	.then(data => console.log(data));
-// 	}
-
-// 	componentDidMount() {
-// 		console.log('mounted');
-// 		this.callAPI();
-// 	}
-// 	render() {
-// 		return <div className='App'>Test</div>;
-// 	}
-// }
 
 export default App;
