@@ -2,15 +2,6 @@ const express = require('express');
 
 const cors = require('cors');
 
-const util = require('util');
-
-const fetch = require('node-fetch');
-
-const fetchData = require('./fetchData');
-
-//during testing or development
-if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
-
 const app = express(); //instantiate new express application
 const PORT = 4000;
 
@@ -25,58 +16,6 @@ app.listen(PORT, error => {
 	if (error) throw error;
 	console.log('Server running on port', PORT);
 });
-
-// repeat with the interval of 2 seconds
-// let timerId = setInterval(() => console.log('tick'), 2000);
-// let timerId = setInterval(
-// 	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
-// 	() => fetchData.fetchLiveData('SPY').then(data => console.log(data)),
-// 	10000
-// );
-
-let cachedData;
-
-const symbols = ['SPY', 'GOOGL'];
-
-let timerId = setInterval(
-	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
-	async () => {
-		const data = await fetchData.fetchLiveData(symbols);
-
-		// console.log('-----', data, '--------BEFORE');
-
-		symbols.forEach(symbol => {
-			const {
-				quoteTimeInLong,
-				tradeTimeInLong,
-				regularMarketTradeTimeInLong,
-				...filteredData
-			} = data[symbol];
-
-			// console.log(filteredData);
-			data[symbol] = filteredData;
-
-			// cachedData[symbol]=filteredData;
-		});
-
-		console.log(util.isDeepStrictEqual(data, cachedData));
-
-		cachedData = data;
-		// console.log(data, '--------AFTER');
-	},
-	10000
-);
-
-// // after 5 seconds stop
-// setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000);
-
-// util.isDeepStrictEqual(obj1, obj2) // true
-
-// fetch(
-// 	'https://api.tdameritrade.com/v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true'
-// )
-// 	.then(res => res.json())
-// 	.then(data => console.log(data));
 
 function eventsHandler(req, res) {
 	const headers = {
