@@ -8,6 +8,8 @@ const fetch = require('node-fetch');
 
 const fetchData = require('./fetchData');
 
+const constants = require('./constants');
+
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
@@ -34,37 +36,94 @@ app.listen(PORT, error => {
 // 	10000
 // );
 
-let cachedData;
+let cachedData = {};
 
-const symbols = ['SPY', 'GOOGL'];
+// const symbols = ['SPY', 'GOOGL'];
+const symbols = constants.SYMBOLS.slice(0, 100);
 
 let timerId = setInterval(
 	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
 	async () => {
-		const data = await fetchData.fetchLiveData(symbols);
+		let data = await fetchData.fetchLiveData(symbols);
+
+		if (data.error) {
+			console.log('error during fetching', data.error);
+			return;
+		}
+
+		// console.log(data, 'data');
 
 		// console.log('-----', data, '--------BEFORE');
+		// /* METHOD 1 --> DESTRUCTURE TO REMOVE CERTAIN KEYS AND MAKE DEEP OBJECT COMPARISON */
+		// /* APPEARS SLOWER THAN METHOD 2 */
+		// console.time('time');
+		// symbols.forEach(symbol => {
+		// 	// console.log(data[symbol] !== undefined, symbol, 'qu---');
+		// 	if (data[symbol] === undefined) console.log(symbol, 'qu---');
+		// 	try {
+		// 		// filter out below keys
+		// 		let {
+		// 			quoteTimeInLong,
+		// 			tradeTimeInLong,
+		// 			regularMarketTradeTimeInLong,
+		// 			...filteredData
+		// 		} = data[symbol];
 
-		symbols.forEach(symbol => {
-			const {
-				quoteTimeInLong,
-				tradeTimeInLong,
-				regularMarketTradeTimeInLong,
-				...filteredData
-			} = data[symbol];
+		// 		data[symbol] = filteredData;
+		// 	} catch (e) {
+		// 		// console.log('no data for', symbol, Object.keys(data));
+		// 		console.log('no data for', symbol);
+		// 	}
+		// });
 
-			// console.log(filteredData);
-			data[symbol] = filteredData;
+		// console.log(util.isDeepStrictEqual(data, cachedData));
 
-			// cachedData[symbol]=filteredData;
-		});
+		// // after comparing with the prior data object, cache the current data object
+		// cachedData = data;
+		// // console.log(data, '--------AFTER');
+		// console.timeEnd('time');
 
-		console.log(util.isDeepStrictEqual(data, cachedData));
+		/* METHOD 2 --> LOOP THROUGH OBJECTS AND COMPARE VALUES */
+		/* APPEARS FASTER THAN METHOD 1 */
+		console.time('time');
 
+		let identical = true;
+
+		for (const i in symbols) {
+			const symbol = symbols[i];
+			// console.log(symbol, 'symbol', data[symbol]);
+			if (!data[symbol]) {
+				console.log('fetching error for', symbol);
+			}
+			for (const key in data[symbol]) {
+				// console.log(key, 'key');
+				if (
+					![
+						'quoteTimeInLong',
+						'tradeTimeInLong',
+						'regularMarketTradeTimeInLong',
+					].includes(key)
+				) {
+					if (cachedData[symbol]) {
+						if (data[symbol][key] !== cachedData[symbol][key]) {
+							identical = false;
+							break;
+						}
+					} else {
+						identical = false;
+						break;
+					}
+				}
+			}
+
+			if (!identical) break;
+		}
+
+		console.log(identical, 'identical');
 		cachedData = data;
-		// console.log(data, '--------AFTER');
+		console.timeEnd('time');
 	},
-	10000
+	3000
 );
 
 // // after 5 seconds stop
