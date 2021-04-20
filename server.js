@@ -39,26 +39,43 @@ app.listen(PORT, error => {
 let cachedData = {};
 
 // const symbols = ['SPY', 'GOOGL'];
-const symbols = constants.SYMBOLS.slice(0, 2);
+const symbols = constants.SYMBOLS;
 
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const splits = 5;
+const interValTime = 60000;
 let timerId = setInterval(
 	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
 	async () => {
-		let data = await fetchData.fetchLiveData(symbols);
-		// Object.keys(data).forEach(symbol => console.log(symbol, 'part1'));
-		// console.log('fetching...', data);
-		console.log('part1', Object.keys(data));
+		let startIndex = 0;
+		let endIndex = symbols.length / splits;
+		let data = {};
+		// split fetches into 5 equal parts
+		for (let i = 0; i < splits; i++) {
+			let partialData = await fetchData.fetchLiveData(
+				symbols.slice(startIndex, endIndex)
+			);
+			data = {...data, ...partialData};
 
-		await sleep(15000);
-		let data2 = await fetchData.fetchLiveData(constants.SYMBOLS.slice(2, 4));
-		data = {...data, ...data2};
-		// console.log('------', data, 'concat-----');
-		console.log('part2', Object.keys(data));
-		// Object.keys(data).forEach(symbol => console.log(symbol, 'part2'));
+			startIndex = endIndex;
+			endIndex += symbols.length / splits;
+
+			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+		}
+		// let data = await fetchData.fetchLiveData(symbols);
+		// // Object.keys(data).forEach(symbol => console.log(symbol, 'part1'));
+		// // console.log('fetching...', data);
+		// console.log('part1', Object.keys(data));
+
+		// await sleep(15000);
+		// let data2 = await fetchData.fetchLiveData(constants.SYMBOLS.slice(2, 4));
+		// data = {...data, ...data2};
+		// // console.log('------', data, 'concat-----');
+		// console.log('part2', Object.keys(data));
+		// // Object.keys(data).forEach(symbol => console.log(symbol, 'part2'));
 
 		if (data.error) {
 			console.log('error during fetching', data.error);
@@ -144,7 +161,7 @@ let timerId = setInterval(
 		cachedData = data;
 		console.timeEnd('time');
 	},
-	50000
+	interValTime
 );
 
 // // after 5 seconds stop
