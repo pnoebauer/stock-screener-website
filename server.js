@@ -169,12 +169,6 @@ let timerId = setInterval(
 
 // util.isDeepStrictEqual(obj1, obj2) // true
 
-// fetch(
-// 	'https://api.tdameritrade.com/v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true'
-// )
-// 	.then(res => res.json())
-// 	.then(data => console.log(data));
-
 function eventsHandler(req, res) {
 	const headers = {
 		'Content-Type': 'text/event-stream',
