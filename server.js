@@ -47,11 +47,13 @@ function sleep(ms) {
 
 const splits = 5;
 const interValTime = 60000;
+const symbolsPerSplit = Math.round(symbols.length / splits);
+
 let timerId = setInterval(
 	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
 	async () => {
 		let startIndex = 0;
-		let endIndex = symbols.length / splits;
+		let endIndex = symbolsPerSplit;
 		let data = {};
 		// split fetches into 5 equal parts
 		for (let i = 0; i < splits; i++) {
@@ -60,11 +62,23 @@ let timerId = setInterval(
 			);
 			data = {...data, ...partialData};
 
-			startIndex = endIndex;
-			endIndex += symbols.length / splits;
+			console.log('symbols', startIndex, 'to', endIndex, 'of', symbols.length);
+			const d = new Date();
+			console.log(d.getMinutes(), d.getSeconds());
 
-			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+			startIndex = endIndex;
+			endIndex += symbolsPerSplit;
+			endIndex = Math.min(endIndex, symbols.length);
+
+			if (i !== splits - 1) {
+				console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
+				await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+			}
 		}
+
+		console.log(data.AAPL.bidPrice, 'AAPL bid');
+		console.log(data.AAPL.askPrice, 'AAPL ask');
+
 		// let data = await fetchData.fetchLiveData(symbols);
 		// // Object.keys(data).forEach(symbol => console.log(symbol, 'part1'));
 		// // console.log('fetching...', data);
@@ -166,8 +180,6 @@ let timerId = setInterval(
 
 // // after 5 seconds stop
 // setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000);
-
-// util.isDeepStrictEqual(obj1, obj2) // true
 
 function eventsHandler(req, res) {
 	const headers = {
