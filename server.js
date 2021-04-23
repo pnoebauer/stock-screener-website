@@ -154,6 +154,7 @@ function eventsHandler(req, res) {
 	const newClient = {
 		id: clientId,
 		res,
+		symbol: 'AAPL',
 	};
 
 	// console.log(newClient, 'newClient');
@@ -165,6 +166,11 @@ function eventsHandler(req, res) {
 	req.on('close', () => {
 		console.log(`${clientId} Connection closed`);
 		clients = clients.filter(client => client.id !== clientId);
+		newClient.res.end();
+		// if (!res.finished) {
+		// 	res.end();
+		// 	console.log("Stopped sending events.");
+		//   }
 	});
 }
 
@@ -172,23 +178,27 @@ app.get('/events', eventsHandler);
 
 // const eventType = 'test';
 // sendEventsToAll iterates the clients array and uses the write method of each Express object to send the update.
-function sendEventsToAll(newFact) {
-	clients.forEach(client =>
+function sendEventsToAll(data) {
+	clients.forEach(client => {
+		// console.log(client) ||
+		console.log(client.id);
+		const clientData = data[client.symbol];
 		client.res.write(
-			`data: ${JSON.stringify(newFact)}\n\n`
+			// `data: ${JSON.stringify(data)}\n\n`
+			`data: ${JSON.stringify(clientData)}\n\n`
 			// specify event type so that frontend can only listen to this type of event
 			// // `event: ${eventType}\ndata: ${JSON.stringify(newFact)}\n\n`
-		)
-	);
+		);
+	});
 }
 
-// The addFact middleware saves the fact, returns it to the client which made POST request, and invokes the sendEventsToAll function.
-async function addFact(req, res) {
-	const newFact = req.body;
-	facts.push(newFact);
-	res.json(newFact);
-	console.log('----------', facts, 'facts', newFact, 'newFact----------');
-	return sendEventsToAll(newFact);
-}
+// // The addFact middleware saves the fact, returns it to the client which made POST request, and invokes the sendEventsToAll function.
+// async function addFact(req, res) {
+// 	const newFact = req.body;
+// 	facts.push(newFact);
+// 	res.json(newFact);
+// 	console.log('----------', facts, 'facts', newFact, 'newFact----------');
+// 	return sendEventsToAll(newFact);
+// }
 
-app.post('/fact', addFact);
+// app.post('/fact', addFact);
