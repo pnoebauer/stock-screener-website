@@ -2,9 +2,9 @@ const express = require('express');
 
 const cors = require('cors');
 
-const util = require('util');
+// const util = require('util');
 
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 
 const fetchData = require('./fetchData');
 
@@ -49,134 +49,87 @@ const splits = 5;
 const interValTime = 60000;
 const symbolsPerSplit = Math.round(symbols.length / splits);
 
-let timerId = setInterval(
-	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
-	async () => {
-		let startIndex = 0;
-		let endIndex = symbolsPerSplit;
-		let data = {};
-		// split fetches into 5 equal parts
-		for (let i = 0; i < splits; i++) {
-			let partialData = await fetchData.fetchLiveData(
-				symbols.slice(startIndex, endIndex)
-			);
-			data = {...data, ...partialData};
+let timerId = setInterval(async () => {
+	// console.log('new interval');
 
-			console.log('symbols', startIndex, 'to', endIndex, 'of', symbols.length);
-			const d = new Date();
-			console.log(d.getMinutes(), d.getSeconds());
+	let startIndex = 0;
+	let endIndex = symbolsPerSplit;
+	let data = {};
+	// split fetches into 5 equal parts
+	for (let i = 0; i < splits; i++) {
+		let partialData = await fetchData.fetchLiveData(symbols.slice(startIndex, endIndex));
+		data = {...data, ...partialData};
 
-			startIndex = endIndex;
-			endIndex += symbolsPerSplit;
-			endIndex = Math.min(endIndex, symbols.length);
+		// console.log('symbols', startIndex, 'to', endIndex, 'of', symbols.length);
+		const d = new Date();
+		// console.log(d.getMinutes(), d.getSeconds());
 
-			if (i !== splits - 1) {
-				console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
-				await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
-			}
+		startIndex = endIndex;
+		endIndex += symbolsPerSplit;
+		endIndex = Math.min(endIndex, symbols.length);
+
+		if (i !== splits - 1) {
+			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
+			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
 		}
+	}
 
-		console.log(data.AAPL.bidPrice, 'AAPL bid');
-		console.log(data.AAPL.askPrice, 'AAPL ask');
+	// console.log(data.AAPL.bidPrice, 'AAPL bid');
+	// console.log(data.AAPL.askPrice, 'AAPL ask');
 
-		// let data = await fetchData.fetchLiveData(symbols);
-		// // Object.keys(data).forEach(symbol => console.log(symbol, 'part1'));
-		// // console.log('fetching...', data);
-		// console.log('part1', Object.keys(data));
+	if (data.error) {
+		console.log('error during fetching', data.error);
+		return;
+	}
 
-		// await sleep(15000);
-		// let data2 = await fetchData.fetchLiveData(constants.SYMBOLS.slice(2, 4));
-		// data = {...data, ...data2};
-		// // console.log('------', data, 'concat-----');
-		// console.log('part2', Object.keys(data));
-		// // Object.keys(data).forEach(symbol => console.log(symbol, 'part2'));
+	console.time('time');
 
-		if (data.error) {
-			console.log('error during fetching', data.error);
-			return;
+	let identical = true;
+
+	for (const i in symbols) {
+		const symbol = symbols[i];
+		// console.log(symbol, 'symbol', data[symbol]);
+		if (!data[symbol]) {
+			console.log('fetching error for', symbol);
+			data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
+			continue;
 		}
-
-		// console.log(data, 'data');
-
-		// console.log('-----', data, '--------BEFORE');
-		// /* METHOD 1 --> DESTRUCTURE TO REMOVE CERTAIN KEYS AND MAKE DEEP OBJECT COMPARISON */
-		// /* APPEARS SLOWER THAN METHOD 2 */
-		// console.time('time');
-		// symbols.forEach(symbol => {
-		// 	// console.log(data[symbol] !== undefined, symbol, 'qu---');
-		// 	if (data[symbol] === undefined) console.log(symbol, 'qu---');
-		// 	try {
-		// 		// filter out below keys
-		// 		let {
-		// 			quoteTimeInLong,
-		// 			tradeTimeInLong,
-		// 			regularMarketTradeTimeInLong,
-		// 			...filteredData
-		// 		} = data[symbol];
-
-		// 		data[symbol] = filteredData;
-		// 	} catch (e) {
-		// 		// console.log('no data for', symbol, Object.keys(data));
-		// 		console.log('no data for', symbol);
-		// 	}
-		// });
-
-		// console.log(util.isDeepStrictEqual(data, cachedData));
-
-		// // after comparing with the prior data object, cache the current data object
-		// cachedData = data;
-		// // console.log(data, '--------AFTER');
-		// console.timeEnd('time');
-
-		/* METHOD 2 --> LOOP THROUGH OBJECTS AND COMPARE VALUES */
-		/* APPEARS FASTER THAN METHOD 1 */
-		console.time('time');
-
-		let identical = true;
-
-		for (const i in symbols) {
-			const symbol = symbols[i];
-			// console.log(symbol, 'symbol', data[symbol]);
-			if (!data[symbol]) {
-				console.log('fetching error for', symbol);
-				data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
-				continue;
-			}
-			for (const key in data[symbol]) {
-				// console.log(key, 'key');
-				if (
-					![
-						'quoteTimeInLong',
-						'tradeTimeInLong',
-						'regularMarketTradeTimeInLong',
-					].includes(key)
-				) {
-					if (cachedData[symbol]) {
-						//if the new fetch request has no data for this symbol and key, then set it to the old one
-						if (!data[symbol][key]) {
-							data[symbol][key] = cachedData[symbol][key];
-							continue;
-						}
-						if (data[symbol][key] !== cachedData[symbol][key]) {
-							identical = false;
-							break;
-						}
-					} else {
+		for (const key in data[symbol]) {
+			// console.log(key, 'key');
+			if (
+				!['quoteTimeInLong', 'tradeTimeInLong', 'regularMarketTradeTimeInLong'].includes(
+					key
+				)
+			) {
+				if (cachedData[symbol]) {
+					//if the new fetch request has no data for this symbol and key, then set it to the old one
+					if (!data[symbol][key]) {
+						data[symbol][key] = cachedData[symbol][key];
+						continue;
+					}
+					if (data[symbol][key] !== cachedData[symbol][key]) {
 						identical = false;
 						break;
 					}
+				} else {
+					identical = false;
+					break;
 				}
 			}
-
-			if (!identical) break;
 		}
 
-		console.log(identical, 'identical');
-		cachedData = data;
-		console.timeEnd('time');
-	},
-	interValTime
-);
+		if (!identical) break;
+	}
+
+	console.log(identical, 'identical');
+	cachedData = data;
+	if (!identical) {
+		console.log(cachedData.AAPL);
+		sendEventsToAll(data);
+	}
+
+	console.timeEnd('time');
+}, interValTime);
 
 // // after 5 seconds stop
 // setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000);
@@ -190,7 +143,8 @@ function eventsHandler(req, res) {
 	res.writeHead(200, headers); //HTTP status set to 200 and headers object written to head
 
 	//facts array is turned into a string
-	const data = `data: ${JSON.stringify(facts)}\n\n`; // \n\n is mandatory to indicate the end of an event
+	// const data = `data: ${JSON.stringify(facts)}\n\n`; // \n\n is mandatory to indicate the end of an event
+	const data = `data: ${JSON.stringify(cachedData)}\n\n`;
 
 	res.write(data);
 
@@ -217,12 +171,11 @@ function eventsHandler(req, res) {
 app.get('/events', eventsHandler);
 
 // const eventType = 'test';
-
 // sendEventsToAll iterates the clients array and uses the write method of each Express object to send the update.
 function sendEventsToAll(newFact) {
 	clients.forEach(client =>
 		client.res.write(
-			`event: data: ${JSON.stringify(newFact)}\n\n`
+			`data: ${JSON.stringify(newFact)}\n\n`
 			// specify event type so that frontend can only listen to this type of event
 			// // `event: ${eventType}\ndata: ${JSON.stringify(newFact)}\n\n`
 		)

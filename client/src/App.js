@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import './App.css';
 
 function App() {
-	const [facts, setFacts] = useState([]);
+	// const [facts, setFacts] = useState([]);
+	const [facts, setFacts] = useState({});
 	const [listening, setListening] = useState(false);
 
 	useEffect(() => {
@@ -20,7 +21,8 @@ function App() {
 
 				console.log(parsedData, 'parsedData');
 
-				setFacts(facts => facts.concat(parsedData));
+				// setFacts(facts => facts.concat(parsedData));
+				setFacts(facts => ({...facts, parsedData}));
 			};
 
 			setListening(true);
@@ -36,12 +38,12 @@ function App() {
 				</tr>
 			</thead>
 			<tbody>
-				{facts.map((fact, i) => (
+				{/* {facts.map((fact, i) => (
 					<tr key={i}>
 						<td>{fact.info}</td>
 						<td>{fact.source}</td>
 					</tr>
-				))}
+				))} */}
 			</tbody>
 		</table>
 	);
