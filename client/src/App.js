@@ -1,53 +1,111 @@
-import React, {useState, useEffect} from 'react';
-
+import React from 'react';
 import './App.css';
 
-function App() {
-	// const [facts, setFacts] = useState([]);
-	const [facts, setFacts] = useState({});
-	const [listening, setListening] = useState(false);
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.events = undefined;
+		this.state = {
+			symbols: {},
+			symbolList: ['GOOGL', 'AAPL', 'AMZN'],
+		};
+	}
 
-	useEffect(() => {
-		if (!listening) {
-			const events = new EventSource('http://localhost:4000/events');
+	componentDidMount() {
+		this.startEventSource();
+	}
 
-			// Subscribe to event with type 'test'
-			events.addEventListener('test', function (event) {
-				console.log('event.data', event.data);
-			});
+	startEventSource() {
+		this.events = new EventSource('http://localhost:4000/events');
 
-			// Subscribe to all events without an explicit type
-			events.onmessage = event => {
-				const parsedData = JSON.parse(event.data);
+		// // Subscribe to event with type 'test'
+		// this.events.addEventListener('test', function (event) {
+		// 	console.log('event.data', event.data);
+		// });
 
-				console.log(parsedData, 'parsedData');
+		// Subscribe to all events without an explicit type
+		this.events.onmessage = event => {
+			const symbols = JSON.parse(event.data);
 
-				// setFacts(facts => facts.concat(parsedData));
-				setFacts(facts => ({...facts, parsedData}));
-			};
+			console.log(symbols, 'symbols');
 
-			setListening(true);
-		}
-	}, [listening, facts]);
+			this.setState({symbols});
 
-	return (
-		<table className='stats-table'>
-			<thead>
-				<tr>
-					<th>Fact</th>
-					<th>Source</th>
-				</tr>
-			</thead>
-			<tbody>
-				{/* {facts.map((fact, i) => (
-					<tr key={i}>
-						<td>{fact.info}</td>
-						<td>{fact.source}</td>
-					</tr>
-				))} */}
-			</tbody>
-		</table>
-	);
+			// console.log('symbols A', this.state.symbols);
+		};
+	}
+
+	componentWillUnmount() {
+		if (this.eventSource) this.eventSource.close();
+	}
+
+	render() {
+		const {symbols} = this.state;
+		return (
+			<div>
+				{/* {console.log('symbols', symbols)} */}
+				<ul>
+					{Object.keys(symbols).map((symbol, index) => {
+						// console.log(symbol);
+						return (
+							<li
+								key={index}
+							>{`${symbols[symbol].symbol}: ${symbols[symbol].closePrice}`}</li>
+						);
+					})}
+				</ul>
+			</div>
+		);
+	}
 }
 
 export default App;
+
+// import React, {useState, useEffect} from 'react';
+// function App() {
+// 	// const [facts, setFacts] = useState([]);
+// 	const [symbols, setSymbols] = useState({});
+// 	const [listening, setListening] = useState(false);
+
+// 	useEffect(() => {
+// 		if (!listening) {
+// 			const events = new EventSource('http://localhost:4000/events');
+
+// 			// Subscribe to event with type 'test'
+// 			events.addEventListener('test', function (event) {
+// 				console.log('event.data', event.data);
+// 			});
+
+// 			// Subscribe to all events without an explicit type
+// 			events.onmessage = event => {
+// 				const parsedData = JSON.parse(event.data);
+
+// 				console.log(parsedData, 'parsedData');
+
+// 				setSymbols(symbols => ({...symbols, ...parsedData}));
+
+// 				// console.log('symbols A', symbols);
+// 			};
+
+// 			setListening(true);
+// 		}
+// 	}, [listening, symbols]);
+
+// 	return (
+// 		<div>
+// 			{/* {console.log('symbols', symbols)} */}
+// 			<ul>
+// 				{Object.keys(symbols).map((symbol, index) => {
+// 					// console.log(symbol);
+// 					return (
+// 						<li
+// 							key={index}
+// 						>{`${symbols[symbol].symbol}: ${symbols[symbol].closePrice}`}</li>
+// 					);
+// 				})}
+// 			</ul>
+// 		</div>
+// 	);
+// }
+
+// export default App;

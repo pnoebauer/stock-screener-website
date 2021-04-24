@@ -49,90 +49,93 @@ const splits = 5;
 const interValTime = 60000;
 const symbolsPerSplit = Math.round(symbols.length / splits);
 
-// let timerId = setInterval(async () => {
-// 	// console.log('new interval');
+let timerId = setInterval(async () => {
+	// console.log('new interval');
 
-// 	let startIndex = 0;
-// 	let endIndex = symbolsPerSplit;
-// 	let data = {};
-// 	// split fetches into 5 equal parts
-// 	for (let i = 0; i < splits; i++) {
-// 		let partialData = await fetchData.fetchLiveData(symbols.slice(startIndex, endIndex));
-// 		data = {...data, ...partialData};
+	let startIndex = 0;
+	let endIndex = symbolsPerSplit;
+	let data = {};
+	// split fetches into 5 equal parts
+	for (let i = 0; i < splits; i++) {
+		let partialData = await fetchData.fetchLiveData(symbols.slice(startIndex, endIndex));
+		data = {...data, ...partialData};
 
-// 		// console.log('symbols', startIndex, 'to', endIndex, 'of', symbols.length);
-// 		const d = new Date();
-// 		// console.log(d.getMinutes(), d.getSeconds());
+		// console.log('symbols', startIndex, 'to', endIndex, 'of', symbols.length);
+		const d = new Date();
+		// console.log(d.getMinutes(), d.getSeconds());
 
-// 		startIndex = endIndex;
-// 		endIndex += symbolsPerSplit;
-// 		endIndex = Math.min(endIndex, symbols.length);
+		startIndex = endIndex;
+		endIndex += symbolsPerSplit;
+		endIndex = Math.min(endIndex, symbols.length);
 
-// 		if (i !== splits - 1) {
-// 			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
-// 			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
-// 		}
-// 	}
+		if (i !== splits - 1) {
+			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
+			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+		}
+	}
 
-// 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
-// 	// console.log(data.AAPL.askPrice, 'AAPL ask');
+	// console.log(data.AAPL.bidPrice, 'AAPL bid');
+	// console.log(data.AAPL.askPrice, 'AAPL ask');
 
-// 	if (data.error) {
-// 		console.log('error during fetching', data.error);
-// 		return;
-// 	}
+	if (data.error) {
+		console.log('error during fetching', data.error);
+		return;
+	}
 
-// 	console.time('time');
+	console.time('time');
 
-// 	let identical = true;
+	let identical = true;
 
-// 	for (const i in symbols) {
-// 		const symbol = symbols[i];
-// 		// console.log(symbol, 'symbol', data[symbol]);
-// 		if (!data[symbol]) {
-// 			console.log('fetching error for', symbol);
-// 			data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
-// 			continue;
-// 		}
-// 		for (const key in data[symbol]) {
-// 			// console.log(key, 'key');
-// 			if (
-// 				!['quoteTimeInLong', 'tradeTimeInLong', 'regularMarketTradeTimeInLong'].includes(
-// 					key
-// 				)
-// 			) {
-// 				if (cachedData[symbol]) {
-// 					//if the new fetch request has no data for this symbol and key, then set it to the old one
-// 					if (!data[symbol][key]) {
-// 						data[symbol][key] = cachedData[symbol][key];
-// 						continue;
-// 					}
-// 					if (data[symbol][key] !== cachedData[symbol][key]) {
-// 						identical = false;
-// 						break;
-// 					}
-// 				} else {
-// 					identical = false;
-// 					break;
-// 				}
-// 			}
-// 		}
+	for (const i in symbols) {
+		const symbol = symbols[i];
+		// console.log(symbol, 'symbol', data[symbol]);
+		if (!data[symbol]) {
+			console.log('fetching error for', symbol);
+			data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
+			continue;
+		}
+		for (const key in data[symbol]) {
+			// console.log(key, 'key');
+			if (
+				!['quoteTimeInLong', 'tradeTimeInLong', 'regularMarketTradeTimeInLong'].includes(
+					key
+				)
+			) {
+				if (cachedData[symbol]) {
+					//if the new fetch request has no data for this symbol and key, then set it to the old one
+					if (!data[symbol][key]) {
+						data[symbol][key] = cachedData[symbol][key];
+						continue;
+					}
+					if (data[symbol][key] !== cachedData[symbol][key]) {
+						identical = false;
+						break;
+					}
+				} else {
+					identical = false;
+					break;
+				}
+			}
+		}
 
-// 		if (!identical) break;
-// 	}
+		if (!identical) break;
+	}
 
-// 	console.log(identical, 'identical');
-// 	cachedData = data;
-// 	if (!identical) {
-// 		console.log(cachedData.AAPL);
-// 		sendEventsToAll(data);
-// 	}
+	console.log(identical, 'identical');
+	cachedData = data;
+	if (!identical) {
+		console.log(cachedData.AAPL);
+		sendEventsToAll(data);
+	}
 
-// 	console.timeEnd('time');
-// }, interValTime);
+	console.timeEnd('time');
+}, interValTime);
 
 // // after 5 seconds stop
-// setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000);
+// setTimeout(() => {
+// 	clearInterval(timerId);
+// 	alert('stop');
+// }, 5000);
 
 function eventsHandler(req, res) {
 	const headers = {
@@ -175,7 +178,7 @@ function eventsHandler(req, res) {
 	});
 }
 
-// app.get('/events', eventsHandler);
+app.get('/events', eventsHandler);
 // app.post('/events', eventsHandler);
 
 const eventType = 'test';
@@ -183,13 +186,13 @@ const eventType = 'test';
 function sendEventsToAll(data) {
 	clients.forEach(client => {
 		// console.log(client) ||
-		console.log(client.id);
+		// console.log(client.id);
 		const clientData = data[client.symbol];
 		client.res.write(
-			// `data: ${JSON.stringify(data)}\n\n`
+			`data: ${JSON.stringify(data)}\n\n`
 			// `data: ${JSON.stringify(clientData)}\n\n`
 			// specify event type so that frontend can only listen to this type of event
-			`event: ${eventType}\ndata: ${JSON.stringify(clientData)}\n\n`
+			// `event: ${eventType}\ndata: ${JSON.stringify(clientData)}\n\n`
 		);
 	});
 }
@@ -201,6 +204,31 @@ app.get('/events/:id', async function (req, res) {
 	// console.log(id);
 
 	console.log(req.query);
+	console.log(id);
+	console.log(id.split(','));
+
+	const obj = {
+		SPY: {
+			close: 1,
+			open: 2,
+		},
+		AAPL: {
+			close: 1,
+			open: 2,
+		},
+		GOOGL: {
+			close: 1,
+			open: 2,
+		},
+		AMZN: {
+			close: 1,
+			open: 2,
+		},
+	};
+
+	const requObj = {};
+	id.split(',').forEach(symbol => (requObj[symbol] = obj[symbol]));
+	console.log(requObj);
 	// console.log(req.params.id);
 
 	res.send(id);
