@@ -82,7 +82,7 @@ let timerId = setInterval(async () => {
 		return;
 	}
 
-	console.time('time');
+	// console.time('time');
 
 	let identical = true;
 
@@ -128,7 +128,7 @@ let timerId = setInterval(async () => {
 		sendEventsToAll(data);
 	}
 
-	console.timeEnd('time');
+	// console.timeEnd('time');
 }, interValTime);
 
 // // after 5 seconds stop
@@ -137,7 +137,9 @@ let timerId = setInterval(async () => {
 // 	alert('stop');
 // }, 5000);
 
-function eventsHandler(req, res) {
+function eventsHandler(req, res, id) {
+	// console.log(id.split(','));
+
 	const headers = {
 		'Content-Type': 'text/event-stream',
 		Connection: 'keep-alive',
@@ -145,9 +147,14 @@ function eventsHandler(req, res) {
 	};
 	res.writeHead(200, headers); //HTTP status set to 200 and headers object written to head
 
-	//facts array is turned into a string
+	//data array is turned into a string
 	// const data = `data: ${JSON.stringify(facts)}\n\n`; // \n\n is mandatory to indicate the end of an event
-	const data = `data: ${JSON.stringify(cachedData)}\n\n`;
+	// const data = `data: ${JSON.stringify(cachedData)}\n\n`;
+
+	const requObj = {};
+	id.split(',').forEach(symbol => (requObj[symbol] = cachedData[symbol]));
+
+	const data = `data: ${JSON.stringify(requObj)}\n\n`;
 
 	res.write(data);
 
@@ -157,7 +164,7 @@ function eventsHandler(req, res) {
 	const newClient = {
 		id: clientId,
 		res,
-		symbol: 'AAPL',
+		symbol: id,
 	};
 
 	// console.log(newClient, 'newClient');
@@ -178,7 +185,44 @@ function eventsHandler(req, res) {
 	});
 }
 
-app.get('/events', eventsHandler);
+// app.get('/events', eventsHandler);
+app.get('/events/:id', async function (req, res) {
+	// Retrieve the tag from our URL path
+	const id = req.query.id;
+	// console.log(id);
+
+	eventsHandler(req, res, id);
+
+	// console.log(req.query);
+	// console.log(id);
+	// console.log(id.split(','));
+
+	// const obj = {
+	// 	SPY: {
+	// 		close: 1,
+	// 		open: 2,
+	// 	},
+	// 	AAPL: {
+	// 		close: 1,
+	// 		open: 2,
+	// 	},
+	// 	GOOGL: {
+	// 		close: 1,
+	// 		open: 2,
+	// 	},
+	// 	AMZN: {
+	// 		close: 1,
+	// 		open: 2,
+	// 	},
+	// };
+
+	// const requObj = {};
+	// id.split(',').forEach(symbol => (requObj[symbol] = obj[symbol]));
+	// console.log(requObj);
+	// // console.log(req.params.id);
+
+	// res.send(id);
+});
 // app.post('/events', eventsHandler);
 
 const eventType = 'test';
@@ -187,10 +231,14 @@ function sendEventsToAll(data) {
 	clients.forEach(client => {
 		// console.log(client) ||
 		// console.log(client.id);
-		const clientData = data[client.symbol];
+		// const clientData = data[client.symbol];
+		const clientData = {};
+		client.symbol.split(',').forEach(symbol => (clientData[symbol] = cachedData[symbol]));
+
+		// const data = `data: ${JSON.stringify(requObj)}\n\n`;
 		client.res.write(
-			`data: ${JSON.stringify(data)}\n\n`
-			// `data: ${JSON.stringify(clientData)}\n\n`
+			// `data: ${JSON.stringify(data)}\n\n`
+			`data: ${JSON.stringify(clientData)}\n\n`
 			// specify event type so that frontend can only listen to this type of event
 			// `event: ${eventType}\ndata: ${JSON.stringify(clientData)}\n\n`
 		);

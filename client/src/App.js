@@ -12,11 +12,17 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
-		this.startEventSource();
+		const url = `http://localhost:4000/events/symbols?id=${this.state.symbolList.join(
+			','
+		)}`;
+		// console.log(url);
+		this.startEventSource(url);
 	}
 
-	startEventSource() {
-		this.events = new EventSource('http://localhost:4000/events');
+	startEventSource(url) {
+		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL
+		// this.events = new EventSource('http://localhost:4000/events');
+		this.events = new EventSource(url);
 
 		// // Subscribe to event with type 'test'
 		// this.events.addEventListener('test', function (event) {
