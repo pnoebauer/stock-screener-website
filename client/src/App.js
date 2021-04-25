@@ -19,6 +19,18 @@ class App extends React.Component {
 		this.startEventSource(url);
 	}
 
+	componentDidUpdate(prevProps, prevState) {
+		// if (prevState.symbols !== this.state.symbols) {
+		//   console.log('symbols state has changed.')
+		// }
+
+		let contained = (arr, target) => target.every(v => arr.includes(v)); //does arr contain all elements of target
+
+		if (!contained(prevState.symbols, this.state.symbols)) {
+			// close old event source and start a new one with updated symbols
+		}
+	}
+
 	startEventSource(url) {
 		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL
 		// this.events = new EventSource('http://localhost:4000/events');

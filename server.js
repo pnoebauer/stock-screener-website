@@ -192,38 +192,7 @@ app.get('/events/:id', async function (req, res) {
 	// console.log(id);
 
 	eventsHandler(req, res, id);
-
-	// console.log(req.query);
-	// console.log(id);
-	// console.log(id.split(','));
-
-	// const obj = {
-	// 	SPY: {
-	// 		close: 1,
-	// 		open: 2,
-	// 	},
-	// 	AAPL: {
-	// 		close: 1,
-	// 		open: 2,
-	// 	},
-	// 	GOOGL: {
-	// 		close: 1,
-	// 		open: 2,
-	// 	},
-	// 	AMZN: {
-	// 		close: 1,
-	// 		open: 2,
-	// 	},
-	// };
-
-	// const requObj = {};
-	// id.split(',').forEach(symbol => (requObj[symbol] = obj[symbol]));
-	// console.log(requObj);
-	// // console.log(req.params.id);
-
-	// res.send(id);
 });
-// app.post('/events', eventsHandler);
 
 const eventType = 'test';
 // sendEventsToAll iterates the clients array and uses the write method of each Express object to send the update.
@@ -244,43 +213,6 @@ function sendEventsToAll(data) {
 		);
 	});
 }
-
-// Route to return all articles with a given tag
-app.get('/events/:id', async function (req, res) {
-	// Retrieve the tag from our URL path
-	var id = req.query.id;
-	// console.log(id);
-
-	console.log(req.query);
-	console.log(id);
-	console.log(id.split(','));
-
-	const obj = {
-		SPY: {
-			close: 1,
-			open: 2,
-		},
-		AAPL: {
-			close: 1,
-			open: 2,
-		},
-		GOOGL: {
-			close: 1,
-			open: 2,
-		},
-		AMZN: {
-			close: 1,
-			open: 2,
-		},
-	};
-
-	const requObj = {};
-	id.split(',').forEach(symbol => (requObj[symbol] = obj[symbol]));
-	console.log(requObj);
-	// console.log(req.params.id);
-
-	res.send(id);
-});
 
 // // The addFact middleware saves the fact, returns it to the client which made POST request, and invokes the sendEventsToAll function.
 // async function addFact(req, res) {
