@@ -12,11 +12,7 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
-		const url = `http://localhost:4000/events/symbols?id=${this.state.symbolList.join(
-			','
-		)}`;
-		// console.log(url);
-		this.startEventSource(url);
+		this.startEventSource();
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -24,14 +20,28 @@ class App extends React.Component {
 		//   console.log('symbols state has changed.')
 		// }
 
-		let contained = (arr, target) => target.every(v => arr.includes(v)); //does arr contain all elements of target
+		// let contained = (arr, target) => target.every(v => arr.includes(v)); //does arr contain all elements of target
+		// console.log([...a].sort().join() === [...b].sort().join());
 
-		if (!contained(prevState.symbols, this.state.symbols)) {
+		// if (!contained(prevState.symbols, this.state.symbols)) {
+		// 	// close old event source and start a new one with updated symbols
+		// }
+
+		let arrayElementsEqual = (arr1, arr2) =>
+			[...new Set(arr1)].sort().join() === [...new Set(arr2)].sort().join(); //check if both arrays contain same values (excl. duplicates)
+
+		if (!arrayElementsEqual(prevState.symbols, this.state.symbols)) {
 			// close old event source and start a new one with updated symbols
+			if (this.eventSource) this.eventSource.close();
+
+			this.startEventSource();
 		}
 	}
 
-	startEventSource(url) {
+	startEventSource() {
+		const uniqueSymbols = [...new Set(this.state.symbolList)];
+
+		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
 		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL
 		// this.events = new EventSource('http://localhost:4000/events');
 		this.events = new EventSource(url);
