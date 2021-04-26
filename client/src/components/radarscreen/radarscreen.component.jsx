@@ -97,25 +97,16 @@ class RadarScreen extends React.Component {
 			Interval = localStorage.getItem('Interval').split(',');
 			ID = localStorage.getItem('ID').split(',');
 
-			// console.log('Z rehydrate', rehydrate, Symbol);
 			rehydrate = {...rehydrate, Symbol, Interval, ID};
-			// console.log('A rehydrate', rehydrate, Symbol);
 
 			header.forEach(headerTitle => {
 				if (!Object.keys(rehydrate).includes(headerTitle)) {
 					rehydrate[headerTitle] = [];
 				}
 			});
-
-			// console.log('rehydrate', rehydrate);
 		} catch {
 			header = this.getHeaderTitle(this.state);
 		}
-		// console.log('mount bef', this.state.Symbol, Symbol, rehydrate);
-
-		// const reh = JSON.parse(JSON.stringify(rehydrate));
-
-		// console.log('rehydrate stringif', reh, rehydrate);
 
 		this.setState(rehydrate, () => {
 			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
@@ -161,22 +152,28 @@ class RadarScreen extends React.Component {
 		);
 
 		let stateIndicatorObject = {};
-		//filter out the indicators that are needed in the columns
-		apiIndicators.forEach(apiIndicatorName => {
-			// look up the name used for the column header (and state key)
-			const stateIndicatorName = API_TO_INDICATORS[apiIndicatorName];
-			stateIndicatorObject = {
-				...stateIndicatorObject,
-				[stateIndicatorName]: Symbol.map(
-					symbolName => apiObject[symbolName][apiIndicatorName]
-				),
-			};
-		});
+
+		try {
+			//filter out the indicators that are needed in the columns
+			apiIndicators.forEach(apiIndicatorName => {
+				// look up the name used for the column header (and state key)
+				const stateIndicatorName = API_TO_INDICATORS[apiIndicatorName];
+				stateIndicatorObject = {
+					...stateIndicatorObject,
+					[stateIndicatorName]: Symbol.map(
+						symbolName => apiObject[symbolName][apiIndicatorName]
+					),
+				};
+			});
+		} catch (e) {
+			console.log('error converted apiObject to stateObject', e);
+		}
 
 		return stateIndicatorObject;
 	}
 
 	startEventSource() {
+		console.log('start new event source');
 		const uniqueSymbols = [...new Set(this.state.Symbol)];
 
 		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
@@ -197,7 +194,12 @@ class RadarScreen extends React.Component {
 
 			const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
 
-			// console.log(stateIndicatorObject, 'stateIndicatorObject');
+			console.log(
+				stateIndicatorObject,
+				'stateIndicatorObject',
+				new Date().getMinutes(),
+				new Date().getSeconds()
+			);
 
 			this.setState(stateIndicatorObject);
 			// this.setState({'52 Week High': [1, 1, 1, 1, 1, 1]});
@@ -238,12 +240,12 @@ class RadarScreen extends React.Component {
 				// console.log(prevState.ID,'prevState.ID')
 				const maxID = Math.max(...prevState.ID);
 
-				console.log(prevState[columnName], 'before', valueRow, headerCol);
-				console.log(
-					Object.assign([], prevState[columnName], {
-						[valueRow]: updatedValue,
-					})
-				);
+				// console.log(prevState[columnName], 'before', valueRow, headerCol);
+				// console.log(
+				// 	Object.assign([], prevState[columnName], {
+				// 		[valueRow]: updatedValue,
+				// 	})
+				// );
 
 				return {
 					// updates that one value that changed in the array
@@ -260,7 +262,7 @@ class RadarScreen extends React.Component {
 			},
 			//fetch the data for the entire row based on Symbol, Interval
 			() => {
-				console.log(this.state.Symbol, 'after change');
+				// console.log(this.state.Symbol, 'after change');
 				// would not be necessary anymore because one a symbol changes componentDidUpdate triggers a new EventSource
 				// const Symbol = new Array(this.state.Symbol[valueRow]);
 				// this.fetchAndSetState(Symbol, header, {}, valueRow);

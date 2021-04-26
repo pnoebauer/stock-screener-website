@@ -50,7 +50,11 @@ const interValTime = 60000;
 const symbolsPerSplit = Math.round(symbols.length / splits);
 
 let timerId = setInterval(async () => {
-	// console.log('new interval');
+	// console.log('new interval at', new Date().getSeconds());
+
+	const waitToFullMinute = (60 - new Date().getSeconds()) * 1000;
+	await sleep(waitToFullMinute + 10000);
+	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
 
 	let startIndex = 0;
 	let endIndex = symbolsPerSplit;
@@ -121,10 +125,15 @@ let timerId = setInterval(async () => {
 		if (!identical) break;
 	}
 
+	const second = new Date().getSeconds();
+	const delay = (60 - second) * 1000;
+
 	console.log(identical, 'identical');
 	cachedData = data;
 	if (!identical) {
-		console.log(cachedData.AAPL);
+		// console.log(cachedData.AAPL, new Date().getSeconds());
+		await sleep(delay);
+		console.log('sending', new Date().getSeconds());
 		sendEventsToAll(data);
 	}
 
