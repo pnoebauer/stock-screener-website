@@ -1,139 +1,41 @@
 import React from 'react';
+
 import './App.css';
+import Header from './components/header/header.component';
 
-class App extends React.Component {
-	constructor(props) {
-		super(props);
-		this.events = undefined;
-		this.state = {
-			symbols: {},
-			symbolList: ['GOOGL', 'AAPL', 'AMZN'],
-		};
-	}
+import BuildScreener from './components/build-screener/build-screener.component';
 
-	componentDidMount() {
-		this.startEventSource();
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		// if (prevState.symbols !== this.state.symbols) {
-		//   console.log('symbols state has changed.')
-		// }
-
-		// let contained = (arr, target) => target.every(v => arr.includes(v)); //does arr contain all elements of target
-		// console.log([...a].sort().join() === [...b].sort().join());
-
-		// if (!contained(prevState.symbols, this.state.symbols)) {
-		// 	// close old event source and start a new one with updated symbols
-		// }
-
-		let arrayElementsEqual = (arr1, arr2) =>
-			[...new Set(arr1)].sort().join() === [...new Set(arr2)].sort().join(); //check if both arrays contain same values (excl. duplicates)
-
-		if (!arrayElementsEqual(prevState.symbols, this.state.symbols)) {
-			// close old event source and start a new one with updated symbols
-			if (this.eventSource) this.eventSource.close();
-
-			this.startEventSource();
-		}
-	}
-
-	startEventSource() {
-		const uniqueSymbols = [...new Set(this.state.symbolList)];
-
-		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
-		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL
-		// this.events = new EventSource('http://localhost:4000/events');
-		this.events = new EventSource(url);
-
-		// // Subscribe to event with type 'test'
-		// this.events.addEventListener('test', function (event) {
-		// 	console.log('event.data', event.data);
-		// });
-
-		// Subscribe to all events without an explicit type
-		this.events.onmessage = event => {
-			const symbols = JSON.parse(event.data);
-
-			console.log(symbols, 'symbols');
-
-			this.setState({symbols});
-
-			// console.log('symbols A', this.state.symbols);
-		};
-	}
-
-	componentWillUnmount() {
-		if (this.eventSource) this.eventSource.close();
-	}
-
-	render() {
-		const {symbols} = this.state;
-		return (
-			<div>
-				{/* {console.log('symbols', symbols)} */}
-				<ul>
-					{Object.keys(symbols).map((symbol, index) => {
-						// console.log(symbol);
-						return (
-							<li
-								key={index}
-							>{`${symbols[symbol].symbol}: ${symbols[symbol].closePrice}`}</li>
-						);
-					})}
-				</ul>
-			</div>
-		);
-	}
+function App() {
+	return (
+		<div className='App'>
+			<Header />
+			<BuildScreener injectProp={'abcd'} />
+		</div>
+	);
 }
 
-export default App;
+// class App extends React.Component {
+// 	callAPI() {
+// 		fetch('http://localhost:4000')
+// 			.then(res => res.json())
+// 			// .then(res => console.log(res, 'res'))
+// 			.then(data => console.log(data, 'data'))
+// 			.catch(e => console.log(e, 'error'));
 
-// import React, {useState, useEffect} from 'react';
-// function App() {
-// 	// const [facts, setFacts] = useState([]);
-// 	const [symbols, setSymbols] = useState({});
-// 	const [listening, setListening] = useState(false);
+// 		// fetch(
+// 		// 	'https://api.tdameritrade.com/v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true'
+// 		// )//.then(res => console.log(res, 'res'));
+// 		// 	.then(res => res.json())
+// 		// 	.then(data => console.log(data));
+// 	}
 
-// 	useEffect(() => {
-// 		if (!listening) {
-// 			const events = new EventSource('http://localhost:4000/events');
-
-// 			// Subscribe to event with type 'test'
-// 			events.addEventListener('test', function (event) {
-// 				console.log('event.data', event.data);
-// 			});
-
-// 			// Subscribe to all events without an explicit type
-// 			events.onmessage = event => {
-// 				const parsedData = JSON.parse(event.data);
-
-// 				console.log(parsedData, 'parsedData');
-
-// 				setSymbols(symbols => ({...symbols, ...parsedData}));
-
-// 				// console.log('symbols A', symbols);
-// 			};
-
-// 			setListening(true);
-// 		}
-// 	}, [listening, symbols]);
-
-// 	return (
-// 		<div>
-// 			{/* {console.log('symbols', symbols)} */}
-// 			<ul>
-// 				{Object.keys(symbols).map((symbol, index) => {
-// 					// console.log(symbol);
-// 					return (
-// 						<li
-// 							key={index}
-// 						>{`${symbols[symbol].symbol}: ${symbols[symbol].closePrice}`}</li>
-// 					);
-// 				})}
-// 			</ul>
-// 		</div>
-// 	);
+// 	componentDidMount() {
+// 		console.log('mounted');
+// 		this.callAPI();
+// 	}
+// 	render() {
+// 		return <div className='App'>Test</div>;
+// 	}
 // }
 
-// export default App;
+export default App;
