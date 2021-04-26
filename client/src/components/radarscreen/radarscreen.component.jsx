@@ -88,6 +88,7 @@ class RadarScreen extends React.Component {
 
 	componentDidMount() {
 		let {Symbol, Interval, ID} = this.state;
+		// let Interval, ID;
 		let rehydrate = {};
 		let header;
 		try {
@@ -96,16 +97,29 @@ class RadarScreen extends React.Component {
 			Interval = localStorage.getItem('Interval').split(',');
 			ID = localStorage.getItem('ID').split(',');
 
+			// console.log('Z rehydrate', rehydrate, Symbol);
 			rehydrate = {...rehydrate, Symbol, Interval, ID};
-			// console.log('rehydrate',rehydrate)
+			// console.log('A rehydrate', rehydrate, Symbol);
+
+			header.forEach(headerTitle => {
+				if (!Object.keys(rehydrate).includes(headerTitle)) {
+					rehydrate[headerTitle] = [];
+				}
+			});
+
+			// console.log('rehydrate', rehydrate);
 		} catch {
 			header = this.getHeaderTitle(this.state);
 		}
+		// console.log('mount bef', this.state.Symbol, Symbol, rehydrate);
+
+		// const reh = JSON.parse(JSON.stringify(rehydrate));
+
+		// console.log('rehydrate stringif', reh, rehydrate);
 
 		this.setState(rehydrate, () => {
-			// console.log('mount h', header)
-			// this.fetchAndSetState(Symbol, header);
-			this.startEventSource(Symbol);
+			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
+			this.startEventSource(this.state.Symbol);
 		});
 	}
 
@@ -113,19 +127,26 @@ class RadarScreen extends React.Component {
 		let arrayElementsEqual = (arr1, arr2) =>
 			[...new Set(arr1)].sort().join() === [...new Set(arr2)].sort().join(); //check if both arrays contain same values (excl. duplicates)
 
-		// if (!arrayElementsEqual(prevState.Symbol, this.state.Symbol)) {
+		let sameElements = (arr1, arr2) =>
+			[...arr1].sort().join() === [...arr2].sort().join();
+
+		// console.log(
+		// 	sameElements(prevState.Symbol, this.state.Symbol),
+		// 	prevState.Symbol,
+		// 	this.state.Symbol
+		// );
 		// trigger if symbols or columns change
 		if (
-			!arrayElementsEqual(prevState.Symbol, this.state.Symbol) ||
+			!sameElements(prevState.Symbol, this.state.Symbol) ||
 			!arrayElementsEqual(this.getHeaderTitle(prevState), this.getHeaderTitle(this.state))
 		) {
 			// close old event source and start a new one with updated Symbol
 			if (this.events) {
-				console.log('updating, closing eventSource');
+				// console.log('updating, closing eventSource');
 				this.events.close();
+				// console.log('update', this.events);
+				this.startEventSource();
 			}
-
-			this.startEventSource();
 		}
 	}
 
@@ -172,10 +193,14 @@ class RadarScreen extends React.Component {
 		this.events.onmessage = event => {
 			const symbolsDataObject = JSON.parse(event.data);
 
+			// console.log(symbolsDataObject, 'symbolsDataObject');
+
 			const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
 
+			// console.log(stateIndicatorObject, 'stateIndicatorObject');
+
 			this.setState(stateIndicatorObject);
-			// console.log(symbolsDataObject, 'symbolsDataObject');
+			// this.setState({'52 Week High': [1, 1, 1, 1, 1, 1]});
 
 			// if (Object.keys(symbolsDataObject).length) {
 			// 	// console.log('set state after message');
@@ -197,7 +222,7 @@ class RadarScreen extends React.Component {
 
 	componentWillUnmount() {
 		if (this.events) {
-			console.log('unmounting, closing eventSource');
+			// console.log('unmounting, closing eventSource');
 			this.events.close();
 		}
 	}
@@ -212,6 +237,14 @@ class RadarScreen extends React.Component {
 				const columnName = header[headerCol]; //which column changed (Symbol, Interval)
 				// console.log(prevState.ID,'prevState.ID')
 				const maxID = Math.max(...prevState.ID);
+
+				console.log(prevState[columnName], 'before', valueRow, headerCol);
+				console.log(
+					Object.assign([], prevState[columnName], {
+						[valueRow]: updatedValue,
+					})
+				);
+
 				return {
 					// updates that one value that changed in the array
 					[columnName]: Object.assign([], prevState[columnName], {
@@ -227,6 +260,7 @@ class RadarScreen extends React.Component {
 			},
 			//fetch the data for the entire row based on Symbol, Interval
 			() => {
+				console.log(this.state.Symbol, 'after change');
 				// would not be necessary anymore because one a symbol changes componentDidUpdate triggers a new EventSource
 				// const Symbol = new Array(this.state.Symbol[valueRow]);
 				// this.fetchAndSetState(Symbol, header, {}, valueRow);
@@ -236,12 +270,14 @@ class RadarScreen extends React.Component {
 
 	sortTable = event => {
 		this.setState((prevState, props) => {
+			// console.log('tr');
 			const sortedTable = props.onSort(event, prevState);
 			return sortedTable;
 		});
 	};
 
 	handleColumnUpdate = names => {
+		// console.log('tr col');
 		// const {Symbol} = this.state;
 		// merge permanentHeaders with the updated column names
 		const header = [...permanentHeaders, ...names];
@@ -254,6 +290,13 @@ class RadarScreen extends React.Component {
 			}
 		});
 
+		header.forEach(headerTitle => {
+			if (!Object.keys(clearedState).includes(headerTitle)) {
+				clearedState[headerTitle] = [];
+			}
+		});
+
+		// console.log(clearedState, 'cl');
 		this.setState(clearedState);
 
 		// will be triggered through didComponentUpdate
@@ -261,6 +304,7 @@ class RadarScreen extends React.Component {
 	};
 
 	handleRowDelete = e => {
+		// console.log('tr del');
 		const rowIdx = Number(e.target.id);
 		const stateClone = JSON.parse(JSON.stringify(this.state));
 
@@ -279,6 +323,7 @@ class RadarScreen extends React.Component {
 	};
 
 	handleDeleteAllRows = e => {
+		console.log('tr del all');
 		Object.keys(this.state).forEach(key => {
 			this.setState({[key]: []});
 		});
@@ -288,6 +333,7 @@ class RadarScreen extends React.Component {
 		this.onChange(updatedValue, headerCol, valueRow, true);
 
 	handleUniverseAdd = symbols => {
+		// console.log('tr uni');
 		const numberAddedSymbols = symbols.length;
 
 		const stateClone = JSON.parse(JSON.stringify(this.state));
@@ -315,6 +361,8 @@ class RadarScreen extends React.Component {
 		// passed from the withSort HOC
 		const {sortConfig} = this.props;
 		const {Symbol} = this.state;
+
+		// console.log(Symbol, 'render');
 
 		const usedIndicators = header.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]

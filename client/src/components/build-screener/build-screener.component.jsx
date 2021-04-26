@@ -22,6 +22,7 @@ const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 
 // const BuildScreener = withFetch(TestFetch, urlRealTime, apikey);
 
-const BuildScreener = withSorting(withFetch(RadarScreen, urlRealTime, apikey));
+// const BuildScreener = withSorting(withFetch(RadarScreen, urlRealTime, apikey));
+const BuildScreener = withSorting(RadarScreen);
 
 export default BuildScreener;
