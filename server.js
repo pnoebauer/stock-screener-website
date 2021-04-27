@@ -39,38 +39,64 @@ app.listen(PORT, error => {
 let cachedData = {};
 
 // const symbols = ['SPY', 'GOOGL'];
-const symbols = constants.SYMBOLS;
+// const symbols = constants.SYMBOLS;
+const {SYMBOLS, API_TO_INDICATORS} = constants;
+
+// fetchData.fetchLiveData(['SPY']).then(data => console.log(data));
 
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const filterData = dataSet => {
+	let filteredData = {};
+
+	for (const symbol in dataSet) {
+		filteredData[symbol] = {};
+		for (const key in dataSet[symbol]) {
+			if (Object.keys(API_TO_INDICATORS).includes(key)) {
+				// console.log(symbol, key, dataSet[symbol][key]);
+				// filteredData[symbol][key] = dataSet[symbol][key];
+
+				const keyValue =
+					key === 'divDate' ? dataSet[symbol][key].split(' ')[0] : dataSet[symbol][key];
+
+				filteredData[symbol][key] = keyValue;
+			}
+		}
+	}
+
+	return filteredData;
+};
+
 const splits = 5;
 const interValTime = 60000;
-const symbolsPerSplit = Math.round(symbols.length / splits);
+const symbolsPerSplit = Math.round(SYMBOLS.length / splits);
 
-let timerId = setInterval(async () => {
-	// console.log('new interval at', new Date().getSeconds());
-
-	const waitToFullMinute = (60 - new Date().getSeconds()) * 1000;
-	await sleep(waitToFullMinute + 10000);
-	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
-
+const batchFetch = async symbolList => {
 	let startIndex = 0;
 	let endIndex = symbolsPerSplit;
 	let data = {};
 	// split fetches into 5 equal parts
 	for (let i = 0; i < splits; i++) {
-		let partialData = await fetchData.fetchLiveData(symbols.slice(startIndex, endIndex));
-		data = {...data, ...partialData};
+		let partialData = await fetchData.fetchLiveData(
+			symbolList.slice(startIndex, endIndex)
+		);
 
-		// console.log('symbols', startIndex, 'to', endIndex, 'of', symbols.length);
-		const d = new Date();
+		let filteredData = filterData(partialData);
+		// console.log(filteredData);
+
+		data = {...data, ...filteredData};
+		// data = {...data, ...partialData};
+		// console.log(data);
+
+		// console.log('SYMBOLS', startIndex, 'to', endIndex, 'of', symbolList.length);
+		// const d = new Date();
 		// console.log(d.getMinutes(), d.getSeconds());
 
 		startIndex = endIndex;
 		endIndex += symbolsPerSplit;
-		endIndex = Math.min(endIndex, symbols.length);
+		endIndex = Math.min(endIndex, symbolList.length);
 
 		if (i !== splits - 1) {
 			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
@@ -81,17 +107,19 @@ let timerId = setInterval(async () => {
 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
 	// console.log(data.AAPL.askPrice, 'AAPL ask');
 
-	if (data.error) {
-		console.log('error during fetching', data.error);
-		return;
-	}
+	// if (data.error) {
+	// 	console.log('error during fetching', data.error);
+	// 	return;
+	// }
 
-	// console.time('time');
+	return data;
+};
 
+const compareCacheWithFetch = data => {
 	let identical = true;
 
-	for (const i in symbols) {
-		const symbol = symbols[i];
+	for (const i in SYMBOLS) {
+		const symbol = SYMBOLS[i];
 		// console.log(symbol, 'symbol', data[symbol]);
 		if (!data[symbol]) {
 			console.log('fetching error for', symbol);
@@ -125,20 +153,142 @@ let timerId = setInterval(async () => {
 		if (!identical) break;
 	}
 
-	const second = new Date().getSeconds();
-	const delay = (60 - second) * 1000;
+	return identical;
+};
 
+// batchFetch(SYMBOLS.slice(0, 5)).then(data => console.log(data));
+
+const waitTillSecond = async timeSecond => {
+	const second = new Date().getSeconds();
+	const delay = (60 - second + timeSecond) * 1000;
+
+	await sleep(delay);
+};
+
+let timerId = setInterval(async () => {
+	// console.log('new interval at', new Date().getSeconds());
+
+	await waitTillSecond(10);
+	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
+
+	const data = await batchFetch(SYMBOLS);
+	// console.log(data.AAPL.bidPrice, 'AAPL bid');
+
+	if (data.error) {
+		console.log('error during fetching', data.error);
+		return;
+	}
+
+	// console.time('time');
+
+	const identical = compareCacheWithFetch(data);
 	console.log(identical, 'identical');
+
 	cachedData = data;
 	if (!identical) {
 		// console.log(cachedData.AAPL, new Date().getSeconds());
-		await sleep(delay);
+		await waitTillSecond(0);
 		console.log('sending', new Date().getSeconds());
 		sendEventsToAll(data);
 	}
-
 	// console.timeEnd('time');
 }, interValTime);
+
+// let timerId = setInterval(async () => {
+// 	// console.log('new interval at', new Date().getSeconds());
+
+// 	const waitToFullMinute = (60 - new Date().getSeconds()) * 1000;
+// 	await sleep(waitToFullMinute + 10000);
+// 	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
+
+// 	let startIndex = 0;
+// 	let endIndex = symbolsPerSplit;
+// 	let data = {};
+// 	// split fetches into 5 equal parts
+// 	for (let i = 0; i < splits; i++) {
+// 		let partialData = await fetchData.fetchLiveData(SYMBOLS.slice(startIndex, endIndex));
+
+// 		// let filteredData = filterData(partialData);
+
+// 		// data = {...data, ...filteredData};
+// 		data = {...data, ...partialData};
+// 		console.log(data);
+
+// 		// console.log('SYMBOLS', startIndex, 'to', endIndex, 'of', SYMBOLS.length);
+// 		// const d = new Date();
+// 		// console.log(d.getMinutes(), d.getSeconds());
+
+// 		startIndex = endIndex;
+// 		endIndex += symbolsPerSplit;
+// 		endIndex = Math.min(endIndex, SYMBOLS.length);
+
+// 		if (i !== splits - 1) {
+// 			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
+// 			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+// 		}
+// 	}
+
+// 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
+// 	// console.log(data.AAPL.askPrice, 'AAPL ask');
+
+// 	if (data.error) {
+// 		console.log('error during fetching', data.error);
+// 		return;
+// 	}
+
+// 	// console.time('time');
+
+// 	let identical = true;
+
+// 	for (const i in SYMBOLS) {
+// 		const symbol = SYMBOLS[i];
+// 		// console.log(symbol, 'symbol', data[symbol]);
+// 		if (!data[symbol]) {
+// 			console.log('fetching error for', symbol);
+// 			data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
+// 			continue;
+// 		}
+// 		for (const key in data[symbol]) {
+// 			// console.log(key, 'key');
+// 			if (
+// 				!['quoteTimeInLong', 'tradeTimeInLong', 'regularMarketTradeTimeInLong'].includes(
+// 					key
+// 				)
+// 			) {
+// 				if (cachedData[symbol]) {
+// 					//if the new fetch request has no data for this symbol and key, then set it to the old one
+// 					if (!data[symbol][key]) {
+// 						data[symbol][key] = cachedData[symbol][key];
+// 						continue;
+// 					}
+// 					if (data[symbol][key] !== cachedData[symbol][key]) {
+// 						identical = false;
+// 						break;
+// 					}
+// 				} else {
+// 					identical = false;
+// 					break;
+// 				}
+// 			}
+// 		}
+
+// 		if (!identical) break;
+// 	}
+
+// 	const second = new Date().getSeconds();
+// 	const delay = (60 - second) * 1000;
+
+// 	console.log(identical, 'identical');
+// 	cachedData = data;
+// 	if (!identical) {
+// 		// console.log(cachedData.AAPL, new Date().getSeconds());
+// 		await sleep(delay);
+// 		console.log('sending', new Date().getSeconds());
+// 		sendEventsToAll(data);
+// 	}
+
+// 	// console.timeEnd('time');
+// }, interValTime);
 
 // // after 5 seconds stop
 // setTimeout(() => {

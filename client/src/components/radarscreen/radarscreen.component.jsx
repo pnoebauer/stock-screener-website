@@ -27,19 +27,18 @@ class RadarScreen extends React.Component {
 			Symbol: SYMBOLS.slice(0, 5),
 			Interval: Array(5).fill(INTERVALS[0]),
 			ID: [...Array(5)].map((a, idx) => idx),
-			// 'Last Price': Array(8).fill(0)
 		};
 	}
 
 	// Returns all the headers based on state object keys
 	getHeaderTitle = stateObj => {
 		let headerTitle = Object.keys(stateObj).filter(key => stateObj[key] !== undefined);
-		// console.log(headerTitle)
 		headerTitle = headerTitle.filter(item => item !== 'ID');
 		return headerTitle;
 	};
 
 	updateLocalStorage() {
+		// console.log('local storage update');
 		localStorage.setItem('header', this.getHeaderTitle(this.state));
 		localStorage.setItem('Symbol', this.state.Symbol);
 		localStorage.setItem('Interval', this.state.Interval);
@@ -48,7 +47,6 @@ class RadarScreen extends React.Component {
 
 	componentDidMount() {
 		let {Symbol, Interval, ID} = this.state;
-		// let Interval, ID;
 		let rehydrate = {};
 		let header;
 		try {
@@ -163,6 +161,8 @@ class RadarScreen extends React.Component {
 			if (Object.keys(symbolsDataObject).length) {
 				// console.log('set state after message');
 				this.setState(stateIndicatorObject, () => this.updateLocalStorage());
+			} else {
+				// this.updateLocalStorage();
 			}
 		};
 	}
@@ -182,7 +182,7 @@ class RadarScreen extends React.Component {
 		this.setState(
 			prevState => {
 				const columnName = header[headerCol]; //which column changed (Symbol, Interval)
-				const maxID = Math.max(...prevState.ID);
+				const maxID = Math.max(...prevState.ID, 1);
 
 				return {
 					// updates that one value that changed in the array
@@ -254,7 +254,6 @@ class RadarScreen extends React.Component {
 	};
 
 	handleDeleteAllRows = e => {
-		// console.log('tr del all');
 		Object.keys(this.state).forEach(key => {
 			this.setState({[key]: []});
 		});

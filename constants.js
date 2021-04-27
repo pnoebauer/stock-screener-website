@@ -729,4 +729,5 @@ module.exports = {
 	UNIVERSES,
 	SYMBOLS,
 	UNSTABLEPERIOD,
+	API_TO_INDICATORS,
 };
