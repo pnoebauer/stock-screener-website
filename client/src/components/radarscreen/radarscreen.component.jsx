@@ -39,52 +39,12 @@ class RadarScreen extends React.Component {
 		return headerTitle;
 	};
 
-	// fetchAndSetState = (Symbol, header, clearedState, valueRow) => {
-	// 	const {fetchRealTimeData} = this.props;
-
-	// 	// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
-	// 	const apiIndicators = header.flatMap(item =>
-	// 		permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
-	// 	);
-
-	// 	let stateUpdates = {};
-
-	// 	//fetch all symbols and apiIndicators
-	// 	fetchRealTimeData(Symbol, apiIndicators)
-	// 		.then(indicatorObject => {
-	// 			// loop over all apiIndicators
-	// 			apiIndicators.forEach(apiIndicator => {
-	// 				// look up the name used for the column header (and state key)
-	// 				const indicatorColumn = API_TO_INDICATORS[apiIndicator];
-
-	// 				const updatedRows =
-	// 					valueRow !== undefined
-	// 						? Object.assign([], this.state[indicatorColumn], {
-	// 								[valueRow]: indicatorObject[apiIndicator][0],
-	// 						  })
-	// 						: indicatorObject[apiIndicator];
-
-	// 				// merge the result of the current indicator column with the temp state object
-	// 				stateUpdates = {
-	// 					...stateUpdates,
-	// 					[indicatorColumn]: updatedRows,
-	// 				};
-	// 			});
-	// 			return stateUpdates;
-	// 		})
-	// 		.catch(e => console.log(e, 'error during fetching'))
-	// 		// update state to the updated indicators and the clearedState (all unused indicators set to null)
-	// 		.then(stateUpdates =>
-	// 			this.setState({...clearedState, ...stateUpdates}, () => {
-	// 				// console.log(stateUpdates,clearedState,'c',{...stateUpdates,...clearedState})
-	// 				// console.log(this.getHeaderTitle(this.state))
-	// 				localStorage.setItem('header', this.getHeaderTitle(this.state));
-	// 				localStorage.setItem('Symbol', this.state.Symbol);
-	// 				localStorage.setItem('Interval', this.state.Interval);
-	// 				localStorage.setItem('ID', this.state.ID);
-	// 			})
-	// 		);
-	// };
+	updateLocalStorage() {
+		localStorage.setItem('header', this.getHeaderTitle(this.state));
+		localStorage.setItem('Symbol', this.state.Symbol);
+		localStorage.setItem('Interval', this.state.Interval);
+		localStorage.setItem('ID', this.state.ID);
+	}
 
 	componentDidMount() {
 		let {Symbol, Interval, ID} = this.state;
@@ -144,7 +104,6 @@ class RadarScreen extends React.Component {
 	apiObjectToStateObject(apiObject) {
 		const {Symbol} = this.state;
 		const header = this.getHeaderTitle(this.state);
-		// const {fetchRealTimeData} = this.props;
 
 		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
 		const apiIndicators = header.flatMap(item =>
@@ -194,31 +153,17 @@ class RadarScreen extends React.Component {
 
 			const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
 
-			console.log(
-				stateIndicatorObject,
-				'stateIndicatorObject',
-				new Date().getMinutes(),
-				new Date().getSeconds()
-			);
+			// console.log(
+			// 	stateIndicatorObject,
+			// 	'stateIndicatorObject',
+			// 	new Date().getMinutes(),
+			// 	new Date().getSeconds()
+			// );
 
-			this.setState(stateIndicatorObject);
-			// this.setState({'52 Week High': [1, 1, 1, 1, 1, 1]});
-
-			// if (Object.keys(symbolsDataObject).length) {
-			// 	// console.log('set state after message');
-			// 	this.setState({symbolsDataObject});
-			// }
-
-			// console.log('symbolsDataObject A', this.state.symbolsDataObject);
-
-			// this.setState({...clearedState, ...stateUpdates}, () => {
-			// 	// console.log(stateUpdates,clearedState,'c',{...stateUpdates,...clearedState})
-			// 	// console.log(this.getHeaderTitle(this.state))
-			// 	localStorage.setItem('header', this.getHeaderTitle(this.state));
-			// 	localStorage.setItem('Symbol', this.state.Symbol);
-			// 	localStorage.setItem('Interval', this.state.Interval);
-			// 	localStorage.setItem('ID', this.state.ID);
-			// })
+			if (Object.keys(symbolsDataObject).length) {
+				// console.log('set state after message');
+				this.setState(stateIndicatorObject, () => this.updateLocalStorage());
+			}
 		};
 	}
 
@@ -237,15 +182,7 @@ class RadarScreen extends React.Component {
 		this.setState(
 			prevState => {
 				const columnName = header[headerCol]; //which column changed (Symbol, Interval)
-				// console.log(prevState.ID,'prevState.ID')
 				const maxID = Math.max(...prevState.ID);
-
-				// console.log(prevState[columnName], 'before', valueRow, headerCol);
-				// console.log(
-				// 	Object.assign([], prevState[columnName], {
-				// 		[valueRow]: updatedValue,
-				// 	})
-				// );
 
 				return {
 					// updates that one value that changed in the array
@@ -260,12 +197,9 @@ class RadarScreen extends React.Component {
 						: prevState.ID,
 				};
 			},
-			//fetch the data for the entire row based on Symbol, Interval
 			() => {
-				// console.log(this.state.Symbol, 'after change');
-				// would not be necessary anymore because one a symbol changes componentDidUpdate triggers a new EventSource
-				// const Symbol = new Array(this.state.Symbol[valueRow]);
-				// this.fetchAndSetState(Symbol, header, {}, valueRow);
+				// already covered with startEventSource
+				// this.updateLocalStorage();
 			}
 		);
 	};
@@ -279,30 +213,27 @@ class RadarScreen extends React.Component {
 	};
 
 	handleColumnUpdate = names => {
-		// console.log('tr col');
-		// const {Symbol} = this.state;
 		// merge permanentHeaders with the updated column names
 		const header = [...permanentHeaders, ...names];
 
+		// stringify the whole state object in order to modify it and to remove
 		const clearedState = JSON.parse(JSON.stringify(this.state));
 
+		// unused columns (=state keys) are set to undefined
 		Object.keys(clearedState).forEach(key => {
 			if (!header.includes(key)) {
 				clearedState[key] = undefined;
 			}
 		});
 
+		// check if all header elements already exist in the state object, if not set the key with that element to an empty array
 		header.forEach(headerTitle => {
 			if (!Object.keys(clearedState).includes(headerTitle)) {
 				clearedState[headerTitle] = [];
 			}
 		});
 
-		// console.log(clearedState, 'cl');
 		this.setState(clearedState);
-
-		// will be triggered through didComponentUpdate
-		// this.fetchAndSetState(Symbol, header, clearedState);
 	};
 
 	handleRowDelete = e => {
@@ -317,15 +248,13 @@ class RadarScreen extends React.Component {
 		});
 
 		this.setState(stateClone, () => {
-			localStorage.setItem('header', this.getHeaderTitle(this.state));
-			localStorage.setItem('Symbol', this.state.Symbol);
-			localStorage.setItem('Interval', this.state.Interval);
-			localStorage.setItem('ID', this.state.ID);
+			// already covered with startEventSource
+			// this.updateLocalStorage();
 		});
 	};
 
 	handleDeleteAllRows = e => {
-		console.log('tr del all');
+		// console.log('tr del all');
 		Object.keys(this.state).forEach(key => {
 			this.setState({[key]: []});
 		});
@@ -353,9 +282,6 @@ class RadarScreen extends React.Component {
 		];
 
 		this.setState(stateClone);
-		// triggered by componentDidUpdate
-		// const header = this.getHeaderTitle(this.state);
-		// this.fetchAndSetState(stateClone.Symbol, header, stateClone);
 	};
 
 	render() {
