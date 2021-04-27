@@ -28,18 +28,8 @@ app.listen(PORT, error => {
 	console.log('Server running on port', PORT);
 });
 
-// repeat with the interval of 2 seconds
-// let timerId = setInterval(() => console.log('tick'), 2000);
-// let timerId = setInterval(
-// 	// () => fetchData.fetchLiveData('SPY').then(data => console.log(data.SPY.lastPrice)),
-// 	() => fetchData.fetchLiveData('SPY').then(data => console.log(data)),
-// 	10000
-// );
-
 let cachedData = {};
 
-// const symbols = ['SPY', 'GOOGL'];
-// const symbols = constants.SYMBOLS;
 const {SYMBOLS, API_TO_INDICATORS} = constants;
 
 // fetchData.fetchLiveData(['SPY']).then(data => console.log(data));
@@ -56,7 +46,6 @@ const filterData = dataSet => {
 		for (const key in dataSet[symbol]) {
 			if (Object.keys(API_TO_INDICATORS).includes(key)) {
 				// console.log(symbol, key, dataSet[symbol][key]);
-				// filteredData[symbol][key] = dataSet[symbol][key];
 
 				const keyValue =
 					key === 'divDate' ? dataSet[symbol][key].split(' ')[0] : dataSet[symbol][key];
@@ -91,8 +80,7 @@ const batchFetch = async symbolList => {
 		// console.log(data);
 
 		// console.log('SYMBOLS', startIndex, 'to', endIndex, 'of', symbolList.length);
-		// const d = new Date();
-		// console.log(d.getMinutes(), d.getSeconds());
+		// console.log(new Date().getMinutes(), new Date().getSeconds());
 
 		startIndex = endIndex;
 		endIndex += symbolsPerSplit;
@@ -105,12 +93,6 @@ const batchFetch = async symbolList => {
 	}
 
 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
-	// console.log(data.AAPL.askPrice, 'AAPL ask');
-
-	// if (data.error) {
-	// 	console.log('error during fetching', data.error);
-	// 	return;
-	// }
 
 	return data;
 };
@@ -178,14 +160,12 @@ let timerId = setInterval(async () => {
 		console.log('error during fetching', data.error);
 		return;
 	}
-
 	// console.time('time');
-
 	const identical = compareCacheWithFetch(data);
 	console.log(identical, 'identical');
 
 	cachedData = data;
-	if (!identical) {
+	if (!identical || true) {
 		// console.log(cachedData.AAPL, new Date().getSeconds());
 		await waitTillSecond(0);
 		console.log('sending', new Date().getSeconds());
@@ -194,110 +174,8 @@ let timerId = setInterval(async () => {
 	// console.timeEnd('time');
 }, interValTime);
 
-// let timerId = setInterval(async () => {
-// 	// console.log('new interval at', new Date().getSeconds());
-
-// 	const waitToFullMinute = (60 - new Date().getSeconds()) * 1000;
-// 	await sleep(waitToFullMinute + 10000);
-// 	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
-
-// 	let startIndex = 0;
-// 	let endIndex = symbolsPerSplit;
-// 	let data = {};
-// 	// split fetches into 5 equal parts
-// 	for (let i = 0; i < splits; i++) {
-// 		let partialData = await fetchData.fetchLiveData(SYMBOLS.slice(startIndex, endIndex));
-
-// 		// let filteredData = filterData(partialData);
-
-// 		// data = {...data, ...filteredData};
-// 		data = {...data, ...partialData};
-// 		console.log(data);
-
-// 		// console.log('SYMBOLS', startIndex, 'to', endIndex, 'of', SYMBOLS.length);
-// 		// const d = new Date();
-// 		// console.log(d.getMinutes(), d.getSeconds());
-
-// 		startIndex = endIndex;
-// 		endIndex += symbolsPerSplit;
-// 		endIndex = Math.min(endIndex, SYMBOLS.length);
-
-// 		if (i !== splits - 1) {
-// 			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
-// 			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
-// 		}
-// 	}
-
-// 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
-// 	// console.log(data.AAPL.askPrice, 'AAPL ask');
-
-// 	if (data.error) {
-// 		console.log('error during fetching', data.error);
-// 		return;
-// 	}
-
-// 	// console.time('time');
-
-// 	let identical = true;
-
-// 	for (const i in SYMBOLS) {
-// 		const symbol = SYMBOLS[i];
-// 		// console.log(symbol, 'symbol', data[symbol]);
-// 		if (!data[symbol]) {
-// 			console.log('fetching error for', symbol);
-// 			data[symbol] = cachedData[symbol]; //if the new fetch request has no data for this symbol, then set it to the old one
-// 			continue;
-// 		}
-// 		for (const key in data[symbol]) {
-// 			// console.log(key, 'key');
-// 			if (
-// 				!['quoteTimeInLong', 'tradeTimeInLong', 'regularMarketTradeTimeInLong'].includes(
-// 					key
-// 				)
-// 			) {
-// 				if (cachedData[symbol]) {
-// 					//if the new fetch request has no data for this symbol and key, then set it to the old one
-// 					if (!data[symbol][key]) {
-// 						data[symbol][key] = cachedData[symbol][key];
-// 						continue;
-// 					}
-// 					if (data[symbol][key] !== cachedData[symbol][key]) {
-// 						identical = false;
-// 						break;
-// 					}
-// 				} else {
-// 					identical = false;
-// 					break;
-// 				}
-// 			}
-// 		}
-
-// 		if (!identical) break;
-// 	}
-
-// 	const second = new Date().getSeconds();
-// 	const delay = (60 - second) * 1000;
-
-// 	console.log(identical, 'identical');
-// 	cachedData = data;
-// 	if (!identical) {
-// 		// console.log(cachedData.AAPL, new Date().getSeconds());
-// 		await sleep(delay);
-// 		console.log('sending', new Date().getSeconds());
-// 		sendEventsToAll(data);
-// 	}
-
-// 	// console.timeEnd('time');
-// }, interValTime);
-
-// // after 5 seconds stop
-// setTimeout(() => {
-// 	clearInterval(timerId);
-// 	alert('stop');
-// }, 5000);
-
-function eventsHandler(req, res, id) {
-	// console.log(id.split(','));
+function eventsHandler(req, res, queriedSymbols) {
+	// console.log(queriedSymbols.split(','));
 
 	const headers = {
 		'Content-Type': 'text/event-stream',
@@ -311,7 +189,8 @@ function eventsHandler(req, res, id) {
 	// const data = `data: ${JSON.stringify(cachedData)}\n\n`;
 
 	const requObj = {};
-	id.split(',').forEach(symbol => (requObj[symbol] = cachedData[symbol]));
+	// retrieve only the required symbols from the cachedData object for each respective client
+	queriedSymbols.split(',').forEach(symbol => (requObj[symbol] = cachedData[symbol]));
 
 	const data = `data: ${JSON.stringify(requObj)}\n\n`;
 
@@ -323,7 +202,7 @@ function eventsHandler(req, res, id) {
 	const newClient = {
 		id: clientId,
 		res,
-		symbol: id,
+		symbol: queriedSymbols,
 	};
 
 	// console.log(newClient, 'newClient');
@@ -347,10 +226,10 @@ function eventsHandler(req, res, id) {
 // app.get('/events', eventsHandler);
 app.get('/events/:id', async function (req, res) {
 	// Retrieve the tag from our URL path
-	const id = req.query.id;
-	// console.log(id);
+	const queriedSymbols = req.query.id;
+	// console.log(queriedSymbols);
 
-	eventsHandler(req, res, id);
+	eventsHandler(req, res, queriedSymbols);
 });
 
 const eventType = 'test';
@@ -372,14 +251,3 @@ function sendEventsToAll(data) {
 		);
 	});
 }
-
-// // The addFact middleware saves the fact, returns it to the client which made POST request, and invokes the sendEventsToAll function.
-// async function addFact(req, res) {
-// 	const newFact = req.body;
-// 	facts.push(newFact);
-// 	res.json(newFact);
-// 	console.log('----------', facts, 'facts', newFact, 'newFact----------');
-// 	return sendEventsToAll(newFact);
-// }
-
-// app.post('/fact', addFact);

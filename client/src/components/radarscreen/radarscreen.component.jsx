@@ -19,7 +19,7 @@ const permanentHeaders = ['ID', 'Symbol', 'Interval'];
 
 let updateKey = null;
 
-class RadarScreen extends React.Component {
+class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
 		this.events = undefined;
@@ -145,25 +145,41 @@ class RadarScreen extends React.Component {
 
 		// Subscribe to all events without an explicit type
 		this.events.onmessage = event => {
+			const {sortConfig} = this.props;
 			const symbolsDataObject = JSON.parse(event.data);
 
 			// console.log(symbolsDataObject, 'symbolsDataObject');
-
-			const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
-
-			// console.log(
-			// 	stateIndicatorObject,
-			// 	'stateIndicatorObject',
-			// 	new Date().getMinutes(),
-			// 	new Date().getSeconds()
-			// );
+			// console.log(this.props.sortConfig, 'sortConfig');
 
 			if (Object.keys(symbolsDataObject).length) {
+				let stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
+
+				if (Object.keys(sortConfig).length) {
+					// console.log('sorting');
+					stateIndicatorObject = this.props.sortTable(
+						stateIndicatorObject,
+						sortConfig.sortedField,
+						sortConfig.direction
+					);
+				}
+
 				// console.log('set state after message');
 				this.setState(stateIndicatorObject, () => this.updateLocalStorage());
+
+				// this.setState((prevState, props) => {
+				// 	const sortedTable = props.onSort(event, prevState);
+				// }
+
+				// , () => this.updateLocalStorage());
 			} else {
 				// this.updateLocalStorage();
 			}
+
+			// this.setState((prevState, props) => {
+			// 	// console.log('tr');
+			// 	const sortedTable = props.onSort(event, prevState);
+			// 	return sortedTable;
+			// });
 		};
 	}
 
@@ -289,7 +305,7 @@ class RadarScreen extends React.Component {
 		const {sortConfig} = this.props;
 		const {Symbol} = this.state;
 
-		// console.log(Symbol, 'render');
+		// console.log('render radar');
 
 		const usedIndicators = header.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]
@@ -325,7 +341,6 @@ class RadarScreen extends React.Component {
 						onChange={this.onChange}
 						handleRowDelete={this.handleRowDelete}
 					/>
-
 					<Dropdown
 						options={SYMBOLS}
 						gridRow={Symbol.length + 2}
@@ -342,7 +357,6 @@ class RadarScreen extends React.Component {
 					>
 						{SYMBOLS[Symbol.length]}
 					</Dropdown>
-
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
@@ -350,7 +364,6 @@ class RadarScreen extends React.Component {
 						}}
 						handleUniverseAdd={this.handleUniverseAdd}
 					/>
-
 					<button
 						style={{
 							border: 'none',
