@@ -17,15 +17,26 @@ function withSorting(WrappedComponent) {
 			delete stateClone.sortConfig;
 
 			// console.log(stateClone,'stateClone orig');
+			console.log(
+				stateClone[sortedField],
+				stateClone,
+				sortedField,
+				'stateClone[sortedField]'
+			);
+
 			const list = [...stateClone[sortedField]];
 
-			// console.log(list);
+			const ids = [...stateClone.ID];
 
-			// temporary array holds objects with position and sort-value
+			console.log(list, 'list');
+
+			// temporary array holds objects with value and index
 			const mapped = list.map((value, index) => {
+				// strings have to be lower case
 				if (typeof value === 'string') {
 					value = value.toLowerCase();
 				}
+				// the id field needs to be of type Number
 				if (sortedField === 'ID') {
 					value = Number(value);
 				}
@@ -33,10 +44,11 @@ function withSorting(WrappedComponent) {
 				return {
 					index,
 					value,
+					id: ids[index],
 				};
 			});
 
-			// console.log(mapped,'mapped');
+			// console.log(mapped, 'mapped');
 
 			// sorting the mapped array containing the reduced values
 			mapped.sort((a, b) => {
@@ -49,17 +61,32 @@ function withSorting(WrappedComponent) {
 				return 0;
 			});
 
-			// console.log(mapped,'map sort');
+			console.log(mapped, 'map sort');
+
+			// const mapSequenceId = mapped.map((element, index) => ({id: element.id, index}));
+			// console.log(mapSequenceId, 'mapSequenceId', stateClone.ID, 'ids');
+
+			let idMap = {};
+			mapped.forEach((element, index) => (idMap[element.id] = index));
+
+			// console.log(idMap, 'idMap', stateClone.ID, 'ids');
+
 			// table headers (Symbol, Interval, Price, ...)
 			const columnHeaders = Object.keys(stateClone);
 
-			// loop over each header and resort its rows based on mapped array
+			// loop over each header and re-sort its rows based on mapped array
 			columnHeaders.forEach(column => {
 				// reorders the current column based on the resorted list (stored in mapped)
 				stateClone[column] = mapped.map(element => stateClone[column][element.index]);
-				// console.log(stateClone[column],'mapped')
-				// console.log(stateClone,'stateClone')
 			});
+
+			// // loop over each header and re-sort its rows based on idMap
+			// columnHeaders.forEach(column => {
+			// 	stateClone[column] = ids.map(id => {
+			// 		const reorderedPosition = idMap[id];
+			// 		return stateClone[column][reorderedPosition];
+			// 	});
+			// });
 
 			// console.log(stateClone,'stateClone fin')
 
@@ -76,14 +103,18 @@ function withSorting(WrappedComponent) {
 			let direction = 1;
 
 			if (sortConfig.sortedField === sortedField) {
+				// if the direction is already up, then change it to down
 				if (sortConfig.direction === direction) {
 					direction = -1;
+					// if the direction is already down, then change it to neutral and sort based on ID (=reset table)
 				} else if (sortConfig.direction === -direction) {
 					// direction = 0;
 					// direction = 1;
 					sortedField = 'ID';
 				}
 			}
+
+			// console.log(sortedField, direction, 'config');
 
 			// const sortedData = sortTable(this.state, sortedField, direction);
 			const sortedData = this.sortTable(state, sortedField, direction);

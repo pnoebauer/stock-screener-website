@@ -145,26 +145,28 @@ class RadarScreen extends React.PureComponent {
 
 		// Subscribe to all events without an explicit type
 		this.events.onmessage = event => {
-			const {sortConfig} = this.props;
+			const {sortConfig, sortTable} = this.props;
 			const symbolsDataObject = JSON.parse(event.data);
 
 			// console.log(symbolsDataObject, 'symbolsDataObject');
 			// console.log(this.props.sortConfig, 'sortConfig');
 
 			if (Object.keys(symbolsDataObject).length) {
-				let stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
+				const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
+
+				let updatedState = {...this.state, ...stateIndicatorObject};
 
 				if (Object.keys(sortConfig).length) {
 					// console.log('sorting');
-					stateIndicatorObject = this.props.sortTable(
-						stateIndicatorObject,
+					updatedState = sortTable(
+						updatedState,
 						sortConfig.sortedField,
 						sortConfig.direction
 					);
 				}
 
 				// console.log('set state after message');
-				this.setState(stateIndicatorObject, () => this.updateLocalStorage());
+				this.setState(updatedState, () => this.updateLocalStorage());
 
 				// this.setState((prevState, props) => {
 				// 	const sortedTable = props.onSort(event, prevState);
