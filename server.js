@@ -165,7 +165,8 @@ let timerId = setInterval(async () => {
 	console.log(identical, 'identical');
 
 	cachedData = data;
-	if (!identical || true) {
+	// if (!identical || true) {
+	if (!identical) {
 		// console.log(cachedData.AAPL, new Date().getSeconds());
 		await waitTillSecond(0);
 		console.log('sending', new Date().getSeconds());

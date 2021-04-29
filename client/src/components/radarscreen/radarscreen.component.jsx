@@ -33,7 +33,7 @@ class RadarScreen extends React.PureComponent {
 	// Returns all the headers based on state object keys
 	getHeaderTitle = stateObj => {
 		let headerTitle = Object.keys(stateObj).filter(key => stateObj[key] !== undefined);
-		headerTitle = headerTitle.filter(item => item !== 'ID');
+		// headerTitle = headerTitle.filter(item => item !== 'ID');
 		return headerTitle;
 	};
 

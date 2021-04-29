@@ -69,23 +69,41 @@ function withSorting(WrappedComponent) {
 			let idMap = {};
 			mapped.forEach((element, index) => (idMap[element.id] = index));
 
-			// console.log(idMap, 'idMap', stateClone.ID, 'ids');
+			console.log(idMap, 'idMap', stateClone.ID, 'ids');
+
+			// let idReord = [];
+			// stateClone.ID.forEach((id, index) => {
+			// 	console.log(id, idMap[id]);
+			// 	const reorderedPosition = idMap[id];
+			// 	idReord[reorderedPosition] = id;
+			// });
+
+			// console.log(idReord, 'idReord');
 
 			// table headers (Symbol, Interval, Price, ...)
 			const columnHeaders = Object.keys(stateClone);
-
-			// loop over each header and re-sort its rows based on mapped array
+			// loop over each header and re-sort its rows based on idMap
 			columnHeaders.forEach(column => {
-				// reorders the current column based on the resorted list (stored in mapped)
-				stateClone[column] = mapped.map(element => stateClone[column][element.index]);
+				let reord = [];
+				stateClone[column].forEach((element, index) => {
+					const id = ids[index];
+
+					// console.log(id, idMap[id]);
+					const reorderedPosition = idMap[id];
+					reord[reorderedPosition] = element;
+				});
+
+				// console.log(reord);
+
+				stateClone[column] = reord;
+
+				// console.log(reord);
 			});
 
-			// // loop over each header and re-sort its rows based on idMap
+			// // loop over each header and re-sort its rows based on mapped array
 			// columnHeaders.forEach(column => {
-			// 	stateClone[column] = ids.map(id => {
-			// 		const reorderedPosition = idMap[id];
-			// 		return stateClone[column][reorderedPosition];
-			// 	});
+			// 	// reorders the current column based on the resorted list (stored in mapped)
+			// 	stateClone[column] = mapped.map(element => stateClone[column][element.index]);
 			// });
 
 			// console.log(stateClone,'stateClone fin')
