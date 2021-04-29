@@ -33,7 +33,7 @@ class RadarScreen extends React.PureComponent {
 	// Returns all the headers based on state object keys
 	getHeaderTitle = stateObj => {
 		let headerTitle = Object.keys(stateObj).filter(key => stateObj[key] !== undefined);
-		// headerTitle = headerTitle.filter(item => item !== 'ID');
+		headerTitle = headerTitle.filter(item => item !== 'ID');
 		return headerTitle;
 	};
 
@@ -91,7 +91,7 @@ class RadarScreen extends React.PureComponent {
 		) {
 			// close old event source and start a new one with updated Symbol
 			if (this.events) {
-				// console.log('updating, closing eventSource');
+				// console.log('updating, closing eventSource', prevState.Symbol, this.state.Symbol);
 				this.events.close();
 				// console.log('update', this.events);
 				this.startEventSource();
@@ -130,8 +130,8 @@ class RadarScreen extends React.PureComponent {
 	}
 
 	startEventSource() {
-		console.log('start new event source');
 		const uniqueSymbols = [...new Set(this.state.Symbol)];
+		console.log('start new event source', uniqueSymbols);
 
 		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
 		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL
@@ -156,6 +156,9 @@ class RadarScreen extends React.PureComponent {
 
 				let updatedState = {...this.state, ...stateIndicatorObject};
 
+				//sorted table cache will be deleted once new data arrives
+				localStorage.removeItem('sortedTable');
+
 				if (Object.keys(sortConfig).length) {
 					// console.log('sorting');
 					updatedState = sortTable(
@@ -164,24 +167,12 @@ class RadarScreen extends React.PureComponent {
 						sortConfig.direction
 					);
 				}
-
 				// console.log('set state after message');
+
 				this.setState(updatedState, () => this.updateLocalStorage());
-
-				// this.setState((prevState, props) => {
-				// 	const sortedTable = props.onSort(event, prevState);
-				// }
-
-				// , () => this.updateLocalStorage());
 			} else {
 				// this.updateLocalStorage();
 			}
-
-			// this.setState((prevState, props) => {
-			// 	// console.log('tr');
-			// 	const sortedTable = props.onSort(event, prevState);
-			// 	return sortedTable;
-			// });
 		};
 	}
 
@@ -266,6 +257,7 @@ class RadarScreen extends React.PureComponent {
 		});
 
 		this.setState(stateClone, () => {
+			// console.log(this.state, stateClone);
 			// already covered with startEventSource
 			// this.updateLocalStorage();
 		});
@@ -307,7 +299,7 @@ class RadarScreen extends React.PureComponent {
 		const {sortConfig} = this.props;
 		const {Symbol} = this.state;
 
-		// console.log('render radar');
+		// console.log('render radar', header, Symbol, this.state);
 
 		const usedIndicators = header.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]

@@ -5,7 +5,7 @@ import GridRow from './grid-row.component';
 const GenerateGrid = ({onChange, handleRowDelete, header, ...props}) => {
 	const {Symbol} = props;
 	const itemNum = Symbol.length;
-	// console.log('map', header, Symbol);
+	// console.log('map', header, Symbol, props);
 	return (
 		<>
 			{

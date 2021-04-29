@@ -66,7 +66,7 @@ class AddColumnButton extends React.Component {
 					showCloseButton={false}
 					closeOnEsc={false}
 					closeMaskOnClick={false}
-					duration={400}
+					duration={500}
 				>
 					<IndicatorSelector
 						handleOkCancel={this.handleOkCancel}
