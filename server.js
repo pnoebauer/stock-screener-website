@@ -47,6 +47,7 @@ const filterData = dataSet => {
 			if (Object.keys(API_TO_INDICATORS).includes(key)) {
 				// console.log(symbol, key, dataSet[symbol][key]);
 
+				//removes trailing time (always 0:00)
 				const keyValue =
 					key === 'divDate' ? dataSet[symbol][key].split(' ')[0] : dataSet[symbol][key];
 
@@ -76,7 +77,6 @@ const batchFetch = async symbolList => {
 		// console.log(filteredData);
 
 		data = {...data, ...filteredData};
-		// data = {...data, ...partialData};
 		// console.log(data);
 
 		// console.log('SYMBOLS', startIndex, 'to', endIndex, 'of', symbolList.length);
@@ -91,7 +91,6 @@ const batchFetch = async symbolList => {
 			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
 		}
 	}
-
 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
 
 	return data;
