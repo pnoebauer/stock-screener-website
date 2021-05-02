@@ -11,6 +11,7 @@ import {
 	SYMBOLS,
 	API_TO_INDICATORS,
 	INDICATORS_TO_API,
+	CUSTOM_INDICATORS,
 } from '../../assets/constants';
 
 import './radarscreen.styles.css';
@@ -104,9 +105,16 @@ class RadarScreen extends React.PureComponent {
 		const header = this.getHeaderTitle(this.state);
 
 		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
+		// const apiIndicators = header.flatMap(item =>
+		// 	permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
+		// );
+
+		const permanentOrCustomIndicators = [...permanentHeaders, ...CUSTOM_INDICATORS];
 		const apiIndicators = header.flatMap(item =>
-			permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
+			permanentOrCustomIndicators.includes(item) ? [] : [INDICATORS_TO_API[item]]
 		);
+
+		// console.log(apiIndicators, Symbol);
 
 		let stateIndicatorObject = {};
 
@@ -115,6 +123,8 @@ class RadarScreen extends React.PureComponent {
 			apiIndicators.forEach(apiIndicatorName => {
 				// look up the name used for the column header (and state key)
 				const stateIndicatorName = API_TO_INDICATORS[apiIndicatorName];
+
+				// converts api object to state array format
 				stateIndicatorObject = {
 					...stateIndicatorObject,
 					[stateIndicatorName]: Symbol.map(
@@ -153,6 +163,7 @@ class RadarScreen extends React.PureComponent {
 
 			if (Object.keys(symbolsDataObject).length) {
 				const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
+				// console.log(stateIndicatorObject, 'sio');
 
 				let updatedState = {...this.state, ...stateIndicatorObject};
 
@@ -222,8 +233,22 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	handleColumnUpdate = names => {
+		// console.log(names);
+
+		const headerNames = names.map(item => {
+			console.log(CUSTOM_INDICATORS.includes(item.name), item.name);
+			if (CUSTOM_INDICATORS.includes(item.name)) {
+				INDICATORS_TO_API[item.name] = item.config;
+			}
+			return item.name;
+		});
+
+		// console.log(INDICATORS_TO_API);
+
 		// merge permanentHeaders with the updated column names
-		const header = [...permanentHeaders, ...names];
+		const header = [...permanentHeaders, ...headerNames];
+
+		// console.log(header, 'h');
 
 		// stringify the whole state object in order to modify it and to remove
 		const clearedState = JSON.parse(JSON.stringify(this.state));

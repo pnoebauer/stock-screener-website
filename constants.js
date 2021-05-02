@@ -475,7 +475,6 @@ const SP500 = [
 	'UHS',
 	'UNM',
 	'VLO',
-	'VAR',
 	'VTR',
 	'VRSN',
 	'VRSK',

@@ -3,7 +3,7 @@ import Modal from '../modal/modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
-import {INDICATORS_TO_API} from '../../assets/constants';
+import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
 
 class AddColumnButton extends React.Component {
 	constructor(props) {
@@ -32,7 +32,13 @@ class AddColumnButton extends React.Component {
 	handleOkCancel = (type, updatedState) => {
 		this.hide();
 		if (type === 'ok') {
-			const columnNames = updatedState.usedIndicators.map(item => item.name);
+			// const columnNames = updatedState.usedIndicators.map(item => item.name);
+			// this.props.handleColumnUpdate(columnNames);
+
+			const columnNames = updatedState.usedIndicators.map(item => ({
+				name: item.name,
+				config: {length: 10, type: 'closePrice'},
+			}));
 			this.props.handleColumnUpdate(columnNames);
 		}
 	};
@@ -42,9 +48,18 @@ class AddColumnButton extends React.Component {
 		const {usedIndicatorsDefault} = this.props;
 		// console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
 
-		const availableIndicatorsDefault = Object.keys(INDICATORS_TO_API).filter(
+		const apiAndCustomIndicators = [
+			...Object.keys(INDICATORS_TO_API),
+			...CUSTOM_INDICATORS,
+		];
+
+		const availableIndicatorsDefault = apiAndCustomIndicators.filter(
 			value => !usedIndicatorsDefault.includes(value)
 		);
+
+		// const availableIndicatorsDefault = Object.keys(INDICATORS_TO_API).filter(
+		// 	value => !usedIndicatorsDefault.includes(value)
+		// );
 		// console.log(availableIndicators,'k')
 
 		return (

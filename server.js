@@ -2,10 +2,6 @@ const express = require('express');
 
 const cors = require('cors');
 
-// const util = require('util');
-
-// const fetch = require('node-fetch');
-
 const fetchData = require('./fetchData');
 
 const constants = require('./constants');
@@ -20,14 +16,12 @@ app.use(express.json()); //for any requests coming in, process their body tag an
 app.use(express.urlencoded({extended: true})); //url requests that contain incorrect characters (i.e. spaces) are converted to correct ones
 app.use(cors()); //allow requests from port 3000 (frontend) to port 5000 (backend)
 
-let clients = [];
-let facts = [];
-
 app.listen(PORT, error => {
 	if (error) throw error;
 	console.log('Server running on port', PORT);
 });
 
+let clients = [];
 let cachedData = {};
 
 const {SYMBOLS, API_TO_INDICATORS} = constants;
@@ -38,6 +32,8 @@ function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+//only keep required indicators and remove unnessary ones such as:
+//  	quoteTimeInLong, tradeTimeInLong, regularMarketTradeTimeInLong
 const filterData = dataSet => {
 	let filteredData = {};
 
@@ -67,7 +63,7 @@ const batchFetch = async symbolList => {
 	let startIndex = 0;
 	let endIndex = symbolsPerSplit;
 	let data = {};
-	// split fetches into 5 equal parts
+	// split fetch call into 5 equal parts
 	for (let i = 0; i < splits; i++) {
 		let partialData = await fetchData.fetchLiveData(
 			symbolList.slice(startIndex, endIndex)
@@ -109,28 +105,21 @@ const compareCacheWithFetch = data => {
 		}
 		for (const key in data[symbol]) {
 			// console.log(key, 'key');
-			if (
-				!['quoteTimeInLong', 'tradeTimeInLong', 'regularMarketTradeTimeInLong'].includes(
-					key
-				)
-			) {
-				if (cachedData[symbol]) {
-					//if the new fetch request has no data for this symbol and key, then set it to the old one
-					if (!data[symbol][key]) {
-						data[symbol][key] = cachedData[symbol][key];
-						continue;
-					}
-					if (data[symbol][key] !== cachedData[symbol][key]) {
-						identical = false;
-						break;
-					}
-				} else {
+			if (cachedData[symbol]) {
+				//if the new fetch request has no data for this symbol and key, then set it to the old one
+				if (!data[symbol][key]) {
+					data[symbol][key] = cachedData[symbol][key];
+					continue;
+				}
+				if (data[symbol][key] !== cachedData[symbol][key]) {
 					identical = false;
 					break;
 				}
+			} else {
+				identical = false;
+				break;
 			}
 		}
-
 		if (!identical) break;
 	}
 
@@ -160,11 +149,13 @@ let timerId = setInterval(async () => {
 		return;
 	}
 	// console.time('time');
+	// check if data has changed since the last fetch
 	const identical = compareCacheWithFetch(data);
 	console.log(identical, 'identical');
 
 	cachedData = data;
 	// if (!identical || true) {
+	// if the data has changed since the last fetch send it to all clients
 	if (!identical) {
 		// console.log(cachedData.AAPL, new Date().getSeconds());
 		await waitTillSecond(0);
@@ -188,12 +179,13 @@ function eventsHandler(req, res, queriedSymbols) {
 	// const data = `data: ${JSON.stringify(facts)}\n\n`; // \n\n is mandatory to indicate the end of an event
 	// const data = `data: ${JSON.stringify(cachedData)}\n\n`;
 
-	const requObj = {};
+	const clientData = {};
 	// retrieve only the required symbols from the cachedData object for each respective client
-	queriedSymbols.split(',').forEach(symbol => (requObj[symbol] = cachedData[symbol]));
+	queriedSymbols.split(',').forEach(symbol => (clientData[symbol] = cachedData[symbol]));
 
-	const data = `data: ${JSON.stringify(requObj)}\n\n`;
+	const data = `data: ${JSON.stringify(clientData)}\n\n`;
 
+	// send the data object to the client
 	res.write(data);
 
 	const clientId = Date.now();
@@ -240,9 +232,10 @@ function sendEventsToAll(data) {
 		// console.log(client.id);
 		// const clientData = data[client.symbol];
 		const clientData = {};
-		client.symbol.split(',').forEach(symbol => (clientData[symbol] = cachedData[symbol]));
+		// client.symbol.split(',').forEach(symbol => (clientData[symbol] = cachedData[symbol]));
+		client.symbol.split(',').forEach(symbol => (clientData[symbol] = data[symbol]));
 
-		// const data = `data: ${JSON.stringify(requObj)}\n\n`;
+		// const data = `data: ${JSON.stringify(clientData)}\n\n`;
 		client.res.write(
 			// `data: ${JSON.stringify(data)}\n\n`
 			`data: ${JSON.stringify(clientData)}\n\n`
