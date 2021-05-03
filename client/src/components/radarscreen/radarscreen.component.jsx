@@ -97,6 +97,15 @@ class RadarScreen extends React.PureComponent {
 				// console.log('update', this.events);
 				this.startEventSource();
 			}
+
+			this.getHeaderTitle(this.state).forEach(header => {
+				console.log(CUSTOM_INDICATORS.includes(header), header);
+				if (CUSTOM_INDICATORS.includes(header)) {
+					console.log(INDICATORS_TO_API[header]); //should return config
+
+					// this.state.Symbol.forEach(symbol => fetch(as in withFetch '/scanner'))
+				}
+			});
 		}
 	}
 
@@ -260,7 +269,8 @@ class RadarScreen extends React.PureComponent {
 			}
 		});
 
-		// check if all header elements already exist in the state object, if not set the key with that element to an empty array
+		// check if all header elements already exist in the state object,
+		// if not set the key with that element to an empty array
 		header.forEach(headerTitle => {
 			if (!Object.keys(clearedState).includes(headerTitle)) {
 				clearedState[headerTitle] = [];
@@ -271,7 +281,6 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	handleRowDelete = e => {
-		// console.log('tr del');
 		const rowIdx = Number(e.target.id);
 		const stateClone = JSON.parse(JSON.stringify(this.state));
 
