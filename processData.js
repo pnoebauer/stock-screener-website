@@ -24,6 +24,8 @@ const processData = (data, lookBack) => {
 
 	//converts all candles from API format to DB format, calculates and adds indicators to the converted candles
 	const convertedCandles = candles.map((candle, index) => {
+		// console.log('converting');
+
 		//from API
 		const {open, high, low, close, volume, datetime} = candle;
 		const currentRow = index + 1;

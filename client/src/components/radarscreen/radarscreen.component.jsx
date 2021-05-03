@@ -71,6 +71,31 @@ class RadarScreen extends React.PureComponent {
 			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
 			this.startEventSource(this.state.Symbol);
 		});
+
+		const requestObj = {
+			symbol: 'MMM',
+			interval: 'Day',
+			indicators: {
+				sma: {
+					parameter: 'close_price',
+					lookBack: 90,
+				},
+				ema: {
+					parameter: 'open_price',
+					lookBack: 210,
+				},
+			},
+		};
+		fetch('http://localhost:4000/scanner', {
+			method: 'POST', // *GET, POST, PUT, DELETE, etc.
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
+		})
+			.then(res => res.json())
+			.then(data => console.log(data, 'data'))
+			.catch(e => console.log(e, 'e'));
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -98,11 +123,11 @@ class RadarScreen extends React.PureComponent {
 				this.startEventSource();
 			}
 
+			// will run on every change for now, change later to only run when a specific symbol or interval changes
 			this.getHeaderTitle(this.state).forEach(header => {
-				console.log(CUSTOM_INDICATORS.includes(header), header);
+				console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
 				if (CUSTOM_INDICATORS.includes(header)) {
-					console.log(INDICATORS_TO_API[header]); //should return config
-
+					console.log(INDICATORS_TO_API[header], header); //should return config
 					// this.state.Symbol.forEach(symbol => fetch(as in withFetch '/scanner'))
 				}
 			});
@@ -245,7 +270,7 @@ class RadarScreen extends React.PureComponent {
 		// console.log(names);
 
 		const headerNames = names.map(item => {
-			console.log(CUSTOM_INDICATORS.includes(item.name), item.name);
+			console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
 			if (CUSTOM_INDICATORS.includes(item.name)) {
 				INDICATORS_TO_API[item.name] = item.config;
 			}

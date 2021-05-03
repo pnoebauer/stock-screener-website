@@ -35,10 +35,15 @@ class AddColumnButton extends React.Component {
 			// const columnNames = updatedState.usedIndicators.map(item => item.name);
 			// this.props.handleColumnUpdate(columnNames);
 
-			const columnNames = updatedState.usedIndicators.map(item => ({
-				name: item.name,
-				config: {length: 10, type: 'closePrice'},
-			}));
+			const columnNames = updatedState.usedIndicators.map(item => {
+				let config;
+				if (item.name === 'SMA' || item.name === 'EMA')
+					config = {length: 10, type: 'closePrice'};
+				return {
+					name: item.name,
+					config,
+				};
+			});
 			this.props.handleColumnUpdate(columnNames);
 		}
 	};

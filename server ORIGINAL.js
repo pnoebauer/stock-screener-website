@@ -53,6 +53,8 @@ const historicalDataIntoDB = async (universes, symbols) => {
 
 			// IF NO LOOKBACK IS PROVIDED NO INDICATORS WILL BE ADDED BUT ONLY CANDLES CONVERTED FOR DB
 			const convertedCandles = processData.processData(data, 200);
+			// const convertedCandles = processData.processData(data);
+			// console.log(convertedCandles[convertedCandles.length - 1]);
 			// console.log(convertedCandles.length);
 			await dbConnect.insertIntoTable(convertedCandles);
 			console.log(`Inserted ${convertedCandles.length} candles for ${symbol}`);
@@ -62,7 +64,8 @@ const historicalDataIntoDB = async (universes, symbols) => {
 	}
 };
 // historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL']);
-// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
+// historicalDataIntoDB(constants.UNIVERSES, ['AAPL']);
+historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
 
 // dbConnect.createTables();
 // fetchData.fetchLiveData('GOOGL').then(data => console.log(data.GOOGL.closePrice));
@@ -85,31 +88,9 @@ const historicalDataIntoDB = async (universes, symbols) => {
 
 const lookBack = 25;
 
-const retrieveSymbolWithIndicators = async queryObject => {
-	// console.log(queryObject);
-
-	const queryParameters = new Set();
-	let maxLookBack = 1;
-	Object.keys(queryObject.indicators).forEach(indicator => {
-		const {[indicator]: indObj} = queryObject.indicators;
-		// console.log(indObj, indicator);
-
-		queryParameters.add(indObj.parameter);
-		maxLookBack = Math.max(maxLookBack, indObj.lookBack);
-	});
-
-	// console.log(queryParameters, maxLookBack);
-
-	const data = await dbConnect.retrieveData(
-		queryObject.symbol,
-		constants.UNSTABLEPERIOD + maxLookBack,
-		Array.from(queryParameters)
-	);
-
-	// console.log(data);
-
+const getLatestIndicators = async (queryObject, data) => {
+	// calculate the indicators after retrieving the data
 	let currentDataSeries = [];
-
 	data.forEach((candle, index) => {
 		currentDataSeries.push(candle);
 
@@ -139,6 +120,92 @@ const retrieveSymbolWithIndicators = async queryObject => {
 	// console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
 	return currentDataSeries[currentDataSeries.length - 1];
 };
+
+const retrieveSymbolWithIndicators = async queryObject => {
+	// console.log(queryObject);
+
+	// determine the maximum lookback and all unique parameters (for data retrieval from the db)
+	const queryParameters = new Set();
+	let maxLookBack = 1;
+	Object.keys(queryObject.indicators).forEach(indicator => {
+		const {[indicator]: indObj} = queryObject.indicators; // destructure out the indicator
+		// console.log(indObj, indicator);
+
+		queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+		maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
+	});
+
+	// console.log(queryParameters, maxLookBack);
+
+	// retrieve data
+	const latestPriceData = await dbConnect.retrieveData(
+		queryObject.symbol,
+		constants.UNSTABLEPERIOD + maxLookBack,
+		Array.from(queryParameters)
+	);
+
+	// console.log(latestPriceData, 'latestPriceData');
+	const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
+
+	return lastCandle;
+};
+
+// const retrieveSymbolWithIndicators = async queryObject => {
+// 	// console.log(queryObject);
+
+// 	// determine the maximum lookback and all unique parameters (for data retrieval from the db)
+// 	const queryParameters = new Set();
+// 	let maxLookBack = 1;
+// 	Object.keys(queryObject.indicators).forEach(indicator => {
+// 		const {[indicator]: indObj} = queryObject.indicators; // destructure out the indicator
+// 		// console.log(indObj, indicator);
+
+// 		queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+// 		maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
+// 	});
+
+// 	// console.log(queryParameters, maxLookBack);
+
+// 	// retrieve data
+// 	const data = await dbConnect.retrieveData(
+// 		queryObject.symbol,
+// 		constants.UNSTABLEPERIOD + maxLookBack,
+// 		Array.from(queryParameters)
+// 	);
+
+// 	// console.log(data);
+
+// 	// calculate the indicators after retrieving the data
+// 	let currentDataSeries = [];
+// 	data.forEach((candle, index) => {
+// 		currentDataSeries.push(candle);
+
+// 		Object.keys(queryObject.indicators).forEach(indicator => {
+// 			let {parameter, lookBack} = queryObject.indicators[indicator];
+// 			lookBack = Number(lookBack);
+
+// 			// start the calculation once the index is within the lookback of the current bar
+// 			if (index >= maxLookBack - lookBack) {
+// 				// console.log(indicator);
+// 				candle[indicator] = calculateIndicators[indicator](
+// 					currentDataSeries,
+// 					lookBack,
+// 					parameter
+// 				);
+// 				// round the final result
+// 				if (index === data.length - 1) {
+// 					candle[indicator] = candle[indicator].toFixed(2);
+// 					// console.log(candle, 'last candle');
+// 				}
+// 			}
+// 		});
+
+// 		// console.log(candle, index);
+// 	});
+
+// 	// console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
+// 	return currentDataSeries[currentDataSeries.length - 1];
+// };
 
 const queryObject = {
 	symbol: 'MMM',
