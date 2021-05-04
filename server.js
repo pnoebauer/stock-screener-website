@@ -256,6 +256,9 @@ const calculateIndicators = require('./calculateIndicators');
 const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 	// calculate the indicators after retrieving the data
 	let currentDataSeries = [];
+
+	let latestIndicators = {};
+
 	data.forEach((candle, index) => {
 		currentDataSeries.push(candle);
 
@@ -275,6 +278,7 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 				if (index === data.length - 1) {
 					candle[indicator] = candle[indicator].toFixed(2);
 					// console.log(candle, 'last candle');
+					latestIndicators[indicator] = candle[indicator];
 				}
 			}
 		});
@@ -283,7 +287,8 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 	});
 
 	// console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
-	return currentDataSeries[currentDataSeries.length - 1];
+	// return currentDataSeries[currentDataSeries.length - 1];
+	return latestIndicators;
 };
 
 const retrieveSymbolWithIndicators = async queryObject => {
@@ -330,12 +335,16 @@ const queryObject = {
 	},
 };
 
-// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
 	// console.log(req.body, symbol);
 	const queryObject = req.body;
+	console.log(queryObject);
 
-	retrieveSymbolWithIndicators(queryObject).then(data => res.json(data));
+	retrieveSymbolWithIndicators(queryObject).then(data => {
+		console.log(queryObject, data);
+		return res.json(data);
+	});
 });

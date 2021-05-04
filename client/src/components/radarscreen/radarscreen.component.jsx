@@ -39,7 +39,7 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	updateLocalStorage() {
-		// console.log('local storage update');
+		console.log('local storage update');
 		localStorage.setItem('header', this.getHeaderTitle(this.state));
 		localStorage.setItem('Symbol', this.state.Symbol);
 		localStorage.setItem('Interval', this.state.Interval);
@@ -90,7 +90,7 @@ class RadarScreen extends React.PureComponent {
 		});
 
 		// will need to be in the local storage
-		INDICATORS_TO_API['SMA'] = {length: 10, type: 'closePrice'};
+		INDICATORS_TO_API['sma'] = {length: 10, type: 'closePrice'};
 
 		this.getHeaderTitle(this.state).forEach(header => {
 			console.log(CUSTOM_INDICATORS.includes(header), header, 'mount');
@@ -115,21 +115,11 @@ class RadarScreen extends React.PureComponent {
 			},
 		};
 
+		console.log(requestObj, 'ro1');
 		await this.getCustomIndicators(requestObj);
-
-		// fetch('http://localhost:4000/scanner', {
-		// 	method: 'POST', // *GET, POST, PUT, DELETE, etc.
-		// 	headers: {
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// 	body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
-		// })
-		// 	.then(res => res.json())
-		// 	.then(data => console.log(data, 'data'))
-		// 	.catch(e => console.log(e, 'e'));
 	}
 
-	componentDidUpdate(prevProps, prevState) {
+	async componentDidUpdate(prevProps, prevState) {
 		let arrayElementsEqual = (arr1, arr2) =>
 			[...new Set(arr1)].sort().join() === [...new Set(arr2)].sort().join(); //check if both arrays contain same values (excl. duplicates)
 
@@ -154,14 +144,36 @@ class RadarScreen extends React.PureComponent {
 				this.startEventSource();
 			}
 
+			let indicators = {};
 			// will run on every change for now, change later to only run when a specific symbol or interval changes
 			this.getHeaderTitle(this.state).forEach(header => {
-				console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
+				// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
 				if (CUSTOM_INDICATORS.includes(header)) {
-					console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
-					// this.state.Symbol.forEach(symbol => fetch(as in withFetch '/scanner'))
+					// console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
+
+					const indicatorName = header.toLowerCase();
+					indicators[indicatorName] = INDICATORS_TO_API[header];
 				}
 			});
+
+			// console.log(indicators, 'indicators', Object.keys(indicators).length);
+
+			if (Object.keys(indicators).length) {
+				for (let index = 0; index < this.state.Symbol.length; index++) {
+					const symbol = this.state.Symbol[index];
+					const interval = this.state.Interval[index];
+
+					const requestObj = {
+						symbol,
+						interval,
+						indicators,
+					};
+
+					// console.log(requestObj, 'requestObj');
+
+					await this.getCustomIndicators(requestObj);
+				}
+			}
 		}
 	}
 

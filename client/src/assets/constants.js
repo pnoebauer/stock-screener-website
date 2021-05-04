@@ -1,11 +1,11 @@
 // export const SYMBOLS = ['SPX', '@ES', '@NQ', 'SPY'];
 
 export const INTERVALS = [
-	'Monthly',
-	'Weekly',
-	'Daily',
-	'4 Hourly',
-	'Hourly',
+	'Day',
+	'Month',
+	'Week',
+	'4 Hour',
+	'Hour',
 	'30 Min',
 	'5 Min',
 	'1 Min',

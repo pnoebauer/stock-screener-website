@@ -37,8 +37,8 @@ class AddColumnButton extends React.Component {
 
 			const columnNames = updatedState.usedIndicators.map(item => {
 				let config;
-				if (item.name === 'SMA' || item.name === 'EMA')
-					config = {length: 10, type: 'closePrice'};
+				if (item.name.toLowerCase() === 'sma' || item.name.toLowerCase() === 'ema')
+					config = {parameter: 'closePrice', lookBack: 10};
 				return {
 					name: item.name,
 					config,
