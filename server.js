@@ -320,17 +320,17 @@ const queryObject = {
 	interval: 'Day',
 	indicators: {
 		sma: {
-			parameter: 'close_price',
+			parameter: 'closePrice',
 			lookBack: 90,
 		},
 		ema: {
-			parameter: 'open_price',
+			parameter: 'openPrice',
 			lookBack: 210,
 		},
 	},
 };
 
-retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;

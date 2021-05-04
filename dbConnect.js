@@ -67,11 +67,11 @@ const createTables = async () => {
 				// table.timestamp('date_time'); //2016-06-22 19:10:25-07 (ex precision)
 				// table.date('date_time');
 
-				table.decimal('open_price');
-				table.decimal('high_price');
-				table.decimal('low_price');
-				table.decimal('close_price');
-				table.bigInteger('volume');
+				table.decimal('openPrice');
+				table.decimal('highPrice');
+				table.decimal('lowPrice');
+				table.decimal('closePrice');
+				table.bigInteger('totalVolume');
 
 				table.decimal('sma');
 				table.decimal('ema');
@@ -107,7 +107,7 @@ const insertIntoTable = async data => {
 // 	// const selection = await knex('daily_data').where('id', '>', '20');
 // 	// const selection = await knex('daily_data')
 // 	// 	.where('id', '>', '20')
-// 	// 	.select('date_time', 'open_price');
+// 	// 	.select('date_time', 'openPrice');
 // 	// console.log(selection);
 
 // 	const selection = await knex('daily_data')
@@ -115,7 +115,7 @@ const insertIntoTable = async data => {
 // 		.andWhere('date_time', '>', '2015-01-20')
 // 		.orderBy('date_time', 'desc')
 // 		.limit(3)
-// 		// .select('date_time', 'open_price');
+// 		// .select('date_time', 'openPrice');
 // 		.select('*');
 // 	console.log(selection);
 // };
@@ -124,7 +124,7 @@ const retrieveData = async (symbol, lookBack, parameters) => {
 	// const selection = await knex('daily_data').where('id', '>', '20');
 	// const selection = await knex('daily_data')
 	// 	.where('id', '>', '20')
-	// 	.select('date_time', 'open_price');
+	// 	.select('date_time', 'openPrice');
 	// console.log(selection);
 	// AOS, ABT
 
@@ -134,7 +134,7 @@ const retrieveData = async (symbol, lookBack, parameters) => {
 	// 	.orderBy('date_time', 'desc')
 	// 	.limit(lookBack)
 	// 	// .select(parameter);
-	// 	.select('date_time', 'close_price');
+	// 	.select('date_time', 'closePrice');
 	// // .orderBy('date_time', 'asc')
 	// // .select('*');
 	// // .whereIn('stock_id', ['MMM', 'AOS', 'ABT'])
@@ -146,7 +146,7 @@ const retrieveData = async (symbol, lookBack, parameters) => {
 		.orderBy('date_time', 'desc')
 		.limit(lookBack)
 		.select(...parameters);
-	// .select('date_time', 'close_price');
+	// .select('date_time', 'closePrice');
 
 	// const selection = await knex('daily_data')
 	// 	.orderBy('date_time', 'desc')

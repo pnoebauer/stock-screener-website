@@ -46,7 +46,23 @@ class RadarScreen extends React.PureComponent {
 		localStorage.setItem('ID', this.state.ID);
 	}
 
-	componentDidMount() {
+	async getCustomIndicators(requestObj) {
+		try {
+			const response = await fetch('http://localhost:4000/scanner', {
+				method: 'POST', // *GET, POST, PUT, DELETE, etc.
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
+			});
+
+			const data = await response.json();
+			console.log(data, 'data');
+		} catch (e) {
+			console.log('Error fetching custom indicators from backend', e);
+		}
+	}
+	async componentDidMount() {
 		let {Symbol, Interval, ID} = this.state;
 		let rehydrate = {};
 		let header;
@@ -70,6 +86,18 @@ class RadarScreen extends React.PureComponent {
 		this.setState(rehydrate, () => {
 			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
 			this.startEventSource(this.state.Symbol);
+			// this.state.Symbol.forEach((symbol,index))
+		});
+
+		// will need to be in the local storage
+		INDICATORS_TO_API['SMA'] = {length: 10, type: 'closePrice'};
+
+		this.getHeaderTitle(this.state).forEach(header => {
+			console.log(CUSTOM_INDICATORS.includes(header), header, 'mount');
+			if (CUSTOM_INDICATORS.includes(header)) {
+				console.log(INDICATORS_TO_API[header], header, 'mount'); //should return config
+				// this.state.Symbol.forEach(symbol => fetch(as in withFetch '/scanner'))
+			}
 		});
 
 		const requestObj = {
@@ -77,25 +105,28 @@ class RadarScreen extends React.PureComponent {
 			interval: 'Day',
 			indicators: {
 				sma: {
-					parameter: 'close_price',
+					parameter: 'closePrice',
 					lookBack: 90,
 				},
 				ema: {
-					parameter: 'open_price',
+					parameter: 'openPrice',
 					lookBack: 210,
 				},
 			},
 		};
-		fetch('http://localhost:4000/scanner', {
-			method: 'POST', // *GET, POST, PUT, DELETE, etc.
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
-		})
-			.then(res => res.json())
-			.then(data => console.log(data, 'data'))
-			.catch(e => console.log(e, 'e'));
+
+		await this.getCustomIndicators(requestObj);
+
+		// fetch('http://localhost:4000/scanner', {
+		// 	method: 'POST', // *GET, POST, PUT, DELETE, etc.
+		// 	headers: {
+		// 		'Content-Type': 'application/json',
+		// 	},
+		// 	body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
+		// })
+		// 	.then(res => res.json())
+		// 	.then(data => console.log(data, 'data'))
+		// 	.catch(e => console.log(e, 'e'));
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -127,7 +158,7 @@ class RadarScreen extends React.PureComponent {
 			this.getHeaderTitle(this.state).forEach(header => {
 				console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
 				if (CUSTOM_INDICATORS.includes(header)) {
-					console.log(INDICATORS_TO_API[header], header); //should return config
+					console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
 					// this.state.Symbol.forEach(symbol => fetch(as in withFetch '/scanner'))
 				}
 			});

@@ -31,14 +31,15 @@ const processData = (data, lookBack) => {
 		const currentRow = index + 1;
 		// const lookBack = 200;
 
+		// !!!!!!--------NEEDS TO BE CHANGED TO MATCH EITHER API OR FRONTEND FORMAT
 		//API to DB conversion
 		let convertedCandle = {
 			stock_id: symbol,
-			open_price: open,
-			high_price: high,
-			low_price: low,
-			close_price: close,
-			volume,
+			openPrice: open,
+			highPrice: high,
+			lowPrice: low,
+			closePrice: close,
+			totalVolume: volume,
 			date_time: convertToTimestamp(datetime),
 		};
 
@@ -47,7 +48,7 @@ const processData = (data, lookBack) => {
 
 		// if (currentRow > 1)
 		if (currentRow > lookBack - constants.UNSTABLEPERIOD) {
-			const parameter = 'close_price';
+			const parameter = 'closePrice';
 			Object.keys(calculateIndicators).forEach(indicator => {
 				convertedCandle[indicator] = calculateIndicators[indicator](
 					currentDataSeries,

@@ -212,11 +212,11 @@ const queryObject = {
 	interval: 'Day',
 	indicators: {
 		sma: {
-			parameter: 'close_price',
+			parameter: 'closePrice',
 			lookBack: 90,
 		},
 		ema: {
-			parameter: 'open_price',
+			parameter: 'openPrice',
 			lookBack: 210,
 		},
 	},
