@@ -89,6 +89,7 @@ class RadarScreen extends React.PureComponent {
 			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
 			this.startEventSource(this.state.Symbol);
 			// this.state.Symbol.forEach((symbol,index))
+			this.updateCustomIndicators();
 		});
 	}
 
@@ -113,10 +114,8 @@ class RadarScreen extends React.PureComponent {
 				this.startEventSource();
 			}
 
-			let indicators = {};
-
-			let stateIndicators = {};
-
+			// let indicators = {};
+			// let stateIndicators = {};
 			// 	// will run on every change for now, change later to only run when a specific symbol or interval changes
 			// 	this.getHeaderTitle(this.state).forEach(header => {
 			// 		// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
@@ -161,50 +160,67 @@ class RadarScreen extends React.PureComponent {
 			// 	}
 			// }
 
-			// will run on every change for now, change later to only run when a specific symbol or interval changes
-			this.getHeaderTitle(this.state).forEach(header => {
-				// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
-				if (Object.keys(CUSTOM_INDICATORS_C).includes(header)) {
-					// console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
+			// this.updateCustomIndicators();
+		}
+	}
 
-					// console.log(CUSTOM_INDICATORS_C[header], header, 'update'); //should return config
-					const indicatorName = header.toLowerCase();
+	async updateCustomIndicators(symbolIndex) {
+		// console.log('updateCustomIndicators');
+		let indicators = {};
+		let stateIndicators = {};
 
-					indicators[indicatorName] = CUSTOM_INDICATORS_C[header]; //set indicator to config
+		// will run on every change for now, change later to only run when a specific symbol or interval changes
+		this.getHeaderTitle(this.state).forEach(header => {
+			// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
+			if (Object.keys(CUSTOM_INDICATORS_C).includes(header)) {
+				// console.log(CUSTOM_INDICATORS_C[header], header, 'update'); //should return config
+				const indicatorName = header.toLowerCase();
 
-					stateIndicators[header] = [];
-				}
-			});
+				indicators[indicatorName] = CUSTOM_INDICATORS_C[header]; //set indicator to config
 
-			// console.log(indicators, 'indicators', Object.keys(indicators).length);
-
-			if (Object.keys(indicators).length) {
-				for (let index = 0; index < this.state.Symbol.length; index++) {
-					const symbol = this.state.Symbol[index];
-					const interval = this.state.Interval[index];
-
-					const requestObj = {
-						symbol,
-						interval,
-						indicators,
-					};
-
-					// console.log(requestObj, 'requestObj');
-
-					const indicatorObject = await this.getCustomIndicators(requestObj);
-					Object.keys(indicators).forEach(
-						indicator =>
-							(stateIndicators[indicator.toUpperCase()] = [
-								...stateIndicators[indicator.toUpperCase()],
-								indicatorObject[indicator],
-							])
-					);
-				}
-
-				// console.log(stateIndicators);
-
-				this.setState(stateIndicators);
+				stateIndicators[header] = symbolIndex ? [...this.state[header]] : [];
 			}
+		});
+
+		// console.log(indicators, 'indicators', Object.keys(indicators).length);
+
+		if (Object.keys(indicators).length) {
+			const startIndex = symbolIndex || 0;
+			const endIndex = symbolIndex + 1 || this.state.Symbol.length;
+
+			for (let index = startIndex; index < endIndex; index++) {
+				const symbol = this.state.Symbol[index];
+				const interval = this.state.Interval[index];
+
+				const requestObj = {
+					symbol,
+					interval,
+					indicators,
+				};
+
+				// console.log(requestObj, 'requestObj');
+
+				const indicatorObject = await this.getCustomIndicators(requestObj);
+				Object.keys(indicators).forEach(
+					indicator =>
+						// (stateIndicators[indicator.toUpperCase()] = [
+						// 	...stateIndicators[indicator.toUpperCase()],
+						// 	indicatorObject[indicator],
+						// ])
+						(stateIndicators[indicator.toUpperCase()] = Object.assign(
+							[],
+							stateIndicators[indicator.toUpperCase()],
+							{
+								[index]: indicatorObject[indicator],
+							}
+						))
+				);
+				console.log(stateIndicators);
+			}
+
+			// console.log(stateIndicators);
+
+			this.setState(stateIndicators);
 		}
 	}
 
@@ -310,6 +326,7 @@ class RadarScreen extends React.PureComponent {
 	onChange = (updatedValue, headerCol, valueRow, rowAdded) => {
 		const header = this.getHeaderTitle(this.state);
 
+		console.log(valueRow, 'vR');
 		//update the changed cell (Symbol, Interval)
 		this.setState(
 			prevState => {
@@ -321,8 +338,9 @@ class RadarScreen extends React.PureComponent {
 					[columnName]: Object.assign([], prevState[columnName], {
 						[valueRow]: updatedValue,
 					}),
+					// if a row was added set interval to a default of 'Day' and increment its ID by 1 above the max
 					Interval: rowAdded
-						? Object.assign([], prevState.Interval, {[valueRow]: 'Daily'})
+						? Object.assign([], prevState.Interval, {[valueRow]: 'Day'})
 						: prevState.Interval,
 					ID: rowAdded
 						? Object.assign([], prevState.ID, {[valueRow]: maxID + 1})
@@ -332,6 +350,8 @@ class RadarScreen extends React.PureComponent {
 			() => {
 				// already covered with startEventSource
 				// this.updateLocalStorage();
+
+				this.updateCustomIndicators(valueRow);
 			}
 		);
 	};

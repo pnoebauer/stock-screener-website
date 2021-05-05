@@ -728,11 +728,11 @@ export const CUSTOM_INDICATORS = ['SMA', 'EMA'];
 
 export const CUSTOM_INDICATORS_C = {
 	SMA: {
-		parameter: 'priceClose',
+		parameter: 'closePrice',
 		lookBack: 20,
 	},
 	EMA: {
-		parameter: 'priceClose',
+		parameter: 'closePrice',
 		lookBack: 20,
 	},
 };

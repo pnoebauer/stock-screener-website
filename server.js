@@ -341,10 +341,10 @@ app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
 	// console.log(req.body, symbol);
 	const queryObject = req.body;
-	console.log(queryObject);
+	// console.log(queryObject);
 
 	retrieveSymbolWithIndicators(queryObject).then(data => {
-		console.log(queryObject, data);
+		// console.log(queryObject, data);
 		return res.json(data);
 	});
 });
