@@ -725,3 +725,14 @@ export const INDICATORS_TO_API = {
 };
 
 export const CUSTOM_INDICATORS = ['SMA', 'EMA'];
+
+export const CUSTOM_INDICATORS_C = {
+	SMA: {
+		parameter: 'priceClose',
+		lookBack: 20,
+	},
+	EMA: {
+		parameter: 'priceClose',
+		lookBack: 20,
+	},
+};

@@ -12,6 +12,7 @@ import {
 	API_TO_INDICATORS,
 	INDICATORS_TO_API,
 	CUSTOM_INDICATORS,
+	CUSTOM_INDICATORS_C,
 } from '../../assets/constants';
 
 import './radarscreen.styles.css';
@@ -57,7 +58,8 @@ class RadarScreen extends React.PureComponent {
 			});
 
 			const data = await response.json();
-			console.log(data, 'data');
+			// console.log(data, 'data');
+			return data;
 		} catch (e) {
 			console.log('Error fetching custom indicators from backend', e);
 		}
@@ -88,49 +90,16 @@ class RadarScreen extends React.PureComponent {
 			this.startEventSource(this.state.Symbol);
 			// this.state.Symbol.forEach((symbol,index))
 		});
-
-		// will need to be in the local storage
-		INDICATORS_TO_API['sma'] = {length: 10, type: 'closePrice'};
-
-		this.getHeaderTitle(this.state).forEach(header => {
-			console.log(CUSTOM_INDICATORS.includes(header), header, 'mount');
-			if (CUSTOM_INDICATORS.includes(header)) {
-				console.log(INDICATORS_TO_API[header], header, 'mount'); //should return config
-				// this.state.Symbol.forEach(symbol => fetch(as in withFetch '/scanner'))
-			}
-		});
-
-		const requestObj = {
-			symbol: 'MMM',
-			interval: 'Day',
-			indicators: {
-				sma: {
-					parameter: 'closePrice',
-					lookBack: 90,
-				},
-				ema: {
-					parameter: 'openPrice',
-					lookBack: 210,
-				},
-			},
-		};
-
-		console.log(requestObj, 'ro1');
-		await this.getCustomIndicators(requestObj);
 	}
 
 	async componentDidUpdate(prevProps, prevState) {
+		// console.log(INDICATORS_TO_API, 'INDICATORS_TO_API');
 		let arrayElementsEqual = (arr1, arr2) =>
 			[...new Set(arr1)].sort().join() === [...new Set(arr2)].sort().join(); //check if both arrays contain same values (excl. duplicates)
 
 		let sameElements = (arr1, arr2) =>
-			[...arr1].sort().join() === [...arr2].sort().join();
+			[...arr1].sort().join() === [...arr2].sort().join(); //check if both arrays are equal (incl. duplicates)
 
-		// console.log(
-		// 	sameElements(prevState.Symbol, this.state.Symbol),
-		// 	prevState.Symbol,
-		// 	this.state.Symbol
-		// );
 		// trigger if symbols or columns change
 		if (
 			!sameElements(prevState.Symbol, this.state.Symbol) ||
@@ -145,14 +114,65 @@ class RadarScreen extends React.PureComponent {
 			}
 
 			let indicators = {};
+
+			let stateIndicators = {};
+
+			// 	// will run on every change for now, change later to only run when a specific symbol or interval changes
+			// 	this.getHeaderTitle(this.state).forEach(header => {
+			// 		// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
+			// 		if (CUSTOM_INDICATORS.includes(header)) {
+			// 			// console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
+
+			// 			const indicatorName = header.toLowerCase();
+			// 			indicators[indicatorName] = INDICATORS_TO_API[header];
+
+			// 			stateIndicators[header] = [];
+			// 		}
+			// 	});
+
+			// 	// console.log(indicators, 'indicators', Object.keys(indicators).length);
+
+			// 	if (Object.keys(indicators).length) {
+			// 		for (let index = 0; index < this.state.Symbol.length; index++) {
+			// 			const symbol = this.state.Symbol[index];
+			// 			const interval = this.state.Interval[index];
+
+			// 			const requestObj = {
+			// 				symbol,
+			// 				interval,
+			// 				indicators,
+			// 			};
+
+			// 			// console.log(requestObj, 'requestObj');
+
+			// 			const indicatorObject = await this.getCustomIndicators(requestObj);
+			// 			Object.keys(indicators).forEach(
+			// 				indicator =>
+			// 					(stateIndicators[indicator.toUpperCase()] = [
+			// 						...stateIndicators[indicator.toUpperCase()],
+			// 						indicatorObject[indicator],
+			// 					])
+			// 			);
+			// 		}
+
+			// 		// console.log(stateIndicators);
+
+			// 		this.setState(stateIndicators);
+			// 	}
+			// }
+
 			// will run on every change for now, change later to only run when a specific symbol or interval changes
 			this.getHeaderTitle(this.state).forEach(header => {
 				// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
-				if (CUSTOM_INDICATORS.includes(header)) {
+				if (Object.keys(CUSTOM_INDICATORS_C).includes(header)) {
 					// console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
 
+					// console.log(CUSTOM_INDICATORS_C[header], header, 'update'); //should return config
 					const indicatorName = header.toLowerCase();
-					indicators[indicatorName] = INDICATORS_TO_API[header];
+
+					indicators[indicatorName] = CUSTOM_INDICATORS_C[header]; //set indicator to config
+
+					stateIndicators[header] = [];
 				}
 			});
 
@@ -171,8 +191,19 @@ class RadarScreen extends React.PureComponent {
 
 					// console.log(requestObj, 'requestObj');
 
-					await this.getCustomIndicators(requestObj);
+					const indicatorObject = await this.getCustomIndicators(requestObj);
+					Object.keys(indicators).forEach(
+						indicator =>
+							(stateIndicators[indicator.toUpperCase()] = [
+								...stateIndicators[indicator.toUpperCase()],
+								indicatorObject[indicator],
+							])
+					);
 				}
+
+				// console.log(stateIndicators);
+
+				this.setState(stateIndicators);
 			}
 		}
 	}
@@ -186,7 +217,11 @@ class RadarScreen extends React.PureComponent {
 		// 	permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
 		// );
 
-		const permanentOrCustomIndicators = [...permanentHeaders, ...CUSTOM_INDICATORS];
+		// const permanentOrCustomIndicators = [...permanentHeaders, ...CUSTOM_INDICATORS];
+
+		const customIndicators = Object.keys(CUSTOM_INDICATORS_C);
+		const permanentOrCustomIndicators = [...permanentHeaders, ...customIndicators];
+
 		const apiIndicators = header.flatMap(item =>
 			permanentOrCustomIndicators.includes(item) ? [] : [INDICATORS_TO_API[item]]
 		);
@@ -312,13 +347,28 @@ class RadarScreen extends React.PureComponent {
 	handleColumnUpdate = names => {
 		// console.log(names);
 
+		// const headerNames = names.map(item => {
+		// 	console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
+		// 	if (CUSTOM_INDICATORS.includes(item.name)) {
+		// 		INDICATORS_TO_API[item.name] = item.config;
+		// 	}
+		// 	return item.name;
+		// });
+
 		const headerNames = names.map(item => {
-			console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
-			if (CUSTOM_INDICATORS.includes(item.name)) {
-				INDICATORS_TO_API[item.name] = item.config;
+			// console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
+			// if (CUSTOM_INDICATORS.includes(item.name)) {
+			// 	INDICATORS_TO_API[item.name] = item.config;
+			// }
+
+			if (Object.keys(CUSTOM_INDICATORS_C).includes(item.name)) {
+				CUSTOM_INDICATORS_C[item.name] = item.config;
 			}
+
 			return item.name;
 		});
+
+		// console.log(CUSTOM_INDICATORS_C, 'cic');
 
 		// console.log(INDICATORS_TO_API);
 
