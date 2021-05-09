@@ -88,7 +88,7 @@ class RadarScreen extends React.PureComponent {
 		this.setState(rehydrate, () => {
 			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
 			this.startEventSource(this.state.Symbol);
-			// this.state.Symbol.forEach((symbol,index))
+
 			this.updateCustomIndicators();
 		});
 	}
@@ -114,52 +114,6 @@ class RadarScreen extends React.PureComponent {
 				this.startEventSource();
 			}
 
-			// let indicators = {};
-			// let stateIndicators = {};
-			// 	// will run on every change for now, change later to only run when a specific symbol or interval changes
-			// 	this.getHeaderTitle(this.state).forEach(header => {
-			// 		// console.log(CUSTOM_INDICATORS.includes(header), header, 'componentDidUpdate');
-			// 		if (CUSTOM_INDICATORS.includes(header)) {
-			// 			// console.log(INDICATORS_TO_API[header], header, 'update'); //should return config
-
-			// 			const indicatorName = header.toLowerCase();
-			// 			indicators[indicatorName] = INDICATORS_TO_API[header];
-
-			// 			stateIndicators[header] = [];
-			// 		}
-			// 	});
-
-			// 	// console.log(indicators, 'indicators', Object.keys(indicators).length);
-
-			// 	if (Object.keys(indicators).length) {
-			// 		for (let index = 0; index < this.state.Symbol.length; index++) {
-			// 			const symbol = this.state.Symbol[index];
-			// 			const interval = this.state.Interval[index];
-
-			// 			const requestObj = {
-			// 				symbol,
-			// 				interval,
-			// 				indicators,
-			// 			};
-
-			// 			// console.log(requestObj, 'requestObj');
-
-			// 			const indicatorObject = await this.getCustomIndicators(requestObj);
-			// 			Object.keys(indicators).forEach(
-			// 				indicator =>
-			// 					(stateIndicators[indicator.toUpperCase()] = [
-			// 						...stateIndicators[indicator.toUpperCase()],
-			// 						indicatorObject[indicator],
-			// 					])
-			// 			);
-			// 		}
-
-			// 		// console.log(stateIndicators);
-
-			// 		this.setState(stateIndicators);
-			// 	}
-			// }
-
 			// this.updateCustomIndicators();
 		}
 	}
@@ -178,7 +132,7 @@ class RadarScreen extends React.PureComponent {
 
 				indicators[indicatorName] = CUSTOM_INDICATORS_C[header]; //set indicator to config
 
-				stateIndicators[header] = symbolIndex ? [...this.state[header]] : [];
+				stateIndicators[header] = symbolIndex ? [...this.state[header]] : []; //if an index is provided copy the state array for that indicator
 			}
 		});
 
@@ -215,7 +169,7 @@ class RadarScreen extends React.PureComponent {
 							}
 						))
 				);
-				console.log(stateIndicators);
+				// console.log(stateIndicators);
 			}
 
 			// console.log(stateIndicators);
@@ -326,7 +280,6 @@ class RadarScreen extends React.PureComponent {
 	onChange = (updatedValue, headerCol, valueRow, rowAdded) => {
 		const header = this.getHeaderTitle(this.state);
 
-		console.log(valueRow, 'vR');
 		//update the changed cell (Symbol, Interval)
 		this.setState(
 			prevState => {
@@ -367,14 +320,6 @@ class RadarScreen extends React.PureComponent {
 	handleColumnUpdate = names => {
 		// console.log(names);
 
-		// const headerNames = names.map(item => {
-		// 	console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
-		// 	if (CUSTOM_INDICATORS.includes(item.name)) {
-		// 		INDICATORS_TO_API[item.name] = item.config;
-		// 	}
-		// 	return item.name;
-		// });
-
 		const headerNames = names.map(item => {
 			// console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
 			// if (CUSTOM_INDICATORS.includes(item.name)) {
@@ -388,14 +333,10 @@ class RadarScreen extends React.PureComponent {
 			return item.name;
 		});
 
-		// console.log(CUSTOM_INDICATORS_C, 'cic');
-
 		// console.log(INDICATORS_TO_API);
 
 		// merge permanentHeaders with the updated column names
 		const header = [...permanentHeaders, ...headerNames];
-
-		// console.log(header, 'h');
 
 		// stringify the whole state object in order to modify it and to remove
 		const clearedState = JSON.parse(JSON.stringify(this.state));
