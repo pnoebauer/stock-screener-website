@@ -30,8 +30,11 @@ function withSorting(WrappedComponent) {
 
 				idMap = retrievedObject[currentKey];
 			} else {
+				// console.log(sortedField, 'sortedField');
 				const list = [...stateClone[sortedField]];
-				// console.log(list, 'list');
+				// console.log(list, 'list', list.length, !list.length);
+
+				if (!list.length) return;
 
 				// temporary array holds objects with value and index
 				const mapped = list.map((value, index) => {
@@ -65,7 +68,6 @@ function withSorting(WrappedComponent) {
 
 				mapped.forEach((element, index) => (idMap[element.id] = index));
 				// console.log(idMap, 'idMap', stateClone.ID, 'ids');
-
 				// const key = `${sortedField} ${direction}`;
 
 				const sortedTable = {...retrievedObject, [currentKey]: idMap};

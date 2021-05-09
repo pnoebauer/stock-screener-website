@@ -1,23 +1,19 @@
-
 .radarscreen {
 	margin-top: 30px;
 	margin-left: 10px;
 }
 
-
 #grid-container {
-
 	width: 90%;
 	display: grid;
 	/* grid-gap: 1px; */
 
 	/* margin-left: -1px; */
 	border-bottom: 1px solid black;
-  	border-left: 1px solid black;
+	border-left: 1px solid black;
 
 	position: relative;
 }
-
 
 button {
 	outline: none;
@@ -31,19 +27,20 @@ button.add-column-button {
 	width: 55px;
 }
 
-
 .value-cell {
 	background-color: orange;
 	/* border: 0.5px solid rgba(0, 0, 0, 0.8); */
 	height: 40px;
 	box-sizing: border-box;
-	
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-#grid-container > .value-cell, #grid-container > .screen-header, #grid-container > .add-column-button {
+#grid-container > .value-cell,
+#grid-container > .screen-header,
+#grid-container > .add-column-button {
 	/* padding: 15px; */
 	text-align: center;
 	border-top: 1px solid black;
@@ -51,13 +48,14 @@ button.add-column-button {
 }
 
 .screen-header {
-  overflow: hidden;
-  background-color: #f1f1f1;
-  padding: 10px 10px;
-  grid-row: 1;
-  box-sizing: border-box;
-  height: 40px;
-  user-select: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	padding: 10px 10px;
+	grid-row: 1;
+	box-sizing: border-box;
+	height: 40px;
+	user-select: none;
+	position: relative;
 }
 
 .screen-header.ascending::after {
@@ -67,8 +65,8 @@ button.add-column-button {
 	top: 85%;
 	border: 8px solid transparent;
 	border-color: rgb(0, 0, 0) transparent transparent transparent;
-  }
-  
+}
+
 .screen-header.descending::after {
 	content: '';
 	position: relative;

@@ -5,153 +5,142 @@ import List from '../list/list.component';
 import './indicator-selector.styles.css';
 
 class IndicatorSelector extends React.Component {
-    constructor(props) {
-        super(props);
-        // console.log('constructor IndicatorSelector', this.props)
-        this.state = {
-            availableIndicators: this.props.availableIndicatorsDefault,
-            usedIndicators: this.props.usedIndicatorsDefault
-        }
-    }
+	constructor(props) {
+		super(props);
+		// console.log('constructor IndicatorSelector', this.props)
+		this.state = {
+			availableIndicators: this.props.availableIndicatorsDefault,
+			usedIndicators: this.props.usedIndicatorsDefault,
+		};
+	}
 
-    onToggle = event => {
-        const updatedID = event.target.id;
-        const className = event.target.className;
-        const indicatorListName = className.replace('selected', '').trim();
+	onToggle = event => {
+		const updatedID = event.target.id;
+		const className = event.target.className;
+		const indicatorListName = className.replace('selected', '').trim();
 
-        this.setState(prevState => {
-            const updated = prevState[indicatorListName].map(value => {
-                if(updatedID === value.id) {
-                    return {
-                        ...value,
-                        selected: !value.selected
-                    };
-                }
-                else {
-                    return {
-                        ...value
-                    };
-                }
-            });
-            return {
-                [indicatorListName]: updated
-            }
-        });
-    }
+		this.setState(prevState => {
+			const updated = prevState[indicatorListName].map(value => {
+				if (updatedID === value.id) {
+					return {
+						...value,
+						selected: !value.selected,
+					};
+				} else {
+					return {
+						...value,
+					};
+				}
+			});
+			return {
+				[indicatorListName]: updated,
+			};
+		});
+	};
 
-    handleClick = event => {
-        const type = event.target.className;
-        
-        const moveFrom = type === 'add' ? 'availableIndicators' : 'usedIndicators';
-        const moveTo = type === 'add' ? 'usedIndicators' : 'availableIndicators';
+	handleClick = event => {
+		const type = event.target.className;
 
-        this.setState(prevState => {            
-            return {
-                [moveFrom]: 
-                    prevState[moveFrom].filter(item => !item.selected).map(item => ({...item, selected: false})),
-                [moveTo]: 
-                    [
-                        ...prevState[moveTo],
-                        ...prevState[moveFrom].filter(item => item.selected).map(item => ({...item, selected: false}))
-                    ]
-            }
-        }
-        ,
-        // () => console.log()
-        )
-    }
-    
-    unSelect() {
-        this.setState({
-            availableIndicators: this.state.availableIndicators.map(item => ({...item, selected: false})),
-            usedIndicators: this.state.usedIndicators.map(item => ({...item, selected: false}))
-        })
-    }
+		const moveFrom = type === 'add' ? 'availableIndicators' : 'usedIndicators';
+		const moveTo = type === 'add' ? 'usedIndicators' : 'availableIndicators';
 
-    handleOk = () => {
-        // console.log(this.state)
-        this.unSelect();
-        this.props.handleOkCancel('ok',this.state);
-    }
+		this.setState(
+			prevState => {
+				return {
+					[moveFrom]: prevState[moveFrom]
+						.filter(item => !item.selected)
+						.map(item => ({...item, selected: false})),
+					[moveTo]: [
+						...prevState[moveTo],
+						...prevState[moveFrom]
+							.filter(item => item.selected)
+							.map(item => ({...item, selected: false})),
+					],
+				};
+			}
+			// () => console.log()
+		);
+	};
 
-    handleCancel = () => {
-        const { handleOkCancel, ...priorState} = this.props;
+	unSelect() {
+		this.setState({
+			availableIndicators: this.state.availableIndicators.map(item => ({
+				...item,
+				selected: false,
+			})),
+			usedIndicators: this.state.usedIndicators.map(item => ({...item, selected: false})),
+		});
+	}
 
-        // console.log(priorState, this.state)
-        const { availableIndicatorsDefault, usedIndicatorsDefault } = priorState;
+	handleOk = () => {
+		// console.log(this.state)
+		this.unSelect();
+		this.props.handleOkCancel('ok', this.state);
+	};
 
-        this.setState({
-            availableIndicators: [
-                ...this.state.availableIndicators.flatMap(item => ([])),
-                ...availableIndicatorsDefault
-            ],
-            usedIndicators: [
-                ...this.state.usedIndicators.flatMap(item => ([])),
-                ...usedIndicatorsDefault
-            ]
-        }
-            // ,
-            // ()=>console.log(this.state,'s')
-        );
+	handleCancel = () => {
+		const {handleOkCancel, ...priorState} = this.props;
 
-        this.unSelect();
-        this.props.handleOkCancel('cancel');
-    }
+		// console.log(priorState, this.state)
+		const {availableIndicatorsDefault, usedIndicatorsDefault} = priorState;
 
-    render() {
-            // console.log(this.props.usedIndicatorsDefault, this.state.usedIndicators)
-        return (
-            <div className="indicator-selector">
-                
-                <List 
-                    displayedItems={this.state.availableIndicators}
-                    onToggle={this.onToggle}
-                    className="availableIndicators"
-                    headerName='Available Indicators'
-                />
-                
-                <div className="add-remove">
-                    <button 
-                        onClick={this.handleClick}
-                        className='add'
-                    >
-                        ADD
-                    </button>
-                    <button 
-                        onClick={this.handleClick}
-                        className='remove'
-                    >
-                        REMOVE
-                    </button>
-                </div>
-                
-                <List 
-                    displayedItems={this.state.usedIndicators}
-                    onToggle={this.onToggle}
-                    className="usedIndicators"
-                    headerName='Used Indicators'
-                />
+		this.setState(
+			{
+				availableIndicators: [
+					...this.state.availableIndicators.flatMap(item => []),
+					...availableIndicatorsDefault,
+				],
+				usedIndicators: [
+					...this.state.usedIndicators.flatMap(item => []),
+					...usedIndicatorsDefault,
+				],
+			}
+			// ,
+			// ()=>console.log(this.state,'s')
+		);
 
-                <div className="ok-cancel">
-                    <button 
-                        className="cancel"
-                        onClick={this.handleCancel}
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        className="ok"
-                        onClick={this.handleOk}
-                    >
-                        Okay
-                    </button>  
-                </div>
-                
-                
-            </div>
-            
-        )
-    }
+		this.unSelect();
+		this.props.handleOkCancel('cancel');
+	};
+
+	render() {
+		// console.log(this.props.usedIndicatorsDefault, this.state.usedIndicators)
+		return (
+			<div className='indicator-selector'>
+				<List
+					displayedItems={this.state.availableIndicators}
+					onToggle={this.onToggle}
+					className='availableIndicators'
+					headerName='Available Indicators'
+				/>
+
+				<div className='add-remove'>
+					<button onClick={this.handleClick} className='add'>
+						ADD
+					</button>
+					<button onClick={this.handleClick} className='remove'>
+						REMOVE
+					</button>
+				</div>
+
+				<List
+					displayedItems={this.state.usedIndicators}
+					onToggle={this.onToggle}
+					className='usedIndicators'
+					headerName='Used Indicators'
+				/>
+
+				<div className='ok-cancel'>
+					<button className='cancel' onClick={this.handleCancel}>
+						Cancel
+					</button>
+					<button className='ok' onClick={this.handleOk}>
+						Okay
+					</button>
+				</div>
+			</div>
+		);
+	}
 }
 
 export default IndicatorSelector;

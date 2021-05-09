@@ -119,7 +119,7 @@ class RadarScreen extends React.PureComponent {
 	}
 
 	async updateCustomIndicators(symbolIndex) {
-		// console.log('updateCustomIndicators');
+		console.log('updateCustomIndicators');
 		let indicators = {};
 		let stateIndicators = {};
 
@@ -132,13 +132,15 @@ class RadarScreen extends React.PureComponent {
 
 				indicators[indicatorName] = CUSTOM_INDICATORS_C[header]; //set indicator to config
 
-				stateIndicators[header] = symbolIndex ? [...this.state[header]] : []; //if an index is provided copy the state array for that indicator
+				stateIndicators[header] =
+					symbolIndex !== undefined ? [...this.state[header]] : []; //if an index is provided copy the state array for that indicator
 			}
 		});
 
-		// console.log(indicators, 'indicators', Object.keys(indicators).length);
+		console.log(indicators, 'indicators', Object.keys(indicators).length);
 
 		if (Object.keys(indicators).length) {
+			//if no symbolIndex is provided all symbols will be updated, otherwise only that row
 			const startIndex = symbolIndex || 0;
 			const endIndex = symbolIndex + 1 || this.state.Symbol.length;
 
@@ -310,8 +312,13 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	sortTable = event => {
+		if (event.target.name === 'configuration') {
+			event.preventDefault();
+			event.stopPropagation();
+			return;
+		}
 		this.setState((prevState, props) => {
-			// console.log('tr');
+			// console.log('sortTable', event.target.id);
 			const sortedTable = props.onSort(event, prevState);
 			return sortedTable;
 		});
