@@ -1,0 +1,13 @@
+.indicator-configuration-form {
+	margin-top: 15px;
+}
+
+.price-parameter-selector {
+	width: 150px;
+	text-align-last: center;
+}
+
+.lookback-input {
+	width: 150px;
+	text-align: center;
+}
