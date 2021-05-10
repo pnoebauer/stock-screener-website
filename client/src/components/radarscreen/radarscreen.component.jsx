@@ -40,7 +40,7 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	updateLocalStorage() {
-		console.log('local storage update');
+		// console.log('local storage update');
 		localStorage.setItem('header', this.getHeaderTitle(this.state));
 		localStorage.setItem('Symbol', this.state.Symbol);
 		localStorage.setItem('Interval', this.state.Interval);
@@ -119,7 +119,7 @@ class RadarScreen extends React.PureComponent {
 	}
 
 	async updateCustomIndicators(symbolIndex) {
-		console.log('updateCustomIndicators');
+		// console.log('updateCustomIndicators');
 		let indicators = {};
 		let stateIndicators = {};
 
@@ -137,7 +137,7 @@ class RadarScreen extends React.PureComponent {
 			}
 		});
 
-		console.log(indicators, 'indicators', Object.keys(indicators).length);
+		// console.log(indicators, 'indicators', Object.keys(indicators).length);
 
 		if (Object.keys(indicators).length) {
 			//if no symbolIndex is provided all symbols will be updated, otherwise only that row
@@ -225,7 +225,7 @@ class RadarScreen extends React.PureComponent {
 
 	startEventSource() {
 		const uniqueSymbols = [...new Set(this.state.Symbol)];
-		console.log('start new event source', uniqueSymbols);
+		// console.log('start new event source', uniqueSymbols);
 
 		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
 		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL

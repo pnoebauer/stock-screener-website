@@ -11,132 +11,131 @@ const IN_BROWSER = typeof window !== 'undefined';
 const UA = IN_BROWSER && window.navigator.userAgent.toLowerCase();
 const IS_IE_9 = UA && UA.indexOf('msie 9.0') > 0;
 
-
 class Modal extends React.Component {
+	constructor(props) {
+		super(props);
+		this.popup = React.createRef();
+		this.state = {
+			isShow: false,
+			animationType: 'leave',
+		};
+	}
 
-  constructor(props) {
-      super(props);
-      this.popup = React.createRef();
-      this.state = {
-        isShow: false,
-        animationType: 'leave'
-      };
-  }
-  
-  componentDidMount() {
-    if (this.props.visible) {
-      this.enter();
-    }
-  }
+	componentDidMount() {
+		if (this.props.visible) {
+			this.enter();
+		}
+	}
 
-  componentDidUpdate(prevProps) {
-    if (this.props.visible && !prevProps.visible) {
-      this.enter();
-    }
-    if (!this.props.visible && prevProps.visible) {
-      this.leave();
-    }
-  }
+	componentDidUpdate(prevProps) {
+		if (this.props.visible && !prevProps.visible) {
+			this.enter();
+		}
+		if (!this.props.visible && prevProps.visible) {
+			this.leave();
+		}
+	}
 
-  enter() {
-    this.setState({ isShow: true, animationType: 'enter' });
-  }
+	enter() {
+		this.setState({isShow: true, animationType: 'enter'});
+	}
 
-  leave() {
-    this.setState(IS_IE_9 ? { isShow: false } : { animationType: 'leave' });
-  }
+	leave() {
+		this.setState(IS_IE_9 ? {isShow: false} : {animationType: 'leave'});
+	}
 
-  onKeyUp = event => {
-    if (!this.props.closeOnEsc || event.keyCode !== 27) { //closeOnEsc is off or clicked key is not ESC
-      return;
-    }
+	onKeyUp = event => {
+		if (!this.props.closeOnEsc || event.keyCode !== 27) {
+			//closeOnEsc is off or clicked key is not ESC
+			return;
+		}
 
-    this.props.onClose(event);
-  };
+		this.props.onClose(event);
+	};
 
-  animationEnd = event => {
-    const { animationType } = this.state;
-    const { closeOnEsc, onAnimationEnd } = this.props;
+	animationEnd = event => {
+		const {animationType} = this.state;
+		const {closeOnEsc, onAnimationEnd} = this.props;
 
-    if (animationType === 'leave') {
-      this.setState({ isShow: false });
-    } else if (closeOnEsc) {
-      this.popup.current.focus();
-    //   this.el.focus();
-    }
-    // console.log('end',event.target === this.popup.current, onAnimationEnd)
-    
-    // if (event.target === this.el && onAnimationEnd) {
-    if (event.target === this.popup.current && onAnimationEnd) {
-        // console.log('end')
-      onAnimationEnd();
-    }
-  };
+		if (animationType === 'leave') {
+			this.setState({isShow: false});
+		} else if (closeOnEsc) {
+			this.popup.current.focus();
+			//   this.el.focus();
+		}
+		// console.log('end',event.target === this.popup.current, onAnimationEnd)
 
-  render() {
-    const {
-      closeMaskOnClick,
-      onClose,
-      customMaskStyles,
-      showMask,
-      duration,
-      className,
-      children
-    } = this.props;
+		// if (event.target === this.el && onAnimationEnd) {
+		if (event.target === this.popup.current && onAnimationEnd) {
+			// console.log('end')
+			onAnimationEnd();
+		}
+	};
 
-    const { isShow, animationType } = this.state;
+	render() {
+		const {
+			closeMaskOnClick,
+			onClose,
+			customMaskStyles,
+			showMask,
+			duration,
+			className,
+			children,
+		} = this.props;
 
-    const Mask = showMask ? (
-      <div
-        className="rodal-mask"
-        style={customMaskStyles}
-        onClick={closeMaskOnClick ? onClose : void 0}
-      />
-    ) : null;
+		const {isShow, animationType} = this.state;
 
-    const style = {
-      display: isShow ? '' : 'none',
-      animationDuration: duration + 'ms',
-      WebkitAnimationDuration: duration + 'ms'
-    };
+		const Mask = showMask ? (
+			<div
+				className='rodal-mask'
+				style={customMaskStyles}
+				onClick={closeMaskOnClick ? onClose : void 0}
+			/>
+		) : null;
 
-    // console.log({...this.props},'{...this.props}')
+		const style = {
+			display: isShow ? '' : 'none',
+			animationDuration: duration + 'ms',
+			WebkitAnimationDuration: duration + 'ms',
+		};
 
-    return (
-      <div
-        style={style}
-        className={`rodal rodal-fade-${animationType} ${className}`}
-        onAnimationEnd={this.animationEnd}
-        tabIndex="-1"
-        ref={this.popup}
-        // ref={ref => { this.el = ref; }}
-        onKeyUp={this.onKeyUp}
-      >
-        {Mask}
-        <Dialog {...this.props} animationType={animationType}>
-          {children}
-        </Dialog>
-      </div>
-    );
-  }
+		// console.log({...this.props},'{...this.props}')
+
+		return (
+			<div
+				style={style}
+				className={`rodal rodal-fade-${animationType} ${className}`}
+				onAnimationEnd={this.animationEnd}
+				tabIndex='-1'
+				ref={this.popup}
+				// ref={ref => { this.el = ref; }}
+				onKeyUp={this.onKeyUp}
+			>
+				{Mask}
+				<Dialog {...this.props} animationType={animationType}>
+					{children}
+				</Dialog>
+			</div>
+		);
+	}
 }
 
 Modal.defaultProps = {
-  width: 400,
-  height: 240,
-  measure: 'px',
-  visible: false,
-  showMask: true,
-  closeOnEsc: true,
-  closeMaskOnClick: true,
-  showCloseButton: true,
-  animation: 'slideUp',
-  enterAnimation: 'fade',
-  leaveAnimation: 'rotate',
-  duration: 1300,
-  className: '',
-  customStyles: {},
-  customMaskStyles: {}
+	width: 400,
+	height: 240,
+	measure: 'px',
+	visible: false,
+	showMask: true,
+	closeOnEsc: true,
+	closeMaskOnClick: true,
+	showCloseButton: true,
+	animation: 'slideUp',
+	enterAnimation: 'zoom',
+	leaveAnimation: 'fade',
+	duration: 800,
+	className: '',
+	customStyles: {},
+	customMaskStyles: {},
 };
 
 export default Modal;

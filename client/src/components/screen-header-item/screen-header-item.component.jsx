@@ -1,21 +1,63 @@
 import React from 'react';
 
-const ScreenHeaderItem = ({gridColumn, onSort, id, className, children}) => (
-	<div style={{gridColumn}} onClick={onSort} id={id} className={className}>
-		{children}
-		<button
-			style={{
-				position: 'absolute',
-				top: '0px',
-				right: '0px',
-				zIndex: 100,
-			}}
-			onClick={() => console.log('clicked')}
-			name='configuration'
-		>
-			x
-		</button>
-	</div>
-);
+import Modal from '../modal/modal.component';
+
+import IndicatorConfigurationForm from '../indicator-configuration-form/indicator-configuration-form.component';
+
+import {CUSTOM_INDICATORS_C} from '../../assets/constants';
+
+class ScreenHeaderItem extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {visible: false, ...CUSTOM_INDICATORS_C[this.props.id]};
+	}
+
+	show = () => {
+		this.setState({visible: true});
+	};
+
+	hide = () => {
+		this.setState({visible: false});
+	};
+
+	render() {
+		const {gridColumn, onSort, id, className, children} = this.props;
+		// console.log(id, 'id', CUSTOM_INDICATORS_C[id], this.state);
+		return (
+			<>
+				<div style={{gridColumn}} onClick={onSort} id={id} className={className}>
+					{children}
+					{CUSTOM_INDICATORS_C[id] ? (
+						<button
+							style={{
+								position: 'absolute',
+								top: '0px',
+								right: '0px',
+							}}
+							onClick={this.show}
+							name='configuration'
+						>
+							x
+						</button>
+					) : null}
+				</div>
+				{CUSTOM_INDICATORS_C[id] ? (
+					<Modal
+						visible={this.state.visible}
+						onClose={this.hide}
+						width={30}
+						height={50}
+						measure={'%'}
+						showCloseButton={true}
+						closeOnEsc={true}
+						closeMaskOnClick={false}
+					>
+						<IndicatorConfigurationForm indicator={id} />
+					</Modal>
+				) : null}
+			</>
+		);
+	}
+}
 
 export default ScreenHeaderItem;

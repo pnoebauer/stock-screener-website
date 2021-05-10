@@ -121,6 +121,7 @@ class Dropdown extends React.Component {
 	};
 
 	onKeyDown = (event, headerCol, valueRow) => {
+		// console.log('kd');
 		const {onChange} = this.props;
 		const {activeItem, displayedOptions} = this.state;
 
@@ -210,7 +211,9 @@ class Dropdown extends React.Component {
 						this.handleDisplay(clickEvent, gridColumn - 1, gridRow - 2)
 					}
 					onKeyDown={e => this.onKeyDown(e, gridColumn - 1, gridRow - 2)}
-					contentEditable='true'
+					// contentEditable='true'
+					// contentEditable={`${this.props.contentEditable === false ? 'false' : 'true'}`}
+					contentEditable={`${this.props.contentEditable ?? 'true'}`}
 					suppressContentEditableWarning={true}
 					onInput={this.onTextChange}
 					ref={this.selectionDisplay}
@@ -228,8 +231,13 @@ class Dropdown extends React.Component {
 							return (
 								<li
 									style={{height: liHeight}}
-									className={`dropdown-option ${className} ${
-										index === activeItem ? 'active' : ''
+									// className={`dropdown-option ${className} ${
+									// 	index === activeItem ? 'active' : ''
+									// }`}
+									className={`dropdown-option ${className}${
+										index === activeItem && this.props.contentEditable !== false
+											? ' active'
+											: ''
 									}`}
 									value={value}
 									key={index}
