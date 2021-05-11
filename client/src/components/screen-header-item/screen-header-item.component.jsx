@@ -21,7 +21,14 @@ class ScreenHeaderItem extends React.Component {
 	};
 
 	render() {
-		const {gridColumn, onSort, id, className, children} = this.props;
+		const {
+			gridColumn,
+			onSort,
+			id,
+			className,
+			updateCustomIndicators,
+			children,
+		} = this.props;
 		// console.log(id, 'id', CUSTOM_INDICATORS_C[id], this.state);
 		return (
 			<>
@@ -52,7 +59,11 @@ class ScreenHeaderItem extends React.Component {
 						closeOnEsc={false}
 						closeMaskOnClick={false}
 					>
-						<IndicatorConfigurationForm indicator={id} closeForm={this.hide} />
+						<IndicatorConfigurationForm
+							indicator={id}
+							closeForm={this.hide}
+							updateCustomIndicators={updateCustomIndicators}
+						/>
 					</Modal>
 				) : null}
 			</>

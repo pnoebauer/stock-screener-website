@@ -1,7 +1,7 @@
 import React from 'react';
 import ScreenHeaderItem from '../screen-header-item/screen-header-item.component';
 
-const ScreenHeader = ({header, sortTable, sortConfig}) => {
+const ScreenHeader = ({header, sortTable, sortConfig, updateCustomIndicators}) => {
 	const getClassNameForHeader = name => {
 		if (!sortConfig) {
 			return;
@@ -27,6 +27,7 @@ const ScreenHeader = ({header, sortTable, sortConfig}) => {
 					onSort={sortTable}
 					id={name}
 					className={`screen-header ${getClassNameForHeader(name)}`}
+					updateCustomIndicators={updateCustomIndicators}
 				>
 					{name}
 				</ScreenHeaderItem>

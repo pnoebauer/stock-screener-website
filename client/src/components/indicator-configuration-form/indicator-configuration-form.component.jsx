@@ -47,24 +47,27 @@ class IndicatorConfigurationForm extends React.Component {
 	handleSubmit = event => {
 		// console.log('submit', this.state);
 
-		const {indicator} = this.props;
+		const {indicator, updateCustomIndicators} = this.props;
 		const {errormessage, ...config} = this.state;
 
 		// console.log(indicator, config);
 
-		console.log(
-			localStorage.getItem(indicator),
-			JSON.stringify(config),
-			localStorage.getItem(indicator) !== JSON.stringify(config),
-			'sss'
-		);
+		// console.log(
+		// 	localStorage.getItem(indicator),
+		// 	JSON.stringify(config),
+		// 	localStorage.getItem(indicator) !== JSON.stringify(config),
+		// 	'sss'
+		// );
 
 		if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
 			localStorage.setItem(indicator, JSON.stringify(config));
 
-			console.log({[indicator.toLowerCase()]: config});
+			const indicatorConfig = {[indicator.toLowerCase()]: config};
+
+			// console.log(indicatorConfig, 'indicatorConfig');
 
 			// trigger a fetch call in the parent
+			updateCustomIndicators(undefined, indicatorConfig, 'test');
 		}
 		// localStorage.setItem(indicator, JSON.stringify(config));
 
