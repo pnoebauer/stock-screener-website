@@ -45,14 +45,28 @@ class IndicatorConfigurationForm extends React.Component {
 	};
 
 	handleSubmit = event => {
-		console.log('submit', this.state);
+		// console.log('submit', this.state);
 
 		const {indicator} = this.props;
 		const {errormessage, ...config} = this.state;
 
-		console.log(indicator, config);
+		// console.log(indicator, config);
 
-		localStorage.setItem(indicator, JSON.stringify(config));
+		console.log(
+			localStorage.getItem(indicator),
+			JSON.stringify(config),
+			localStorage.getItem(indicator) !== JSON.stringify(config),
+			'sss'
+		);
+
+		if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
+			localStorage.setItem(indicator, JSON.stringify(config));
+
+			console.log({[indicator.toLowerCase()]: config});
+
+			// trigger a fetch call in the parent
+		}
+		// localStorage.setItem(indicator, JSON.stringify(config));
 
 		this.props.closeForm();
 
@@ -60,7 +74,7 @@ class IndicatorConfigurationForm extends React.Component {
 	};
 
 	render() {
-		console.log(this.state, 's');
+		// console.log(this.state, 's');
 
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>
