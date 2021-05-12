@@ -21,57 +21,6 @@ const permanentHeaders = ['ID', 'Symbol', 'Interval'];
 
 let updateKey = null;
 
-// const getValuesForCustomIndicators = (indicatorConfigs, stateIndicators, symbolIndex) => {
-// console.log('start');
-// if (stateIndicators !== undefined) {
-// 	var stateIndicators = JSON.parse(JSON.stringify(stateIndicators)); //clone the object so that the original object is not mutated
-// }
-// console.log(indicatorConfigs, stateIndicators, symbolIndex, 'stateIndicators fct');
-
-// //if no symbolIndex is provided all symbols will be updated, otherwise only that row
-// const startIndex = symbolIndex || 0;
-// const endIndex = symbolIndex + 1 || this.state.Symbol.length;
-
-// console.log(startIndex, endIndex, indicatorConfigs, stateIndicators, 'fct');
-
-// for (let index = startIndex; index < endIndex; index++) {
-// 	const symbol = this.state.Symbol[index];
-// 	const interval = this.state.Interval[index];
-
-// 	const requestObj = {
-// 		symbol,
-// 		interval,
-// 		indicators: indicatorConfigs,
-// 	};
-
-// 	console.log(requestObj, 'requestObj');
-
-// 	const indicatorObject = await this.getCustomIndicators(requestObj); //get the data from the backend
-
-// 	// console.log(indicatorObject, 'indicatorObject fct', stateIndicators);
-
-// 	// loop over all indicators and assign the returned values from the backend to the temporary stateIndicators state object
-// 	Object.keys(indicatorConfigs).forEach(
-// 		indicator =>
-// 			// (stateIndicators[indicator.toUpperCase()] = [
-// 			// 	...stateIndicators[indicator.toUpperCase()],
-// 			// 	indicatorObject[indicator],
-// 			// ])
-// 			(stateIndicators[indicator.toUpperCase()] = Object.assign(
-// 				[],
-// 				stateIndicators[indicator.toUpperCase()],
-// 				{
-// 					[index]: indicatorObject[indicator],
-// 				}
-// 			))
-// 	);
-// 	// console.log(stateIndicators, 'stateIndicators fct');
-// }
-
-// return stateIndicators; //not really necessary
-// 	return 't';
-// };
-
 class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
@@ -164,73 +113,8 @@ class RadarScreen extends React.PureComponent {
 				// console.log('update', this.events);
 				this.startEventSource();
 			}
-
-			// this.updateCustomIndicators();
 		}
 	}
-
-	// async updateCustomIndicators(symbolIndex) {
-	// 	// console.log('updateCustomIndicators');
-	// 	let indicatorConfigs = {};
-	// 	let stateIndicators = {};
-
-	// 	// loop over all headers and store the configuration of the custom indicators in the indicators object
-	// 	this.getHeaderTitle(this.state).forEach(header => {
-	// 		if (Object.keys(CUSTOM_INDICATORS_C).includes(header)) {
-	// 			// console.log(CUSTOM_INDICATORS_C[header], header, 'update'); //should return config
-	// 			const indicatorName = header.toLowerCase();
-
-	// 			// indicators[indicatorName] = CUSTOM_INDICATORS_C[header]; //set indicator to config
-	// 			indicatorConfigs[indicatorName] =
-	// 				JSON.parse(localStorage.getItem(header)) || CUSTOM_INDICATORS_C[header];
-
-	// 			stateIndicators[header] =
-	// 				symbolIndex !== undefined ? [...this.state[header]] : []; //if an index is provided copy the state array for that indicator
-	// 		}
-	// 	});
-
-	// 	// console.log(indicatorConfigs, 'indicatorConfigs', Object.keys(indicatorConfigs).length);
-
-	// 	if (Object.keys(indicatorConfigs).length) {
-	// 		//if no symbolIndex is provided all symbols will be updated, otherwise only that row
-	// 		const startIndex = symbolIndex || 0;
-	// 		const endIndex = symbolIndex + 1 || this.state.Symbol.length;
-
-	// 		for (let index = startIndex; index < endIndex; index++) {
-	// 			const symbol = this.state.Symbol[index];
-	// 			const interval = this.state.Interval[index];
-
-	// 			const requestObj = {
-	// 				symbol,
-	// 				interval,
-	// 				indicators: indicatorConfigs,
-	// 			};
-
-	// 			// console.log(requestObj, 'requestObj');
-
-	// 			const indicatorObject = await this.getCustomIndicators(requestObj);
-	// 			Object.keys(indicatorConfigs).forEach(
-	// 				indicator =>
-	// 					// (stateIndicators[indicator.toUpperCase()] = [
-	// 					// 	...stateIndicators[indicator.toUpperCase()],
-	// 					// 	indicatorObject[indicator],
-	// 					// ])
-	// 					(stateIndicators[indicator.toUpperCase()] = Object.assign(
-	// 						[],
-	// 						stateIndicators[indicator.toUpperCase()],
-	// 						{
-	// 							[index]: indicatorObject[indicator],
-	// 						}
-	// 					))
-	// 			);
-	// 			// console.log(stateIndicators);
-	// 		}
-
-	// 		// console.log(stateIndicators);
-
-	// 		this.setState(stateIndicators);
-	// 	}
-	// }
 
 	getIndicatorConfigs = symbolIndex => {
 		let indicatorConfigs = {};
@@ -249,14 +133,6 @@ class RadarScreen extends React.PureComponent {
 			}
 		});
 
-		// console.log(
-		// 	{
-		// 		indicatorConfigs,
-		// 		stateIndicators,
-		// 	},
-		// 	'conv '
-		// );
-
 		return {
 			indicatorConfigs,
 			stateIndicators,
@@ -268,17 +144,11 @@ class RadarScreen extends React.PureComponent {
 		stateIndicators,
 		symbolIndex
 	) => {
-		console.log('start');
-		if (stateIndicators !== undefined) {
-			var stateIndicators = JSON.parse(JSON.stringify(stateIndicators)); //clone the object so that the original object is not mutated
-		}
-		console.log(indicatorConfigs, stateIndicators, symbolIndex, 'stateIndicators fct');
+		var stateIndicators = JSON.parse(JSON.stringify(stateIndicators)); //clone the object so that the original object is not mutated
 
 		//if no symbolIndex is provided all symbols will be updated, otherwise only that row
 		const startIndex = symbolIndex || 0;
 		const endIndex = symbolIndex + 1 || this.state.Symbol.length;
-
-		console.log(startIndex, endIndex, indicatorConfigs, stateIndicators, 'fct');
 
 		for (let index = startIndex; index < endIndex; index++) {
 			const symbol = this.state.Symbol[index];
@@ -290,19 +160,11 @@ class RadarScreen extends React.PureComponent {
 				indicators: indicatorConfigs,
 			};
 
-			console.log(requestObj, 'requestObj');
-
 			const indicatorObject = await this.getCustomIndicators(requestObj); //get the data from the backend
-
-			// console.log(indicatorObject, 'indicatorObject fct', stateIndicators);
 
 			// loop over all indicators and assign the returned values from the backend to the temporary stateIndicators state object
 			Object.keys(indicatorConfigs).forEach(
 				indicator =>
-					// (stateIndicators[indicator.toUpperCase()] = [
-					// 	...stateIndicators[indicator.toUpperCase()],
-					// 	indicatorObject[indicator],
-					// ])
 					(stateIndicators[indicator.toUpperCase()] = Object.assign(
 						[],
 						stateIndicators[indicator.toUpperCase()],
@@ -311,81 +173,24 @@ class RadarScreen extends React.PureComponent {
 						}
 					))
 			);
-			// console.log(stateIndicators, 'stateIndicators fct');
 		}
 
-		return stateIndicators; //not really necessary
-		// return 't';
+		return stateIndicators;
 	};
 
-	// async updateCustomIndicators(symbolIndex, indicatorConfig) {
-	updateCustomIndicators = async (symbolIndex, indicatorConfigs, test) => {
-		if (test) {
-			console.log('indicatorConfigs test', indicatorConfigs);
-			// return;
-		}
-		// console.log('updateCustomIndicators');
-		// var indicatorConfigs = {};
-		// var stateIndicators = {};
-
-		// if (indicatorConfig === undefined) {
+	updateCustomIndicators = async (symbolIndex, indicatorConfigs) => {
 		if (indicatorConfigs === undefined) {
-			// console.log('updateCustomIndicators');
 			var {indicatorConfigs, stateIndicators} = this.getIndicatorConfigs(symbolIndex);
 		} else {
-			// const stateIndicators = {};
-			// indicatorConfigs = indicatorConfig;
 			var stateIndicators = {[Object.keys(indicatorConfigs)[0].toUpperCase()]: []};
 		}
 
-		console.log(indicatorConfigs, stateIndicators);
-
 		if (Object.keys(indicatorConfigs).length) {
-			console.log(indicatorConfigs, stateIndicators, symbolIndex, 'indicatorConfigs');
 			const updatedStateIndicators = await this.getValuesForCustomIndicators(
 				indicatorConfigs,
 				stateIndicators,
 				symbolIndex
 			);
-			// }
-
-			// 	// //if no symbolIndex is provided all symbols will be updated, otherwise only that row
-			// 	// const startIndex = symbolIndex || 0;
-			// 	// const endIndex = symbolIndex + 1 || this.state.Symbol.length;
-
-			// 	// for (let index = startIndex; index < endIndex; index++) {
-			// 	// 	const symbol = this.state.Symbol[index];
-			// 	// 	const interval = this.state.Interval[index];
-
-			// 	// 	const requestObj = {
-			// 	// 		symbol,
-			// 	// 		interval,
-			// 	// 		indicators: indicatorConfigs,
-			// 	// 	};
-
-			// 	// 	// console.log(requestObj, 'requestObj');
-
-			// 	// 	const indicatorObject = await this.getCustomIndicators(requestObj); //get the data from the backend
-
-			// 	// 	// loop over all indicators and assign the returned values from the backend to the temporary stateIndicators state object
-			// 	// 	Object.keys(indicatorConfigs).forEach(
-			// 	// 		indicator =>
-			// 	// 			// (stateIndicators[indicator.toUpperCase()] = [
-			// 	// 			// 	...stateIndicators[indicator.toUpperCase()],
-			// 	// 			// 	indicatorObject[indicator],
-			// 	// 			// ])
-			// 	// 			(stateIndicators[indicator.toUpperCase()] = Object.assign(
-			// 	// 				[],
-			// 	// 				stateIndicators[indicator.toUpperCase()],
-			// 	// 				{
-			// 	// 					[index]: indicatorObject[indicator],
-			// 	// 				}
-			// 	// 			))
-			// 	// 	);
-			// 	// 	// console.log(stateIndicators);
-			// 	// }
-
-			// 	// console.log(stateIndicators, 'stateIndicators');
 
 			this.setState(updatedStateIndicators);
 		}
