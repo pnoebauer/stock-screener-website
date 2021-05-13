@@ -724,9 +724,7 @@ export const INDICATORS_TO_API = {
 	Volatility: 'volatility',
 };
 
-export const CUSTOM_INDICATORS = ['SMA', 'EMA'];
-
-export const CUSTOM_INDICATORS_C = {
+export const CUSTOM_INDICATORS = {
 	SMA: {
 		parameter: 'closePrice',
 		lookBack: 20,

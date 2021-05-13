@@ -12,7 +12,6 @@ import {
 	API_TO_INDICATORS,
 	INDICATORS_TO_API,
 	CUSTOM_INDICATORS,
-	CUSTOM_INDICATORS_C,
 } from '../../assets/constants';
 
 import './radarscreen.styles.css';
@@ -85,11 +84,23 @@ class RadarScreen extends React.PureComponent {
 			header = this.getHeaderTitle(this.state);
 		}
 
+		// update CUSTOM_INDICATORS configs
+		header.forEach(header => {
+			if (
+				Object.keys(CUSTOM_INDICATORS).includes(header) &&
+				localStorage.getItem(header)
+			) {
+				// console.log(header, JSON.parse(localStorage.getItem(header)));
+				CUSTOM_INDICATORS[header] = JSON.parse(localStorage.getItem(header));
+			}
+		});
+
+		// console.log(CUSTOM_INDICATORS, 'ci');
+
 		this.setState(rehydrate, () => {
 			// console.log('mount h', this.state.Symbol, Symbol, rehydrate);
 			this.startEventSource(this.state.Symbol);
-
-			this.updateCustomIndicators();
+			// this.updateCustomIndicators();
 		});
 	}
 
@@ -101,10 +112,13 @@ class RadarScreen extends React.PureComponent {
 		let sameElements = (arr1, arr2) =>
 			[...arr1].sort().join() === [...arr2].sort().join(); //check if both arrays are equal (incl. duplicates)
 
+		const currentHeaders = this.getHeaderTitle(this.state);
+		const prevHeaders = this.getHeaderTitle(prevState);
+
 		// trigger if symbols or columns change
 		if (
 			!sameElements(prevState.Symbol, this.state.Symbol) ||
-			!arrayElementsEqual(this.getHeaderTitle(prevState), this.getHeaderTitle(this.state))
+			!arrayElementsEqual(prevHeaders, currentHeaders)
 		) {
 			// close old event source and start a new one with updated Symbol
 			if (this.events) {
@@ -114,24 +128,41 @@ class RadarScreen extends React.PureComponent {
 				this.startEventSource();
 			}
 		}
+
+		const newCustomIndicators = currentHeaders.flatMap(header =>
+			Object.keys(CUSTOM_INDICATORS).includes(header) && !prevHeaders.includes(header)
+				? [header]
+				: []
+		);
+
+		const {indicatorConfigs} = this.getIndicatorConfigs(undefined, newCustomIndicators);
+		if (Object.keys(indicatorConfigs).length) {
+			// console.log(indicatorConfigs, 'ic');
+
+			this.updateCustomIndicators(undefined, indicatorConfigs);
+		}
 	}
 
-	getIndicatorConfigs = symbolIndex => {
+	getIndicatorConfigs = (symbolIndex, indicatorList) => {
 		let indicatorConfigs = {};
 		let stateIndicators = {};
 
+		const headers = indicatorList ?? this.getHeaderTitle(this.state);
 		// loop over all headers and store the configuration of the custom indicators in the indicatorConfigs object
-		this.getHeaderTitle(this.state).forEach(header => {
-			if (Object.keys(CUSTOM_INDICATORS_C).includes(header)) {
+		headers.forEach(header => {
+			if (indicatorList ?? Object.keys(CUSTOM_INDICATORS).includes(header)) {
 				const indicatorName = header.toLowerCase(); //the backend stores indicators in lowerCase
 
-				indicatorConfigs[indicatorName] =
-					JSON.parse(localStorage.getItem(header)) || CUSTOM_INDICATORS_C[header];
+				// indicatorConfigs[indicatorName] =
+				// 	JSON.parse(localStorage.getItem(header)) || CUSTOM_INDICATORS[header];
+				indicatorConfigs[indicatorName] = CUSTOM_INDICATORS[header];
 
 				stateIndicators[header] =
 					symbolIndex !== undefined ? [...this.state[header]] : []; //if an index is provided, copy the state array for that indicator
 			}
 		});
+
+		// console.log(CUSTOM_INDICATORS, 'getConfig');
 
 		return {
 			indicatorConfigs,
@@ -179,12 +210,15 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	updateCustomIndicators = async (symbolIndex, indicatorConfigs) => {
+		// (1) get indicatorConfigs an the current state arrays for the to be updated indicators
 		if (indicatorConfigs === undefined) {
 			var {indicatorConfigs, stateIndicators} = this.getIndicatorConfigs(symbolIndex);
 		} else {
-			var stateIndicators = {[Object.keys(indicatorConfigs)[0].toUpperCase()]: []};
+			const updatedIndicator = Object.keys(indicatorConfigs)[0].toUpperCase(); //API uses lowerCase, state uses upperCase
+			var stateIndicators = {[updatedIndicator]: []}; //all values will be updated for that column, hence an empty array is provided (as the whole array will be updated)
 		}
 
+		// (2) get values for the to be updated indicators
 		if (Object.keys(indicatorConfigs).length) {
 			const updatedStateIndicators = await this.getValuesForCustomIndicators(
 				indicatorConfigs,
@@ -200,14 +234,8 @@ class RadarScreen extends React.PureComponent {
 		const {Symbol} = this.state;
 		const header = this.getHeaderTitle(this.state);
 
-		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers
-		// const apiIndicators = header.flatMap(item =>
-		// 	permanentHeaders.includes(item) ? [] : [INDICATORS_TO_API[item]]
-		// );
-
-		// const permanentOrCustomIndicators = [...permanentHeaders, ...CUSTOM_INDICATORS];
-
-		const customIndicators = Object.keys(CUSTOM_INDICATORS_C);
+		// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers or customIndicators
+		const customIndicators = Object.keys(CUSTOM_INDICATORS);
 		const permanentOrCustomIndicators = [...permanentHeaders, ...customIndicators];
 
 		const apiIndicators = header.flatMap(item =>
@@ -282,7 +310,7 @@ class RadarScreen extends React.PureComponent {
 
 				this.setState(updatedState, () => this.updateLocalStorage());
 			} else {
-				// this.updateLocalStorage();
+				this.updateLocalStorage();
 			}
 		};
 	}
@@ -345,12 +373,8 @@ class RadarScreen extends React.PureComponent {
 
 		const headerNames = names.map(item => {
 			// console.log(CUSTOM_INDICATORS.includes(item.name), item.name, 'handleColumnUpdate');
-			// if (CUSTOM_INDICATORS.includes(item.name)) {
-			// 	INDICATORS_TO_API[item.name] = item.config;
-			// }
-
-			if (Object.keys(CUSTOM_INDICATORS_C).includes(item.name)) {
-				CUSTOM_INDICATORS_C[item.name] = item.config;
+			if (Object.keys(CUSTOM_INDICATORS).includes(item.name)) {
+				CUSTOM_INDICATORS[item.name] = item.config;
 			}
 
 			return item.name;

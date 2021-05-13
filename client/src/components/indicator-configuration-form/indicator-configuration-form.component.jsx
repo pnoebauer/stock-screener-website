@@ -3,7 +3,7 @@ import React from 'react';
 import {
 	API_TO_INDICATORS,
 	INDICATORS_TO_API,
-	CUSTOM_INDICATORS_C,
+	CUSTOM_INDICATORS,
 } from '../../assets/constants';
 
 import './indicator-configuration-form.styles.css';
@@ -13,8 +13,10 @@ class IndicatorConfigurationForm extends React.Component {
 		super(props);
 		const {indicator} = this.props;
 
-		const config =
-			JSON.parse(localStorage.getItem(indicator)) || CUSTOM_INDICATORS_C[indicator];
+		// const config =
+		// 	JSON.parse(localStorage.getItem(indicator)) || CUSTOM_INDICATORS[indicator];
+
+		const config = CUSTOM_INDICATORS[indicator];
 
 		const {parameter, lookBack} = config;
 
@@ -64,10 +66,13 @@ class IndicatorConfigurationForm extends React.Component {
 
 			const indicatorConfig = {[indicator.toLowerCase()]: config};
 
+			CUSTOM_INDICATORS[indicator] = config;
+			// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
+
 			// console.log(indicatorConfig, 'indicatorConfig');
 
 			// trigger a fetch call in the parent
-			updateCustomIndicators(undefined, indicatorConfig, 'test');
+			updateCustomIndicators(undefined, indicatorConfig);
 		}
 		// localStorage.setItem(indicator, JSON.stringify(config));
 

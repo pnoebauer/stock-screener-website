@@ -320,28 +320,27 @@ const retrieveSymbolWithIndicators = async queryObject => {
 	return lastCandle;
 };
 
-const queryObject = {
-	symbol: 'MMM',
-	interval: 'Day',
-	indicators: {
-		sma: {
-			parameter: 'closePrice',
-			lookBack: 90,
-		},
-		ema: {
-			parameter: 'openPrice',
-			lookBack: 210,
-		},
-	},
-};
-
-retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+// const queryObject = {
+// 	symbol: 'MMM',
+// 	interval: 'Day',
+// 	indicators: {
+// 		sma: {
+// 			parameter: 'closePrice',
+// 			lookBack: 90,
+// 		},
+// 		ema: {
+// 			parameter: 'openPrice',
+// 			lookBack: 210,
+// 		},
+// 	},
+// };
+// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
 	// console.log(req.body, symbol);
 	const queryObject = req.body;
-	// console.log(queryObject);
+	// console.log(queryObject, new Date().getSeconds(), 'qo');
 
 	retrieveSymbolWithIndicators(queryObject).then(data => {
 		// console.log(queryObject, data);

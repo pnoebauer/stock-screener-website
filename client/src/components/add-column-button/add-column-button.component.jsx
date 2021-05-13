@@ -3,11 +3,7 @@ import Modal from '../modal/modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
-import {
-	INDICATORS_TO_API,
-	CUSTOM_INDICATORS,
-	CUSTOM_INDICATORS_C,
-} from '../../assets/constants';
+import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
 
 class AddColumnButton extends React.Component {
 	constructor(props) {
@@ -63,7 +59,7 @@ class AddColumnButton extends React.Component {
 		// ];
 		const apiAndCustomIndicators = [
 			...Object.keys(INDICATORS_TO_API),
-			...Object.keys(CUSTOM_INDICATORS_C),
+			...Object.keys(CUSTOM_INDICATORS),
 		];
 
 		const availableIndicatorsDefault = apiAndCustomIndicators.filter(
