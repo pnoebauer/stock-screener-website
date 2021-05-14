@@ -1,120 +1,118 @@
-
 .dropdown-container {
-  background-color: orange;
+	background-color: orange;
 
-  position: relative;
+	position: relative;
 
-  display: inline-block;
-  text-align: center;
-
+	display: inline-block;
+	text-align: center;
 }
 
 .selected-value {
-  background-color: green;
-  border-top: 1px solid black;
+	background-color: green;
+	border-top: 1px solid black;
 	border-right: 1px solid black;
-  
-  height: 100%;
-  width: 100%;
 
-  display: flex;
-  justify-content: center;
-  align-items: center; 
-  box-sizing: border-box;
-  text-align: center;
-  outline: none;
+	height: 100%;
+	width: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-sizing: border-box;
+	text-align: center;
+	outline: none;
 }
 
 .selected-value.active {
-  background-color: grey;
+	background-color: grey;
 }
 
 .selected-value.add-row {
-  background-color: purple;
+	background-color: purple;
 }
 .selected-value.active.add-row {
-  background-color: yellow;
+	background-color: yellow;
 }
-
 
 /* down arrow */
 .selected-value::after {
-  content: '';
-  position: absolute;
-  right: 5%;
-  top: 40%;
-  border: 8px solid transparent;
-  border-color: #fff transparent transparent transparent;
+	content: '';
+	position: absolute;
+	right: 5%;
+	top: 40%;
+	border: 8px solid transparent;
+	border-color: #fff transparent transparent transparent;
 }
-  
+
 /* up arrow */
 .selected-value.active::after {
-  top: 8px;
-  border-color: transparent transparent #fff transparent;
+	top: 8px;
+	border-color: transparent transparent #fff transparent;
 }
 
 .options-list {
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  background-color: inherit;
-  position: absolute;
-  width: 100%;
-  /* width: calc(100% - 1px);  */
-  /* height: 100%; */
-  /* height: 500%; */
-  /* background-color: green; */
-  z-index: 100;
-  box-sizing: border-box;
-  /* border-left: 1px solid black; */
-  /* top: 5px; */
-  /* border-top: 1px solid black; */
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background-color: inherit;
+	position: absolute;
+	width: 100%;
+	/* width: calc(100% - 1px);  */
+	/* height: 100%; */
+	/* height: 500%; */
+	/* background-color: green; */
+	z-index: 100;
+	box-sizing: border-box;
+	/* border-left: 1px solid black; */
+	/* top: 5px; */
+	/* border-top: 1px solid black; */
 
-  overflow: auto;
+	overflow: auto;
 }
 
-
 .dropdown-option {
-  list-style-type: none;
+	list-style-type: none;
 
-  /* background-color: inherit; */
-  background-color: red;
+	/* background-color: inherit; */
+	background-color: red;
 
-  border-top: 1px solid black;
-  border-right: 1px solid black;
+	border-top: 1px solid black;
+	border-right: 1px solid black;
 
-  border-left: 1px solid black;
-  
-  cursor: pointer;
-  /* height: 80%; */
-  height: calc(20% - 1px); 
-  /* required as the parent has borders only on one side, whereas this element has them on all sides
+	border-left: 1px solid black;
+
+	cursor: pointer;
+	/* height: 80%; */
+	height: calc(20% - 1px);
+	/* required as the parent has borders only on one side, whereas this element has them on all sides
      consequently both, border-box and content-box are off by one border width */
-  width: calc(100% - 1px); 
-  /* width: 100%;  */
-  /* realign element */
-  margin-left: -1px;
-  /* width: 40px; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* box-sizing: border-box; */
+	width: calc(100% - 1px);
+	/* width: 100%;  */
+	/* realign element */
+	margin-left: -1px;
+	/* width: 40px; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/* box-sizing: border-box; */
 }
 
 .dropdown-option.add-row {
-  background-color: orange;
+	background-color: orange;
 }
 
 .options-list .dropdown-option:last-child {
-  border-bottom: 1px solid black;
+	border-bottom: 1px solid black;
 }
 
-.dropdown-option:hover, .dropdown-option.active {
-  background-color: blue;
-  /* opacity: 0.8; */
-  color: #ffffff;
+.dropdown-option:hover,
+.dropdown-option.active {
+	background-color: blue;
+	/* opacity: 0.8; */
+	color: #ffffff;
 }
 
-.dropdown-option.add-row:hover, .dropdown-option.add-row.active {
-  background-color: grey;
+.dropdown-option.add-row:hover,
+.dropdown-option.add-row.active {
+	background-color: grey;
 }

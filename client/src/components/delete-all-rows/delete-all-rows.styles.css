@@ -1,0 +1,8 @@
+.delete-all-rows {
+	height: 31px;
+	border-right: none;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+	margin-left: -1px;
+}

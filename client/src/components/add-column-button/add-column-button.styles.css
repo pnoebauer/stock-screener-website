@@ -1,0 +1,6 @@
+button.add-column-button {
+	border: none;
+	border-bottom: 1px solid black;
+	margin-bottom: -1px;
+	width: 55px;
+}

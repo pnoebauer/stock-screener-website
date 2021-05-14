@@ -1,10 +1,14 @@
 import React from 'react';
 
+import {RiSettings5Fill} from 'react-icons/ri';
+
 import Modal from '../modal/modal.component';
 
 import IndicatorConfigurationForm from '../indicator-configuration-form/indicator-configuration-form.component';
 
 import {CUSTOM_INDICATORS, API_TO_INDICATORS} from '../../assets/constants';
+
+import './screen-header-item.styles.css';
 
 class ScreenHeaderItem extends React.Component {
 	constructor(props) {
@@ -12,7 +16,9 @@ class ScreenHeaderItem extends React.Component {
 		this.state = {visible: false, ...CUSTOM_INDICATORS[this.props.id]};
 	}
 
-	show = () => {
+	show = event => {
+		event.preventDefault();
+		event.stopPropagation();
 		this.setState({visible: true});
 	};
 
@@ -24,33 +30,45 @@ class ScreenHeaderItem extends React.Component {
 		const {gridColumn, onSort, id, className, updateCustomIndicators, children} =
 			this.props;
 		// console.log(id, 'id', CUSTOM_INDICATORS[id], this.state);
+		console.log(children);
 		return (
 			<>
 				<div style={{gridColumn}} onClick={onSort} id={id} className={className}>
-					{children}
+					{/* <div style={{gridColumn}} className={className}> */}
+					<span onClick={onSort} id={id}>
+						{children}
+					</span>
 					{CUSTOM_INDICATORS[id] ? (
 						<>
 							<button
-								style={{
-									position: 'absolute',
-									top: '0px',
-									right: '0px',
-								}}
 								onClick={this.show}
-								name='configuration'
+								// name='configuration'
+								className='indicator-config-button'
+								id={id}
 							>
-								x
+								<RiSettings5Fill className='indicator-config-icon' />
 							</button>
-							<span
+							<div
 								style={{
 									position: 'absolute',
-									top: '0px',
-									left: '0px',
+									// top: '0px',
+									// left: '0px',
+									bottom: '0px',
+									right: '0px',
+									fontSize: '80%',
+									fontStyle: 'italic',
+									// marginTop: '-5px',
 								}}
+								// name='configuration'
+								onClick={onSort}
+								id={id}
 							>
-								{API_TO_INDICATORS[CUSTOM_INDICATORS[id].parameter]}
-							</span>
-							<span
+								{`${API_TO_INDICATORS[CUSTOM_INDICATORS[id].parameter].replace(
+									' Price',
+									''
+								)}-${CUSTOM_INDICATORS[id].lookBack}`}
+							</div>
+							{/* <span
 								style={{
 									position: 'absolute',
 									bottom: '0px',
@@ -58,7 +76,7 @@ class ScreenHeaderItem extends React.Component {
 								}}
 							>
 								{CUSTOM_INDICATORS[id].lookBack}
-							</span>
+							</span> */}
 						</>
 					) : null}
 				</div>

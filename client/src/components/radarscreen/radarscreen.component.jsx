@@ -3,8 +3,9 @@ import React from 'react';
 import ScreenHeader from '../screen-header/screen-header.component';
 import GenerateGrid from '../generate-grid/generate-grid.component';
 import AddColumnButton from '../add-column-button/add-column-button.component';
-import Dropdown from '../dropdown/dropdown.component';
+import AddRowInput from '../add-row-input/add-row-input.component';
 import AddStockUniverseButton from '../add-stock-universe-button/add-stock-universe-button.component';
+import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 
 import {
 	INTERVALS,
@@ -356,11 +357,13 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	sortTable = event => {
-		if (event.target.name === 'configuration') {
-			event.preventDefault();
-			event.stopPropagation();
-			return;
-		}
+		console.log('called sort', event.target);
+		// if (event.target.name === 'configuration') {
+		// 	console.log('conf');
+		event.preventDefault();
+		event.stopPropagation();
+		// 	return;
+		// }
 		this.setState((prevState, props) => {
 			// console.log('sortTable', event.target.id);
 			const sortedTable = props.onSort(event, prevState);
@@ -496,22 +499,7 @@ class RadarScreen extends React.PureComponent {
 						onChange={this.onChange}
 						handleRowDelete={this.handleRowDelete}
 					/>
-					<Dropdown
-						options={SYMBOLS}
-						gridRow={Symbol.length + 2}
-						gridColumn={1}
-						// key={colIdx.toString()+rowIdx.toString()}
-						onChange={this.onRowAdd}
-						customStyles={{
-							height: '30px',
-							borderBottom: '1px solid black',
-							borderLeft: '1px solid black',
-							marginLeft: '-1px',
-						}}
-						className={'add-row'}
-					>
-						{SYMBOLS[Symbol.length]}
-					</Dropdown>
+					<AddRowInput rowNumber={Symbol.length} onRowAdd={this.onRowAdd} />
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
@@ -519,21 +507,10 @@ class RadarScreen extends React.PureComponent {
 						}}
 						handleUniverseAdd={this.handleUniverseAdd}
 					/>
-					<button
-						style={{
-							border: 'none',
-							gridColumn: '1',
-							gridRow: `${Symbol.length} + 2`,
-							height: '31px',
-							borderBottom: '1px solid black',
-							borderLeft: '1px solid black',
-							borderTop: '1px solid black',
-							marginLeft: '-1px',
-						}}
-						onClick={this.handleDeleteAllRows}
-					>
-						XX
-					</button>
+					<DeleteAllRows
+						handleDeleteAllRows={this.handleDeleteAllRows}
+						gridRow={Symbol.length + 2}
+					/>
 				</div>
 			</div>
 		);

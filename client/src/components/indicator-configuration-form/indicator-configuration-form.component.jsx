@@ -69,8 +69,6 @@ class IndicatorConfigurationForm extends React.Component {
 			CUSTOM_INDICATORS[indicator] = config;
 			// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
 
-			// console.log(indicatorConfig, 'indicatorConfig');
-
 			// trigger a fetch call in the parent
 			updateCustomIndicators(undefined, indicatorConfig);
 		}

@@ -2,18 +2,19 @@ import React from 'react';
 
 import './delete-row-button.styles.css';
 
-const DeleteRowButton = ( { rowIdx, handleRowDelete, children } ) => {
-    
-    return (
-        <button 
-            className="delete-row-button"
-            style={{gridRow: rowIdx+2}}
-            id={rowIdx}
-            onClick={handleRowDelete}
-        >
-            {children}
-        </button>
-    )
-}
+import {IoIosRemoveCircleOutline} from 'react-icons/io';
+
+const DeleteRowButton = ({rowIdx, handleRowDelete}) => {
+	return (
+		<button
+			className='delete-row-button'
+			style={{gridRow: rowIdx + 2, position: 'relative'}}
+			id={rowIdx}
+			onClick={handleRowDelete}
+		>
+			<IoIosRemoveCircleOutline size='40px' className='delete-row-button-icon' />
+		</button>
+	);
+};
 
 export default DeleteRowButton;

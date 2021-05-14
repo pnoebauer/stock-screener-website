@@ -1,6 +1,30 @@
-
 button.delete-row-button {
-    border: none;
+	border: none;
 	border-right: 1px solid black;
-    border-top: 1px solid black;
+	border-top: 1px solid black;
+}
+
+.delete-row-button-icon {
+	position: absolute;
+	/* left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%); */
+
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: 80%;
+	height: 50%;
+
+	cursor: pointer;
+}
+
+.delete-row-button-icon:hover {
+	color: red;
+	/* background-color: white; */
+
+	transform: scale(1.1);
 }

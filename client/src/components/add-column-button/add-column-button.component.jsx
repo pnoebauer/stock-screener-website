@@ -1,4 +1,7 @@
 import React from 'react';
+
+import './add-column-button.styles.css';
+
 import Modal from '../modal/modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
