@@ -4,5 +4,29 @@
 	border-bottom: 1px solid black;
 	border-left: 1px solid black;
 	border-top: 1px solid black;
-	margin-left: -1px;
+
+	position: relative;
+	right: 1px;
+}
+
+.delete-all-rows-icon {
+	position: absolute;
+
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: 80%;
+	height: 50%;
+
+	cursor: pointer;
+}
+
+.delete-all-rows-icon:hover {
+	color: red;
+	/* background-color: white; */
+
+	transform: scale(1.1);
 }

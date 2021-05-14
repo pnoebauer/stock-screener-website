@@ -201,7 +201,7 @@ class RadarScreen extends React.PureComponent {
 						[],
 						stateIndicators[indicator.toUpperCase()],
 						{
-							[index]: indicatorObject[indicator],
+							[index]: Number(indicatorObject[indicator]),
 						}
 					))
 			);
@@ -227,7 +227,26 @@ class RadarScreen extends React.PureComponent {
 				symbolIndex
 			);
 
-			this.setState(updatedStateIndicators);
+			// this.setState(updatedStateIndicators);
+
+			const {sortConfig, sortTable} = this.props;
+
+			let updatedState = {...this.state, ...updatedStateIndicators};
+
+			//sorted table cache will be deleted once new data arrives
+			localStorage.removeItem('sortedTable');
+
+			if (Object.keys(sortConfig).length) {
+				// console.log('sorting');
+				updatedState = sortTable(
+					updatedState,
+					sortConfig.sortedField,
+					sortConfig.direction
+				);
+			}
+			// console.log('set state after message');
+
+			this.setState(updatedState, () => this.updateLocalStorage());
 		}
 	};
 
@@ -357,16 +376,22 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	sortTable = event => {
-		console.log('called sort', event.target);
-		// if (event.target.name === 'configuration') {
-		// 	console.log('conf');
-		event.preventDefault();
-		event.stopPropagation();
-		// 	return;
-		// }
+		if (event.target.getAttribute('name') !== 'screen-header') {
+			// event.preventDefault();
+			// event.stopPropagation();
+			return;
+		}
+
+		// console.log(event.target, event.target.getAttribute('name'), 'sort');
+
+		const sortedField = event.currentTarget.id;
+
 		this.setState((prevState, props) => {
-			// console.log('sortTable', event.target.id);
-			const sortedTable = props.onSort(event, prevState);
+			// console.log('sortTable', sortedField);
+
+			const sortedTable = props.onSort(sortedField, prevState);
+
+			// const sortedTable = props.onSort(event, prevState);
 			return sortedTable;
 		});
 	};
@@ -457,37 +482,37 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	render() {
-		const header = this.getHeaderTitle(this.state);
+		const headers = this.getHeaderTitle(this.state);
 		// passed from the withSort HOC
 		const {sortConfig} = this.props;
 		const {Symbol} = this.state;
 
 		// console.log('render radar', header, Symbol, this.state);
 
-		const usedIndicators = header.flatMap(item =>
+		const usedIndicators = headers.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]
 		);
 
-		updateKey = header;
+		updateKey = headers;
 
 		return (
 			<div className='radarscreen'>
 				<div
 					id='grid-container'
 					style={{
-						gridTemplateColumns: `20px repeat(${header.length}, 1fr) 0`,
+						gridTemplateColumns: `20px repeat(${headers.length}, 1fr) 0`,
 						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
 					}}
 				>
 					<ScreenHeader
-						header={header}
+						headers={headers}
 						sortTable={this.sortTable}
 						sortConfig={sortConfig}
 						updateCustomIndicators={this.updateCustomIndicators}
 					/>
 					<AddColumnButton
 						style={{
-							gridColumn: `${header.length + 2}`,
+							gridColumn: `${headers.length + 2}`,
 						}}
 						handleColumnUpdate={this.handleColumnUpdate}
 						usedIndicatorsDefault={usedIndicators}
@@ -495,7 +520,7 @@ class RadarScreen extends React.PureComponent {
 					/>
 					<GenerateGrid
 						{...this.state}
-						header={header}
+						header={headers}
 						onChange={this.onChange}
 						handleRowDelete={this.handleRowDelete}
 					/>

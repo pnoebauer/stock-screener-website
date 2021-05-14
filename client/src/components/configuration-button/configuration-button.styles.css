@@ -1,0 +1,30 @@
+.config-button {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	height: 50%;
+	width: 10%;
+	border: none;
+	border: 1px solid grey;
+	border-radius: 0 0 0 5px;
+
+	transform: translate(1px, -1px);
+}
+
+.config-icon {
+	position: absolute;
+	/* left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%); */
+
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: 100%;
+	/* height: 50%; */
+
+	cursor: pointer;
+}

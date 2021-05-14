@@ -62,6 +62,7 @@ class IndicatorConfigurationForm extends React.Component {
 		// );
 
 		if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
+			//if the config has changed
 			localStorage.setItem(indicator, JSON.stringify(config));
 
 			const indicatorConfig = {[indicator.toLowerCase()]: config};
@@ -72,7 +73,6 @@ class IndicatorConfigurationForm extends React.Component {
 			// trigger a fetch call in the parent
 			updateCustomIndicators(undefined, indicatorConfig);
 		}
-		// localStorage.setItem(indicator, JSON.stringify(config));
 
 		this.props.closeForm();
 

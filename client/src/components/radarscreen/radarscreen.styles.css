@@ -39,32 +39,3 @@ button {
 	border-top: 1px solid black;
 	border-right: 1px solid black;
 }
-
-.screen-header {
-	overflow: hidden;
-	background-color: #f1f1f1;
-	padding: 10px 10px;
-	grid-row: 1;
-	box-sizing: border-box;
-	height: 40px;
-	user-select: none;
-	position: relative;
-}
-
-.screen-header.ascending::after {
-	content: '';
-	position: relative;
-	left: 2%;
-	top: 85%;
-	border: 8px solid transparent;
-	border-color: rgb(0, 0, 0) transparent transparent transparent;
-}
-
-.screen-header.descending::after {
-	content: '';
-	position: relative;
-	left: 2%;
-	bottom: 85%;
-	border: 8px solid transparent;
-	border-color: transparent transparent rgb(0, 0, 0) transparent;
-}

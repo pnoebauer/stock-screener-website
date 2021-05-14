@@ -1,12 +1,14 @@
 import React from 'react';
 
-import './add-column-button.styles.css';
+import {GrSettingsOption} from 'react-icons/gr';
 
 import Modal from '../modal/modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
 import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
+
+import './add-column-button.styles.css';
 
 class AddColumnButton extends React.Component {
 	constructor(props) {
@@ -35,13 +37,15 @@ class AddColumnButton extends React.Component {
 	handleOkCancel = (type, updatedState) => {
 		this.hide();
 		if (type === 'ok') {
-			// const columnNames = updatedState.usedIndicators.map(item => item.name);
-			// this.props.handleColumnUpdate(columnNames);
-
 			const columnNames = updatedState.usedIndicators.map(item => {
 				let config;
-				if (item.name.toLowerCase() === 'sma' || item.name.toLowerCase() === 'ema')
-					config = {parameter: 'closePrice', lookBack: 10};
+
+				// !!!REQUIRES UPDATING - FOR NOW JUST SET TO THE DEFAULT CONFIGURATION
+				// !!!LATER ADD OPTION TO CHANGE THE SETTINGS WHEN ADDING THE COLUMN
+				if (Object.keys(CUSTOM_INDICATORS).includes(item.name)) {
+					config = CUSTOM_INDICATORS[item.name]; //!!!THIS LINE NEEDS TO BE REPLACED ONCE SETTINGS ARE ADDED
+				}
+
 				return {
 					name: item.name,
 					config,
@@ -52,14 +56,9 @@ class AddColumnButton extends React.Component {
 	};
 
 	render() {
-		// console.log('ab',this.props)
 		const {usedIndicatorsDefault} = this.props;
 		// console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
 
-		// const apiAndCustomIndicators = [
-		// 	...Object.keys(INDICATORS_TO_API),
-		// 	...CUSTOM_INDICATORS,
-		// ];
 		const apiAndCustomIndicators = [
 			...Object.keys(INDICATORS_TO_API),
 			...Object.keys(CUSTOM_INDICATORS),
@@ -69,11 +68,6 @@ class AddColumnButton extends React.Component {
 			value => !usedIndicatorsDefault.includes(value)
 		);
 
-		// const availableIndicatorsDefault = Object.keys(INDICATORS_TO_API).filter(
-		// 	value => !usedIndicatorsDefault.includes(value)
-		// );
-		// console.log(availableIndicators,'k')
-
 		return (
 			<>
 				<button
@@ -81,7 +75,7 @@ class AddColumnButton extends React.Component {
 					className='add-column-button'
 					style={this.props.style}
 				>
-					+
+					<GrSettingsOption className='add-column-icon' />
 				</button>
 
 				<Modal
@@ -101,7 +95,6 @@ class AddColumnButton extends React.Component {
 							availableIndicatorsDefault
 						)}
 						usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicatorsDefault)}
-						// key={this.props.updateKey}
 					/>
 				</Modal>
 			</>

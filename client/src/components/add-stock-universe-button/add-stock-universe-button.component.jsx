@@ -1,4 +1,7 @@
 import React from 'react';
+
+import {IoIosAddCircle} from 'react-icons/io';
+
 import Modal from '../modal/modal.component';
 
 import UniverseSelector from '../stock-universe-selector/stock-universe-selector.coponent';
@@ -76,7 +79,7 @@ class AddStockUniverseButton extends React.Component {
 					className='add-stock-universe-button'
 					style={this.props.style}
 				>
-					+
+					<IoIosAddCircle className='add-stock-universe-icon' />
 				</button>
 
 				<Modal

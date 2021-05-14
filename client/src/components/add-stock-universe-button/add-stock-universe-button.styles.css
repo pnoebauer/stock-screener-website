@@ -1,10 +1,33 @@
-
 button.add-stock-universe-button {
 	border: none;
 	/* border-bottom: 1px solid black;
 	margin-bottom: -1px;
 	width: 55px; */
 
-    border-right: 1px solid black;
-    border-top: 1px solid black;
+	border-right: 1px solid black;
+	border-top: 1px solid black;
+
+	position: relative;
+}
+
+.add-stock-universe-icon {
+	position: absolute;
+
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: 80%;
+	height: 50%;
+
+	cursor: pointer;
+}
+
+.add-stock-universe-icon:hover {
+	color: green;
+	/* background-color: white; */
+
+	transform: scale(1.1);
 }

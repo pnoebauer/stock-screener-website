@@ -47,6 +47,8 @@ function withSorting(WrappedComponent) {
 						value = Number(value);
 					}
 
+					// console.log(sortedField, typeof value, value);
+
 					return {
 						index,
 						value,
@@ -95,11 +97,13 @@ function withSorting(WrappedComponent) {
 			return stateClone;
 		};
 
-		onSort = (event, state) => {
+		onSort = (sortedField, state) => {
+			// onSort = (event, state) => {
 			const {sortConfig} = this.state;
-			// console.log('click',event.target.id, state)
+			// console.log('click', event.target.id, state);
 
-			let sortedField = event.target.id;
+			// let sortedField = event.target.id;
+			// let sortedField = event.currentTarget.id;
 			// // const list = [...this.state[sortedField]]
 
 			let direction = 1;
@@ -118,10 +122,9 @@ function withSorting(WrappedComponent) {
 
 			// console.log(sortedField, direction, 'config');
 
-			// const sortedData = sortTable(this.state, sortedField, direction);
 			const sortedData = this.sortTable(state, sortedField, direction);
 
-			// console.log('sortedData',sortedData)
+			// console.log('sortedData', sortedData);
 			// this.setState(sortedData);
 
 			this.setState({

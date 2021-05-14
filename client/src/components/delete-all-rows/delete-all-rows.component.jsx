@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {MdDeleteSweep} from 'react-icons/md';
+
 import './delete-all-rows.styles.css';
 
 const DeleteAllRows = ({handleDeleteAllRows, gridRow}) => (
@@ -11,7 +13,7 @@ const DeleteAllRows = ({handleDeleteAllRows, gridRow}) => (
 		}}
 		onClick={handleDeleteAllRows}
 	>
-		XX
+		<MdDeleteSweep className='delete-all-rows-icon' />
 	</button>
 );
 

@@ -1,0 +1,10 @@
+.indicator-configuration-display {
+	position: absolute;
+	/*  top: 0px; */
+	/*  left: 0px; */
+	bottom: 1px;
+	right: 3px;
+	font-size: 80%;
+	font-style: italic;
+	/*  margin-top: -5px; */
+}
