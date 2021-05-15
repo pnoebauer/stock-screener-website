@@ -292,49 +292,54 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 };
 
 const retrieveSymbolWithIndicators = async queryObject => {
-	// console.log(queryObject);
+	try {
+		// console.log(queryObject);
 
-	// determine the maximum lookback and all unique parameters (for data retrieval from the db)
-	const queryParameters = new Set();
-	let maxLookBack = 1;
-	Object.keys(queryObject.indicators).forEach(indicator => {
-		const {[indicator]: indObj} = queryObject.indicators; // destructure out the indicator
-		// console.log(indObj, indicator);
+		// determine the maximum lookback and all unique parameters (for data retrieval from the db)
+		const queryParameters = new Set();
+		let maxLookBack = 1;
+		Object.keys(queryObject.indicators).forEach(indicator => {
+			const {[indicator]: indObj} = queryObject.indicators; // destructure out the indicator
+			// console.log(indObj, indicator);
 
-		queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
-		maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
-	});
+			queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+			maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
+		});
 
-	// console.log(queryParameters, maxLookBack);
+		// console.log(queryParameters, maxLookBack);
 
-	// retrieve data
-	const latestPriceData = await dbConnect.retrieveData(
-		queryObject.symbol,
-		constants.UNSTABLEPERIOD + maxLookBack,
-		Array.from(queryParameters)
-	);
+		// retrieve data
+		const latestPriceData = await dbConnect.retrieveData(
+			queryObject.symbol,
+			constants.UNSTABLEPERIOD + maxLookBack,
+			Array.from(queryParameters)
+		);
 
-	// console.log(latestPriceData, 'latestPriceData');
-	const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
+		// console.log(latestPriceData, 'latestPriceData');
+		const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
 
-	return lastCandle;
+		return lastCandle;
+	} catch (e) {
+		console.log('error retrieving symbol with indicators', e);
+		return {};
+	}
 };
 
-// const queryObject = {
-// 	symbol: 'MMM',
-// 	interval: 'Day',
-// 	indicators: {
-// 		sma: {
-// 			parameter: 'closePrice',
-// 			lookBack: 90,
-// 		},
-// 		ema: {
-// 			parameter: 'openPrice',
-// 			lookBack: 210,
-// 		},
-// 	},
-// };
-// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+const queryObject = {
+	symbol: 'MMM',
+	interval: 'Day',
+	indicators: {
+		sma: {
+			parameter: 'closePrice',
+			lookBack: 90,
+		},
+		ema: {
+			parameter: 'openPrice',
+			lookBack: 210,
+		},
+	},
+};
+retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;

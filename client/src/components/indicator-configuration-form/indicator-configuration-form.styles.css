@@ -11,3 +11,10 @@
 	width: 150px;
 	text-align: center;
 }
+
+.indicator-configuration-submit-button {
+	cursor: pointer;
+	outline: none;
+	margin-top: 15px;
+	float: right;
+}

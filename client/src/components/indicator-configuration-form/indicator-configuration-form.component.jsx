@@ -114,7 +114,12 @@ class IndicatorConfigurationForm extends React.Component {
 				/>
 				{this.state.errormessage}
 				<p>
-					<input type='submit' value='Okay' disabled={!!this.state.errormessage} />
+					<input
+						type='submit'
+						value='Apply'
+						className='indicator-configuration-submit-button'
+						disabled={!!this.state.errormessage}
+					/>
 				</p>
 			</form>
 		);

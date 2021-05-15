@@ -4,6 +4,8 @@ import Modal from '../modal/modal.component';
 
 import IndicatorConfigurationForm from '../indicator-configuration-form/indicator-configuration-form.component';
 
+import IntervalConfigurationForm from '../configure-all-intervals-form/configure-all-intervals-form.component';
+
 import ConfigurationButton from '../configuration-button/configuration-button.component';
 
 import IndicatorConfigurationDisplay from '../indicator-configuration-display/indicator-configuration-display.component';
@@ -24,8 +26,15 @@ class ScreenHeaderItem extends React.Component {
 	hide = () => this.setState({visible: false});
 
 	render() {
-		const {gridColumn, onSort, id, className, updateCustomIndicators, headerName} =
-			this.props;
+		const {
+			gridColumn,
+			onSort,
+			id,
+			className,
+			updateCustomIndicators,
+			setAllIntervals,
+			headerName,
+		} = this.props;
 
 		return (
 			<div
@@ -76,7 +85,12 @@ class ScreenHeaderItem extends React.Component {
 							showCloseButton={true}
 							closeOnEsc={false}
 							closeMaskOnClick={false}
-						></Modal>
+						>
+							<IntervalConfigurationForm
+								closeForm={this.hide}
+								setAllIntervals={setAllIntervals}
+							/>
+						</Modal>
 					</>
 				) : null}
 			</div>

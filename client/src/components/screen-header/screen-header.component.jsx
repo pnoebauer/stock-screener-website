@@ -4,7 +4,13 @@ import ScreenHeaderItem from '../screen-header-item/screen-header-item.component
 
 import './screen-header.styles.css';
 
-const ScreenHeader = ({headers, sortTable, sortConfig, updateCustomIndicators}) => {
+const ScreenHeader = ({
+	headers,
+	sortTable,
+	sortConfig,
+	updateCustomIndicators,
+	setAllIntervals,
+}) => {
 	const getClassNameForHeader = name => {
 		if (!sortConfig) {
 			return;
@@ -31,6 +37,7 @@ const ScreenHeader = ({headers, sortTable, sortConfig, updateCustomIndicators}) 
 					id={header}
 					className={`screen-header ${getClassNameForHeader(header)}`}
 					updateCustomIndicators={updateCustomIndicators}
+					setAllIntervals={setAllIntervals}
 					headerName={header}
 				/>
 			))}

@@ -47,23 +47,6 @@ class RadarScreen extends React.PureComponent {
 		localStorage.setItem('ID', this.state.ID);
 	}
 
-	async getCustomIndicators(requestObj) {
-		try {
-			const response = await fetch('http://localhost:4000/scanner', {
-				method: 'POST', // *GET, POST, PUT, DELETE, etc.
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
-			});
-
-			const data = await response.json();
-			// console.log(data, 'data');
-			return data;
-		} catch (e) {
-			console.log('Error fetching custom indicators from backend', e);
-		}
-	}
 	async componentDidMount() {
 		let {Symbol, Interval, ID} = this.state;
 		let rehydrate = {};
@@ -144,6 +127,27 @@ class RadarScreen extends React.PureComponent {
 		}
 	}
 
+	// fetches data for custom indicators from backend
+	async getCustomIndicators(requestObj) {
+		// console.log(requestObj, 'requestObj');
+		try {
+			const response = await fetch('http://localhost:4000/scanner', {
+				method: 'POST', // *GET, POST, PUT, DELETE, etc.
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestObj), // body data type must match "Content-Type" header
+			});
+
+			const data = await response.json();
+			// console.log(data, 'data');
+			return data;
+		} catch (e) {
+			console.log('Error fetching custom indicators from backend', e);
+		}
+	}
+
+	// helper function: get configs for custom indicators and the current state array of those indicators (if only one symbol is updated)
 	getIndicatorConfigs = (symbolIndex, indicatorList) => {
 		let indicatorConfigs = {};
 		let stateIndicators = {};
@@ -171,6 +175,7 @@ class RadarScreen extends React.PureComponent {
 		};
 	};
 
+	// helper function: fetches values for custom indicators from backend and converts them into the required format for the state
 	getValuesForCustomIndicators = async (
 		indicatorConfigs,
 		stateIndicators,
@@ -210,6 +215,7 @@ class RadarScreen extends React.PureComponent {
 		return stateIndicators;
 	};
 
+	// uses getIndicatorConfigs and getValuesForCustomIndicators based on provided args; resorts the data based on the current sort config and sets the state
 	updateCustomIndicators = async (symbolIndex, indicatorConfigs) => {
 		// (1) get indicatorConfigs an the current state arrays for the to be updated indicators
 		if (indicatorConfigs === undefined) {
@@ -226,8 +232,6 @@ class RadarScreen extends React.PureComponent {
 				stateIndicators,
 				symbolIndex
 			);
-
-			// this.setState(updatedStateIndicators);
 
 			const {sortConfig, sortTable} = this.props;
 
@@ -250,6 +254,7 @@ class RadarScreen extends React.PureComponent {
 		}
 	};
 
+	// helper function: converts the received api data object into the format of the state object
 	apiObjectToStateObject(apiObject) {
 		const {Symbol} = this.state;
 		const header = this.getHeaderTitle(this.state);
@@ -287,13 +292,13 @@ class RadarScreen extends React.PureComponent {
 		return stateIndicatorObject;
 	}
 
+	// uses apiObjectToStateObject; starts event source to subscribe to the stock data stream from the backend; resorts the data based on the current sort config and sets the state
 	startEventSource() {
 		const uniqueSymbols = [...new Set(this.state.Symbol)];
 		// console.log('start new event source', uniqueSymbols);
 
 		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
-		// http://localhost:4000/events/tag?id=SPY,AAPL,GOOGL
-		// this.events = new EventSource('http://localhost:4000/events');
+
 		this.events = new EventSource(url);
 
 		// // Subscribe to event with type 'test'
@@ -306,12 +311,8 @@ class RadarScreen extends React.PureComponent {
 			const {sortConfig, sortTable} = this.props;
 			const symbolsDataObject = JSON.parse(event.data);
 
-			// console.log(symbolsDataObject, 'symbolsDataObject');
-			// console.log(this.props.sortConfig, 'sortConfig');
-
 			if (Object.keys(symbolsDataObject).length) {
 				const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
-				// console.log(stateIndicatorObject, 'sio');
 
 				let updatedState = {...this.state, ...stateIndicatorObject};
 
@@ -319,7 +320,6 @@ class RadarScreen extends React.PureComponent {
 				localStorage.removeItem('sortedTable');
 
 				if (Object.keys(sortConfig).length) {
-					// console.log('sorting');
 					updatedState = sortTable(
 						updatedState,
 						sortConfig.sortedField,
@@ -329,9 +329,10 @@ class RadarScreen extends React.PureComponent {
 				// console.log('set state after message');
 
 				this.setState(updatedState, () => this.updateLocalStorage());
-			} else {
-				this.updateLocalStorage();
 			}
+			// else {
+			// 	this.updateLocalStorage();
+			// }
 		};
 	}
 
@@ -381,17 +382,10 @@ class RadarScreen extends React.PureComponent {
 			// event.stopPropagation();
 			return;
 		}
-
-		// console.log(event.target, event.target.getAttribute('name'), 'sort');
-
 		const sortedField = event.currentTarget.id;
 
 		this.setState((prevState, props) => {
-			// console.log('sortTable', sortedField);
-
 			const sortedTable = props.onSort(sortedField, prevState);
-
-			// const sortedTable = props.onSort(event, prevState);
 			return sortedTable;
 		});
 	};
@@ -434,7 +428,7 @@ class RadarScreen extends React.PureComponent {
 		this.setState(clearedState);
 	};
 
-	handleRowDelete = e => {
+	handleDeleteRow = e => {
 		const rowIdx = Number(e.target.id);
 		const stateClone = JSON.parse(JSON.stringify(this.state));
 
@@ -478,7 +472,17 @@ class RadarScreen extends React.PureComponent {
 			...[...Array(numberAddedSymbols)].map((a, idx) => idx + maxID + 1),
 		];
 
-		this.setState(stateClone);
+		this.setState(stateClone, () => this.updateCustomIndicators());
+	};
+
+	handleSetAllIntervals = interval => {
+		this.setState(
+			prevState => {
+				const numberSymbols = prevState.Symbol.length;
+				return {Interval: Array(numberSymbols).fill(interval)};
+			},
+			() => this.getCustomIndicators()
+		);
 	};
 
 	render() {
@@ -509,6 +513,7 @@ class RadarScreen extends React.PureComponent {
 						sortTable={this.sortTable}
 						sortConfig={sortConfig}
 						updateCustomIndicators={this.updateCustomIndicators}
+						setAllIntervals={this.handleSetAllIntervals}
 					/>
 					<AddColumnButton
 						style={{
@@ -522,7 +527,7 @@ class RadarScreen extends React.PureComponent {
 						{...this.state}
 						header={headers}
 						onChange={this.onChange}
-						handleRowDelete={this.handleRowDelete}
+						handleRowDelete={this.handleDeleteRow}
 					/>
 					<AddRowInput rowNumber={Symbol.length} onRowAdd={this.onRowAdd} />
 					<AddStockUniverseButton
