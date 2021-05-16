@@ -213,6 +213,48 @@ const insertIntoTableSymbols = async stockUniverses => {
 	}
 };
 
+// select count("closePrice") from "daily_data";
+knex('daily_data').select(knex.raw('count("closePrice")'));
+// .then(data => console.log(data, 'data'));
+//   .where(knex.raw(1))
+//   .orWhere(knex.raw('status <> ?', [1]))
+//   .groupBy('status')
+
+// SELECT
+//     date_trunc('month', date_time) m,
+//     (array_agg("openPrice" ORDER BY date_time ASC))[1] o,
+//     MAX("highPrice") h,
+//     MIN("lowPrice") l,
+//     (array_agg("closePrice" ORDER BY date_time DESC))[1] c,
+//     SUM("totalVolume") totalVolume,
+//     COUNT(*) ticks
+// FROM "daily_data"
+// WHERE
+// 	"stock_id" = 'AOS' AND
+// 	date_time BETWEEN '2010-01-01' AND '2011-01-01'
+// GROUP BY m
+// ORDER BY m
+// LIMIT 100;
+
+// knex('daily_data')
+// 	.select(['date_time'])
+// 	.where(knex.raw('date_time'), '>=', '2010-01-01')
+// 	.andWhere(knex.raw('date_time'), '<=', '2011-01-01')
+// 	// .groupByRaw("date_trunc('hour', date_time)")
+// 	.then(data => console.log(data, 'data group'));
+
+knex
+	.select(knex.raw(`date_trunc('month', date_time) m, count(*) ticks`))
+	.from('daily_data')
+	.whereBetween('date_time', ['2010-01-01', '2011-01-01'])
+	.andWhere('stock_id', 'AOS')
+	// .where(knex.raw('date_time'), '>=', '2010-01-01')
+	// .andWhere(knex.raw('date_time'), '<=', '2011-01-01')
+	// .groupByRaw("date_trunc('hour', date_time)")
+	.groupBy('m')
+	.orderBy('m')
+	.then(data => console.log(data, 'data group'));
+
 module.exports = {
 	createTables,
 	insertIntoTable,
