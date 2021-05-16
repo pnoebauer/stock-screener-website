@@ -206,15 +206,12 @@ const insertIntoTableSymbols = async stockUniverses => {
 	}
 };
 
-// select count("closePrice") from "daily_data";
-// knex('daily_data').select(knex.raw('count("closePrice")'));
-// .then(data => console.log(data, 'data'));
-//   .where(knex.raw(1))
-//   .orWhere(knex.raw('status <> ?', [1]))
-//   .groupBy('status')
-
+// ------------------- POSTGRES QUERY
 // SELECT
 //     date_trunc('month', date_time) m,
+// for different week start dates:
+// 		--date_trunc('week',(date_time + interval '2 day'))- interval '2 day' w,
+// --	date_trunc('week',date_time + '1 day'::interval)::date - '1 day'::interval as w,
 //     (array_agg("openPrice" ORDER BY date_time ASC))[1] o,
 //     MAX("highPrice") h,
 //     MIN("lowPrice") l,
@@ -238,15 +235,6 @@ const insertIntoTableSymbols = async stockUniverses => {
 
 const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) => {
 	try {
-		// .then(data => {
-		// 	// const convData = data.map(item => {
-		// 	// 	const dateObject = new Date(item.m);
-		// 	// 	// const time = dateObject.toLocaleString('de-de').split(' ')[1]; //US time
-		// 	// 	// console.log(dateObject.toLocaleString(), 'date');
-		// 	// 	return {...item, m: new Date(item.m).toLocaleString()};
-		// 	// });
-		// 	// console.log(convData);
-
 		// 	console.log(data, 'data');
 		// 	console.log(data.reverse(), 'data reversed');
 		// });
@@ -280,13 +268,13 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 			.with('with_alias', qb => {
 				qb.select(
 					knex.raw(`date_trunc('${samplePeriod}', date_time) date_time_s, 
-				(array_agg("openPrice" ORDER BY date_time ASC))[1] "openPrice",
-				MAX("highPrice") "highPrice", 
-				MIN("lowPrice") "lowPrice",
-				(array_agg("closePrice" ORDER BY date_time DESC))[1] "closePrice",
-				SUM("totalVolume") "totalVolume",
-				count(*) ticks
-			`)
+						(array_agg("openPrice" ORDER BY date_time ASC))[1] "openPrice",
+						MAX("highPrice") "highPrice", 
+						MIN("lowPrice") "lowPrice",
+						(array_agg("closePrice" ORDER BY date_time DESC))[1] "closePrice",
+						SUM("totalVolume") "totalVolume",
+						count(*) ticks
+					`)
 				)
 					.from('daily_data')
 					.where('stock_id', symbol)
@@ -297,7 +285,15 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 			.select(...parameters)
 			// .select('date_time_s', 'closePrice')
 			.from('with_alias');
-		// .then(data => console.log(data, 'data group'));
+		// .then(data => {
+		// 	const convData = data.map(item => {
+		// 		const dateObject = new Date(item.m);
+		// 		// const time = dateObject.toLocaleString('de-de').split(' ')[1]; //US time
+		// 		// console.log(dateObject.toLocaleString(), 'date');
+		// 		return {...item, m: new Date(item.m).toLocaleString()};
+		// 	});
+		// 	console.log(convData);
+		// });
 
 		return selection.reverse();
 	} catch (e) {
@@ -310,13 +306,14 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 // 	.then(data => console.log(data))
 // 	.catch(e => console.log(e));
 
-retrieveSampledData('AOS', 10, ['closePrice'], 'month')
-	.then(data => console.log(data))
-	.catch(e => console.log(e));
+// retrieveSampledData('AOS', 10, ['closePrice'], 'month')
+// 	.then(data => console.log(data))
+// 	.catch(e => console.log(e));
 
 module.exports = {
 	createTables,
 	insertIntoTable,
 	retrieveData,
+	retrieveSampledData,
 	insertIntoTableSymbols,
 };

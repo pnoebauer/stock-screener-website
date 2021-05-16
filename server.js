@@ -309,10 +309,17 @@ const retrieveSymbolWithIndicators = async queryObject => {
 		// console.log(queryParameters, maxLookBack);
 
 		// retrieve data
-		const latestPriceData = await dbConnect.retrieveData(
+		// const latestPriceData = await dbConnect.retrieveData(
+		// 	queryObject.symbol,
+		// 	constants.UNSTABLEPERIOD + maxLookBack,
+		// 	Array.from(queryParameters)
+		// );
+
+		const latestPriceData = await dbConnect.retrieveSampledData(
 			queryObject.symbol,
 			constants.UNSTABLEPERIOD + maxLookBack,
-			Array.from(queryParameters)
+			Array.from(queryParameters),
+			queryObject.interval
 		);
 
 		// console.log(latestPriceData, 'latestPriceData');
@@ -327,7 +334,7 @@ const retrieveSymbolWithIndicators = async queryObject => {
 
 const queryObject = {
 	symbol: 'MMM',
-	interval: 'Day',
+	interval: 'week',
 	indicators: {
 		sma: {
 			parameter: 'closePrice',
@@ -339,6 +346,7 @@ const queryObject = {
 		},
 	},
 };
+
 retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
