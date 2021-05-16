@@ -121,72 +121,65 @@ const insertIntoTable = async data => {
 // };
 
 const retrieveData = async (symbol, lookBack, parameters) => {
-	// const selection = await knex('daily_data').where('id', '>', '20');
-	// const selection = await knex('daily_data')
-	// 	.where('id', '>', '20')
-	// 	.select('date_time', 'openPrice');
-	// console.log(selection);
-	// AOS, ABT
+	try {
+		// const selection = await knex('daily_data').where('id', '>', '20');
+		// const selection = await knex('daily_data')
+		// 	.where('id', '>', '20')
+		// 	.select('date_time', 'openPrice');
+		// console.log(selection);
+		// AOS, ABT
 
-	// const selection = await knex('daily_data')
-	// 	.where('stock_id', symbol)
-	// 	// .andWhere('date_time', '>', '2015-01-20')
-	// 	.orderBy('date_time', 'desc')
-	// 	.limit(lookBack)
-	// 	// .select(parameter);
-	// 	.select('date_time', 'closePrice');
-	// // .orderBy('date_time', 'asc')
-	// // .select('*');
-	// // .whereIn('stock_id', ['MMM', 'AOS', 'ABT'])
-	// // .select('*');
+		// const selection = await knex('daily_data')
+		// 	.where('stock_id', symbol)
+		// 	// .andWhere('date_time', '>', '2015-01-20')
+		// 	.orderBy('date_time', 'desc')
+		// 	.limit(lookBack)
+		// 	// .select(parameter);
+		// 	.select('date_time', 'closePrice');
+		// // .orderBy('date_time', 'asc')
+		// // .select('*');
+		// // .whereIn('stock_id', ['MMM', 'AOS', 'ABT'])
+		// // .select('*');
 
-	const selection = await knex('daily_data')
-		.where('stock_id', symbol)
-		// .andWhere('date_time', '>', '2015-01-20')
-		.orderBy('date_time', 'desc')
-		.limit(lookBack)
-		.select(...parameters);
-	// .select('date_time', 'closePrice');
+		const selection = await knex('daily_data')
+			.where('stock_id', symbol)
+			// .andWhere('date_time', '>', '2015-01-20')
+			.orderBy('date_time', 'desc')
+			.limit(lookBack)
+			.select(...parameters);
 
-	// const selection = await knex('daily_data')
-	// 	.orderBy('date_time', 'desc')
-	// 	.limit(5)
-	// 	// .select(parameter);
-	// 	.select('*');
+		// .select('date_time', 'closePrice');
 
-	// knex.select('*').from('users');
-	// (1)
-	// SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5;
-	// (2)
-	// SELECT *
-	// FROM (SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5)
-	// ORDER BY record_date ASC;
-	// OR
-	// WITH t AS (
-	// 	SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5
-	// )
-	// SELECT * FROM t ORDER BY record_date ASC;
+		// const selection = await knex('daily_data')
+		// 	.orderBy('date_time', 'desc')
+		// 	.limit(5)
+		// 	// .select(parameter);
+		// 	.select('*');
 
-	// 	knex.with('with_alias', knex.raw('select * from "books" where "author" = ?', 'Test')).select('*').from('with_alias')
-	// Outputs:
-	// with `with_alias` as (select * from "books" where "author" = 'Test') select * from `with_alias`
+		// knex.select('*').from('users');
+		// (1)
+		// SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5;
+		// (2)
+		// SELECT *
+		// FROM (SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5)
+		// ORDER BY record_date ASC;
+		// OR
+		// WITH t AS (
+		// 	SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5
+		// )
+		// SELECT * FROM t ORDER BY record_date ASC;
 
-	// console.log(selection.reverse());
+		// 	knex.with('with_alias', knex.raw('select * from "books" where "author" = ?', 'Test')).select('*').from('with_alias')
+		// Outputs:
+		// with `with_alias` as (select * from "books" where "author" = 'Test') select * from `with_alias`
 
-	return selection.reverse();
-};
+		// console.log(selection.reverse());
 
-const ins = () => {
-	knex('sometable2')
-		.insert({
-			col1: 3,
-			col2: 3,
-			col3: 300,
-		})
-		.onConflict(['col1', 'col2'])
-		.merge()
-		.then(e => console.log('success'))
-		.catch(e => console.log('error', e));
+		return selection.reverse();
+	} catch (e) {
+		console.log('error retrieving data', e);
+		return Promise.reject('could not retrieve data');
+	}
 };
 
 const insertIntoTableSymbols = async stockUniverses => {
@@ -214,7 +207,7 @@ const insertIntoTableSymbols = async stockUniverses => {
 };
 
 // select count("closePrice") from "daily_data";
-knex('daily_data').select(knex.raw('count("closePrice")'));
+// knex('daily_data').select(knex.raw('count("closePrice")'));
 // .then(data => console.log(data, 'data'));
 //   .where(knex.raw(1))
 //   .orWhere(knex.raw('status <> ?', [1]))
@@ -243,22 +236,87 @@ knex('daily_data').select(knex.raw('count("closePrice")'));
 // 	// .groupByRaw("date_trunc('hour', date_time)")
 // 	.then(data => console.log(data, 'data group'));
 
-knex
-	.select(knex.raw(`date_trunc('month', date_time) m, count(*) ticks`))
-	.from('daily_data')
-	.whereBetween('date_time', ['2010-01-01', '2011-01-01'])
-	.andWhere('stock_id', 'AOS')
-	// .where(knex.raw('date_time'), '>=', '2010-01-01')
-	// .andWhere(knex.raw('date_time'), '<=', '2011-01-01')
-	// .groupByRaw("date_trunc('hour', date_time)")
-	.groupBy('m')
-	.orderBy('m')
-	.then(data => console.log(data, 'data group'));
+const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) => {
+	try {
+		// .then(data => {
+		// 	// const convData = data.map(item => {
+		// 	// 	const dateObject = new Date(item.m);
+		// 	// 	// const time = dateObject.toLocaleString('de-de').split(' ')[1]; //US time
+		// 	// 	// console.log(dateObject.toLocaleString(), 'date');
+		// 	// 	return {...item, m: new Date(item.m).toLocaleString()};
+		// 	// });
+		// 	// console.log(convData);
+
+		// 	console.log(data, 'data');
+		// 	console.log(data.reverse(), 'data reversed');
+		// });
+
+		// return selection.reverse();
+		// return selection;
+
+		// METHOD 1 --> RETURNS ALL USED COLUMNS
+		// const selection = await knex
+		// 	.select(
+		// 		knex.raw(`date_trunc('${samplePeriod}', date_time) date_time_s,
+		// 			(array_agg("openPrice" ORDER BY date_time ASC))[1] "openPrice",
+		// 			MAX("highPrice") "highPrice",
+		// 			MIN("lowPrice") "lowPrice",
+		// 			(array_agg("closePrice" ORDER BY date_time DESC))[1] "closePrice",
+		// 			SUM("totalVolume") "totalVolume",
+		// 			count(*) ticks
+		// 		`)
+		// 	)
+		// 	.from('daily_data')
+		// 	.whereBetween('date_time', ['2000-01-01', '2020-01-01'])
+		// 	.andWhere('stock_id', symbol)
+		// 	.groupBy('date_time_s')
+		// 	.orderBy('date_time_s', 'desc')
+		// 	.limit(lookBack);
+		// .then(data => console.log(data, 'data group'));
+		// console.log(selection.reverse());
+
+		// METHOD 2 --> RETURNS ONLY WHAT IS QUERIED
+		const selection = await knex
+			.with('with_alias', qb => {
+				qb.select(
+					knex.raw(`date_trunc('${samplePeriod}', date_time) date_time_s, 
+				(array_agg("openPrice" ORDER BY date_time ASC))[1] "openPrice",
+				MAX("highPrice") "highPrice", 
+				MIN("lowPrice") "lowPrice",
+				(array_agg("closePrice" ORDER BY date_time DESC))[1] "closePrice",
+				SUM("totalVolume") "totalVolume",
+				count(*) ticks
+			`)
+				)
+					.from('daily_data')
+					.where('stock_id', symbol)
+					.groupBy('date_time_s')
+					.orderBy('date_time_s', 'desc')
+					.limit(lookBack);
+			})
+			.select(...parameters)
+			// .select('date_time_s', 'closePrice')
+			.from('with_alias');
+		// .then(data => console.log(data, 'data group'));
+
+		return selection.reverse();
+	} catch (e) {
+		console.log('error retrieving data', e);
+		return Promise.reject('could not retrieve data');
+	}
+};
+
+// retrieveData('AOS', 10, ['closePrice'])
+// 	.then(data => console.log(data))
+// 	.catch(e => console.log(e));
+
+retrieveSampledData('AOS', 10, ['closePrice'], 'month')
+	.then(data => console.log(data))
+	.catch(e => console.log(e));
 
 module.exports = {
 	createTables,
 	insertIntoTable,
 	retrieveData,
-	ins,
 	insertIntoTableSymbols,
 };
