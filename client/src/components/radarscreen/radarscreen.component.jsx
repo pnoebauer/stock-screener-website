@@ -197,6 +197,8 @@ class RadarScreen extends React.PureComponent {
 				indicators: indicatorConfigs,
 			};
 
+			// console.log(requestObj, 'requestObj', this.state);
+
 			const indicatorObject = await this.getCustomIndicators(requestObj); //get the data from the backend
 
 			// loop over all indicators and assign the returned values from the backend to the temporary stateIndicators state object
@@ -232,6 +234,8 @@ class RadarScreen extends React.PureComponent {
 				stateIndicators,
 				symbolIndex
 			);
+
+			// console.log(updatedStateIndicators, 'updatedStateIndicators');
 
 			const {sortConfig, sortTable} = this.props;
 
@@ -354,23 +358,22 @@ class RadarScreen extends React.PureComponent {
 				const maxID = Math.max(...prevState.ID, 1);
 
 				return {
-					// updates that one value that changed in the array
-					[columnName]: Object.assign([], prevState[columnName], {
-						[valueRow]: updatedValue,
-					}),
 					// if a row was added set interval to a default of 'Day' and increment its ID by 1 above the max
 					Interval: rowAdded
-						? Object.assign([], prevState.Interval, {[valueRow]: 'Day'})
+						? Object.assign([], prevState.Interval, {[valueRow]: INTERVALS[0]})
 						: prevState.Interval,
 					ID: rowAdded
 						? Object.assign([], prevState.ID, {[valueRow]: maxID + 1})
 						: prevState.ID,
+					// updates that one value that changed in the array
+					[columnName]: Object.assign([], prevState[columnName], {
+						[valueRow]: updatedValue,
+					}),
 				};
 			},
 			() => {
 				// already covered with startEventSource
 				// this.updateLocalStorage();
-
 				this.updateCustomIndicators(valueRow);
 			}
 		);
