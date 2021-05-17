@@ -6,6 +6,8 @@ import Modal from '../modal/modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
+import Tooltip from '../tooltip/tooltip.component';
+
 import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
 
 import './add-column-button.styles.css';
@@ -72,10 +74,11 @@ class AddColumnButton extends React.Component {
 			<>
 				<button
 					onClick={this.show}
-					className='add-column-button'
+					className='add-column-button tooltip'
 					style={this.props.style}
 				>
 					<GrSettingsOption className='add-column-icon' />
+					<Tooltip tooltipText={'Click to set indicators'} />
 				</button>
 
 				<Modal

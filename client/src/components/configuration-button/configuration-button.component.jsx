@@ -2,12 +2,29 @@ import React from 'react';
 
 import {RiSettings5Fill} from 'react-icons/ri';
 
+import Tooltip from '../tooltip/tooltip.component';
+
 import './configuration-button.styles.css';
 
-const ConfigurationButton = ({openConfigModal}) => (
-	<button onClick={openConfigModal} className='config-button'>
-		<RiSettings5Fill className='config-icon' />
-	</button>
-);
+const ConfigurationButton = ({openConfigModal, tooltip}) => {
+	let tooltipText = '';
+
+	if (tooltip) {
+		tooltipText =
+			tooltip === 'indicator'
+				? 'Click to adjust the indicator settings'
+				: 'Click to adjust all intervals';
+	}
+
+	return (
+		<button
+			onClick={openConfigModal}
+			className={`config-button ${tooltip ? 'tooltip' : ''}`}
+		>
+			<RiSettings5Fill className='config-icon' />
+			<Tooltip tooltipText={tooltipText} />
+		</button>
+	);
+};
 
 export default ConfigurationButton;

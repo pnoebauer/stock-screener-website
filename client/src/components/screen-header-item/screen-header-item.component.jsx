@@ -17,7 +17,6 @@ import './screen-header-item.styles.css';
 class ScreenHeaderItem extends React.Component {
 	constructor(props) {
 		super(props);
-		// this.state = {visible: false, ...CUSTOM_INDICATORS[this.props.id]};
 		this.state = {visible: false};
 	}
 
@@ -49,12 +48,13 @@ class ScreenHeaderItem extends React.Component {
 				</span>
 				{CUSTOM_INDICATORS[id] ? (
 					<>
-						<ConfigurationButton openConfigModal={this.show} />
+						<ConfigurationButton openConfigModal={this.show} tooltip={'indicator'} />
+
 						<Modal
 							visible={this.state.visible}
 							onClose={this.hide}
 							width={30}
-							height={30}
+							height={22}
 							measure={'%'}
 							showCloseButton={false}
 							closeOnEsc={false}
@@ -75,12 +75,12 @@ class ScreenHeaderItem extends React.Component {
 				) : null}
 				{id === 'Interval' ? (
 					<>
-						<ConfigurationButton openConfigModal={this.show} />
+						<ConfigurationButton openConfigModal={this.show} tooltip={'interval'} />
 						<Modal
 							visible={this.state.visible}
 							onClose={this.hide}
 							width={30}
-							height={30}
+							height={15}
 							measure={'%'}
 							showCloseButton={false}
 							closeOnEsc={false}

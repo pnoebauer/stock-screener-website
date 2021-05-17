@@ -6,6 +6,8 @@ import Modal from '../modal/modal.component';
 
 import UniverseSelector from '../stock-universe-selector/stock-universe-selector.coponent';
 
+import Tooltip from '../tooltip/tooltip.component';
+
 import {UNIVERSES} from '../../assets/constants';
 
 import './add-stock-universe-button.styles.css';
@@ -76,10 +78,11 @@ class AddStockUniverseButton extends React.Component {
 			<>
 				<button
 					onClick={this.show}
-					className='add-stock-universe-button'
+					className='add-stock-universe-button tooltip'
 					style={this.props.style}
 				>
 					<IoIosAddCircle className='add-stock-universe-icon' />
+					<Tooltip tooltipText={'Click to add stock universe'} />
 				</button>
 
 				<Modal

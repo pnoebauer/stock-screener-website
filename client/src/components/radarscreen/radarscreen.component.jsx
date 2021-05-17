@@ -513,7 +513,9 @@ class RadarScreen extends React.PureComponent {
 				>
 					<div className='indexation'>#</div>
 					{Symbol.map((s, index) => (
-						<div className='indexation'>{index + 1}</div>
+						<div className='indexation' key={index}>
+							{index + 1}
+						</div>
 					))}
 				</div>
 				<div
