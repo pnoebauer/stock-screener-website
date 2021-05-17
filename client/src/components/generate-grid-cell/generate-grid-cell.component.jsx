@@ -3,43 +3,36 @@ import React from 'react';
 import Dropdown from '../dropdown/dropdown.component';
 import ValueCell from '../screen-value-cell/screen-value-cell.component';
 
-import { SYMBOLS, INTERVALS } from '../../assets/constants';
+import {SYMBOLS, INTERVALS} from '../../assets/constants';
 
 const dropdownOptions = {
 	Symbol: SYMBOLS,
-	Interval: INTERVALS
-}
+	Interval: INTERVALS,
+};
 
-const GenerateGridCell = ({ type, gridLocation, onChange, children }) => {
+const GenerateGridCell = ({type, gridLocation, onChange, children}) => {
+	const {rowIdx, colIdx} = gridLocation;
+	const gridRow = rowIdx + 2;
+	const gridColumn = colIdx + 1;
 
-    const { rowIdx, colIdx } = gridLocation;
-
-        if(dropdownOptions[type] !== undefined) {
-
-            return (
-                <Dropdown 
-                    options={dropdownOptions[type]}
-                    gridRow={rowIdx+2}
-                    gridColumn={colIdx+1}
-                    // key={colIdx.toString()+rowIdx.toString()} 
-                    onChange={onChange}
-                >
-                    {children}
-                </Dropdown> 
-            )
-        }
-        else {
-            return (
-                <ValueCell 
-                    // key={colIdx.toString()+rowIdx.toString()} 
-                    gridRow={rowIdx+2}
-                    gridColumn={colIdx+1}
-                >
-                    {children}
-                </ValueCell>
-            )
-        }
-    
-}
+	if (dropdownOptions[type] !== undefined) {
+		return (
+			<Dropdown
+				options={dropdownOptions[type]}
+				gridRow={gridRow}
+				gridColumn={gridColumn}
+				onChange={onChange}
+			>
+				{children}
+			</Dropdown>
+		);
+	} else {
+		return (
+			<ValueCell gridRow={gridRow} gridColumn={gridColumn}>
+				{children}
+			</ValueCell>
+		);
+	}
+};
 
 export default GenerateGridCell;

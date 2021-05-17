@@ -484,7 +484,7 @@ class RadarScreen extends React.PureComponent {
 				const numberSymbols = prevState.Symbol.length;
 				return {Interval: Array(numberSymbols).fill(interval)};
 			},
-			() => this.getCustomIndicators()
+			() => this.updateCustomIndicators()
 		);
 	};
 
@@ -503,7 +503,19 @@ class RadarScreen extends React.PureComponent {
 		updateKey = headers;
 
 		return (
-			<div className='radarscreen'>
+			<div className='radarscreen' style={{display: 'flex'}}>
+				<div
+					id='indexation-grid'
+					style={{
+						gridTemplateColumns: `1fr`,
+						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) `,
+					}}
+				>
+					<div className='indexation'>#</div>
+					{Symbol.map((s, index) => (
+						<div className='indexation'>{index + 1}</div>
+					))}
+				</div>
 				<div
 					id='grid-container'
 					style={{

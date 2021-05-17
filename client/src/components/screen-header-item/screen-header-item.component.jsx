@@ -82,7 +82,7 @@ class ScreenHeaderItem extends React.Component {
 							width={30}
 							height={30}
 							measure={'%'}
-							showCloseButton={true}
+							showCloseButton={false}
 							closeOnEsc={false}
 							closeMaskOnClick={false}
 						>

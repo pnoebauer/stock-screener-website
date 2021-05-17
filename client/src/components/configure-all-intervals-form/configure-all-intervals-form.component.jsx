@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-	API_TO_INDICATORS,
-	INDICATORS_TO_API,
-	CUSTOM_INDICATORS,
-	INTERVALS,
-} from '../../assets/constants';
+import {INTERVALS} from '../../assets/constants';
 
 import './configure-all-intervals-form.styles.css';
 
@@ -13,37 +8,17 @@ class IntervalConfigurationForm extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// const config =
-		// 	JSON.parse(localStorage.getItem(indicator)) || CUSTOM_INDICATORS[indicator];
-
 		this.state = {Interval: INTERVALS[0]};
 	}
 
 	selectionChange = event => {
-		// console.log(event.target.value, 'etv');
 		this.setState({Interval: event.target.value});
 	};
 
 	handleSubmit = event => {
-		// const {indicator, updateCustomIndicators} = this.props;
 		const {Interval} = this.state;
 
-		console.log(Interval, 'int');
-
 		this.props.setAllIntervals(Interval);
-
-		// if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
-		// 	//if the config has changed
-		// 	localStorage.setItem(indicator, JSON.stringify(config));
-
-		// 	const indicatorConfig = {[indicator.toLowerCase()]: config};
-
-		// 	CUSTOM_INDICATORS[indicator] = config;
-		// 	// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
-
-		// 	// trigger a fetch call in the parent
-		// 	updateCustomIndicators(undefined, indicatorConfig);
-		// }
 
 		this.props.closeForm();
 
