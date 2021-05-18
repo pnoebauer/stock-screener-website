@@ -1,6 +1,6 @@
 /* Tooltip text */
 .tooltip .tooltiptext {
-	width: 120px;
+	width: 100px;
 	background-color: #555;
 	color: #fff;
 	text-align: center;
@@ -31,17 +31,49 @@
 	z-index: 1;
 }
 
+/* .tooltip .tooltiptext.top { */
+/* bottom: 100%; */
+/* transform: translate(-50%, 0%); */
+/* transform: translate(-25%, 0%);
+} */
+
+/* .tooltip .tooltiptext.top::after { */
+/* top: 100%; */
+/* left: 50%; */
+/* left: 25%;
+
+	margin-left: -5px; */
+/* } */
+
 .tooltip .tooltiptext.top {
-	/* Position the tooltip text */
-	bottom: 125%;
-	left: 50%;
-	/* margin-left: -60px; */ /* middle */
-	margin-left: -30px; /* offset to the right from middle */
+	bottom: 120%;
 }
 
 .tooltip .tooltiptext.top::after {
 	top: 100%;
+	margin-left: -5px;
+}
+
+.tooltip .tooltiptext.top.center {
+	transform: translate(-50%, 0%);
+}
+
+.tooltip .tooltiptext.top.center::after {
 	left: 50%;
-	/* margin-left: -5px; */ /* middle */
-	margin-left: -35px; /* arrow remains positioned above the element */
+}
+
+.tooltip .tooltiptext.top.right {
+	transform: translate(-25%, 0%);
+}
+
+.tooltip .tooltiptext.top.right::after {
+	left: 25%;
+}
+
+.tooltip .tooltiptext.top.left {
+	transform: translate(-75%, 0%);
+}
+
+.tooltip .tooltiptext.top.left::after {
+	left: 75%;
 }

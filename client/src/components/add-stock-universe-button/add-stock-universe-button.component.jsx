@@ -82,7 +82,7 @@ class AddStockUniverseButton extends React.Component {
 					style={this.props.style}
 				>
 					<IoIosAddCircle className='add-stock-universe-icon' />
-					<Tooltip tooltipText={'Click to add stock universe'} />
+					<Tooltip tooltipText={'Click to add stock universe'} position={'right'} />
 				</button>
 
 				<Modal

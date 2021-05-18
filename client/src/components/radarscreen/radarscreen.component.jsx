@@ -379,7 +379,7 @@ class RadarScreen extends React.PureComponent {
 		);
 	};
 
-	sortTable = event => {
+	handleTableSorting = event => {
 		if (event.target.getAttribute('name') !== 'screen-header') {
 			// event.preventDefault();
 			// event.stopPropagation();
@@ -432,10 +432,10 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	handleDeleteRow = e => {
-		const rowIdx = Number(e.target.id);
+		const rowIdx = Number(e.currentTarget.id);
 		const stateClone = JSON.parse(JSON.stringify(this.state));
 
-		// console.log(stateClone, rowIdx)
+		// console.log(stateClone, rowIdx, e.currentTarget.id);
 
 		Object.keys(stateClone).forEach(key => {
 			stateClone[key].splice(rowIdx, 1);
@@ -527,7 +527,7 @@ class RadarScreen extends React.PureComponent {
 				>
 					<ScreenHeader
 						headers={headers}
-						sortTable={this.sortTable}
+						handleTableSorting={this.handleTableSorting}
 						sortConfig={sortConfig}
 						updateCustomIndicators={this.updateCustomIndicators}
 						setAllIntervals={this.handleSetAllIntervals}

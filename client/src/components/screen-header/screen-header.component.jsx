@@ -6,7 +6,7 @@ import './screen-header.styles.css';
 
 const ScreenHeader = ({
 	headers,
-	sortTable,
+	handleTableSorting,
 	sortConfig,
 	updateCustomIndicators,
 	setAllIntervals,
@@ -33,7 +33,7 @@ const ScreenHeader = ({
 				<ScreenHeaderItem
 					key={colIdx.toString()}
 					gridColumn={colIdx + 2}
-					onSort={sortTable}
+					onSort={handleTableSorting}
 					id={header}
 					className={`screen-header ${getClassNameForHeader(header)}`}
 					updateCustomIndicators={updateCustomIndicators}

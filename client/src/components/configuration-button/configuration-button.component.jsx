@@ -22,7 +22,7 @@ const ConfigurationButton = ({openConfigModal, tooltip}) => {
 			className={`config-button ${tooltip ? 'tooltip' : ''}`}
 		>
 			<RiSettings5Fill className='config-icon' />
-			<Tooltip tooltipText={tooltipText} />
+			<Tooltip tooltipText={tooltipText} position={'center'} />
 		</button>
 	);
 };

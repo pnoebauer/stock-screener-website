@@ -297,7 +297,7 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 
 		return selection.reverse();
 	} catch (e) {
-		console.log('error retrieving data', e);
+		console.log('error retrieving data', e, symbol, lookBack, parameters, samplePeriod);
 		return Promise.reject('could not retrieve data');
 	}
 };

@@ -78,7 +78,7 @@ class AddColumnButton extends React.Component {
 					style={this.props.style}
 				>
 					<GrSettingsOption className='add-column-icon' />
-					<Tooltip tooltipText={'Click to set indicators'} />
+					<Tooltip tooltipText={'Click to set indicators'} position={'center'} />
 				</button>
 
 				<Modal
