@@ -35,11 +35,13 @@
 	/* Position the tooltip text */
 	bottom: 125%;
 	left: 50%;
-	margin-left: -60px;
+	/* margin-left: -60px; */ /* middle */
+	margin-left: -30px; /* offset to the right from middle */
 }
 
 .tooltip .tooltiptext.top::after {
 	top: 100%;
 	left: 50%;
-	margin-left: -5px;
+	/* margin-left: -5px; */ /* middle */
+	margin-left: -35px; /* arrow remains positioned above the element */
 }
