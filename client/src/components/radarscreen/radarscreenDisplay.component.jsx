@@ -7,14 +7,6 @@ import AddRowInput from '../add-row-input/add-row-input.component';
 import AddStockUniverseButton from '../add-stock-universe-button/add-stock-universe-button.component';
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 
-import {
-	INTERVALS,
-	SYMBOLS,
-	API_TO_INDICATORS,
-	INDICATORS_TO_API,
-	CUSTOM_INDICATORS,
-} from '../../assets/constants';
-
 import './radarscreen.styles.css';
 
 const permanentHeaders = ['ID', 'Symbol', 'Interval'];
@@ -58,15 +50,20 @@ class RadarScreen extends React.PureComponent {
 					id='indexation-grid'
 					style={{
 						gridTemplateColumns: `1fr`,
-						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) `,
+						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
 					}}
 				>
-					<div className='indexation'>#</div>
+					<div className='indexation' style={{position: 'sticky', top: '0'}}>
+						#
+					</div>
 					{Symbol.map((s, index) => (
 						<div className='indexation' key={index}>
 							{index + 1}
 						</div>
 					))}
+					{/* <div className='indexation' key={Symbol.length + 1}>
+						{Symbol.length + 1}
+					</div> */}
 				</div>
 				<div
 					id='grid-container'
@@ -90,13 +87,6 @@ class RadarScreen extends React.PureComponent {
 						usedIndicatorsDefault={usedIndicators}
 						key={updateKey}
 					/>
-					<GenerateGrid
-						{...dataObject}
-						header={headers}
-						onChange={onChange}
-						handleRowDelete={handleDeleteRow}
-					/>
-					<AddRowInput rowNumber={Symbol.length} onRowAdd={onRowAdd} />
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
@@ -104,6 +94,13 @@ class RadarScreen extends React.PureComponent {
 						}}
 						handleUniverseAdd={handleUniverseAdd}
 					/>
+					<GenerateGrid
+						{...dataObject}
+						header={headers}
+						onChange={onChange}
+						handleRowDelete={handleDeleteRow}
+					/>
+					<AddRowInput rowNumber={Symbol.length} onRowAdd={onRowAdd} />
 					<DeleteAllRows
 						handleDeleteAllRows={handleDeleteAllRows}
 						gridRow={Symbol.length + 2}

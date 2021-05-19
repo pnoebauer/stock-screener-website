@@ -4,7 +4,10 @@ button.add-column-button {
 	margin-bottom: -1px;
 	width: 35px;
 
-	position: relative;
+	/* position: relative; */
+
+	position: sticky;
+	top: 0;
 }
 
 .add-column-icon {

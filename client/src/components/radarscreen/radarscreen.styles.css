@@ -29,17 +29,6 @@ button {
 	cursor: pointer;
 }
 
-.value-cell {
-	background-color: orange;
-	/* border: 0.5px solid rgba(0, 0, 0, 0.8); */
-	height: 40px;
-	box-sizing: border-box;
-
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
 .indexation {
 	background-color: lightgrey;
 	height: 40px;

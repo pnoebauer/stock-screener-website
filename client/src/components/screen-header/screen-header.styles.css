@@ -6,7 +6,11 @@
 	box-sizing: border-box;
 	height: 40px;
 	user-select: none;
-	position: relative;
+	/* position: relative; */
+
+	position: sticky;
+	top: 0;
+	z-index: 5;
 }
 
 .screen-header.ascending::after {

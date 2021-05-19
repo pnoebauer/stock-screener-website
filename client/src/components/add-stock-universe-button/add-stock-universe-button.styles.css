@@ -7,7 +7,12 @@ button.add-stock-universe-button {
 	border-right: 1px solid black;
 	border-top: 1px solid black;
 
-	position: relative;
+	/* position: relative; */
+
+	position: sticky;
+	top: 0;
+
+	z-index: 10;
 }
 
 .add-stock-universe-icon {
