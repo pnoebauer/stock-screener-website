@@ -6,6 +6,7 @@ import AddColumnButton from '../add-column-button/add-column-button.component';
 import AddRowInput from '../add-row-input/add-row-input.component';
 import AddStockUniverseButton from '../add-stock-universe-button/add-stock-universe-button.component';
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
+import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
 
 import './radarscreen.styles.css';
 
@@ -68,8 +69,8 @@ class RadarScreen extends React.PureComponent {
 				<div
 					id='grid-container'
 					style={{
-						gridTemplateColumns: `20px repeat(${headers.length}, 1fr) 0`,
-						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
+						gridTemplateColumns: `20px repeat(${headers.length}, 1fr) 25px 0`,
+						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0 `,
 					}}
 				>
 					<ScreenHeader
@@ -82,9 +83,20 @@ class RadarScreen extends React.PureComponent {
 					<AddColumnButton
 						style={{
 							gridColumn: `${headers.length + 2}`,
+							gridRow: '1',
 						}}
 						handleColumnUpdate={handleColumnUpdate}
 						usedIndicatorsDefault={usedIndicators}
+						key={updateKey}
+					/>
+					<FilterSymbolsButton
+						style={{
+							gridColumn: `${headers.length + 3}`,
+							gridRow: '1',
+						}}
+						// handleColumnUpdate={handleColumnUpdate}
+						// usedIndicatorsDefault={usedIndicators}
+						usedIndicators={usedIndicators}
 						key={updateKey}
 					/>
 					<AddStockUniverseButton

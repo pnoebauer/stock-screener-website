@@ -1,9 +1,8 @@
-button.add-column-button {
+button.filter-symbols-button {
 	border: none;
 	border-bottom: 1px solid black;
 	margin-bottom: -1px;
-	/* width: 15px; */
-	width: 100%;
+	width: 25px;
 
 	/* position: relative; */
 
@@ -11,7 +10,7 @@ button.add-column-button {
 	top: 0;
 }
 
-.add-column-icon {
+.filter-symbols-icon {
 	position: absolute;
 
 	left: 0;
@@ -26,7 +25,7 @@ button.add-column-button {
 	cursor: pointer;
 }
 
-.add-column-icon:hover {
+.filter-symbols-icon:hover {
 	color: green;
 	/* background-color: white; */
 

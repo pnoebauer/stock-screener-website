@@ -1,0 +1,20 @@
+.filter-symbols-form {
+	margin-top: 15px;
+}
+
+.operator {
+	width: 150px;
+	text-align-last: center;
+}
+
+.lookback-input {
+	width: 150px;
+	text-align: center;
+}
+
+.filter-symbols-submit-button {
+	cursor: pointer;
+	outline: none;
+	margin-top: 15px;
+	float: right;
+}
