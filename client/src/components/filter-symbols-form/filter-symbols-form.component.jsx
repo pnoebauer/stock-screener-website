@@ -1,24 +1,10 @@
 import React from 'react';
 
-import {
-	API_TO_INDICATORS,
-	INDICATORS_TO_API,
-	CUSTOM_INDICATORS,
-} from '../../assets/constants';
-
 import './filter-symbols-form.styles.css';
 
 class FilterSymbolsForm extends React.Component {
 	constructor(props) {
 		super(props);
-		// const {indicator} = this.props;
-
-		// const config =
-		// 	JSON.parse(localStorage.getItem(indicator)) || CUSTOM_INDICATORS[indicator];
-
-		// const config = CUSTOM_INDICATORS[indicator];
-
-		// const {parameter, lookBack} = config;
 
 		// this.state = {parameter, lookBack, errormessage: ''};
 		this.state = {

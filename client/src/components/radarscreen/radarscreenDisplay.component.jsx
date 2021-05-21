@@ -19,13 +19,31 @@ class RadarScreen extends React.PureComponent {
 		super(props);
 		this.state = {
 			// filterRules: [],
-			filterRules: {},
+			// filterRules: {},
 		};
 	}
 
 	updateFilterRules = filterRules => {
 		this.setState({filterRules});
 	};
+
+	componentDidUpdate(prevProps) {
+		let sameElements = (arr1, arr2) =>
+			[...arr1].sort().join() === [...arr2].sort().join(); //check if both arrays are equal (incl. duplicates)
+
+		// console.log(
+		// 	'same',
+		// 	sameElements(Object.keys(prevProps.dataObject), Object.keys(this.props.dataObject)),
+		// 	prevProps.dataObject,
+		// 	this.props.dataObject
+		// );
+
+		if (
+			!sameElements(Object.keys(prevProps.dataObject), Object.keys(this.props.dataObject))
+		) {
+			this.setState({filterRules: undefined});
+		}
+	}
 
 	filteredDataObject = () => {
 		const operatorFunction = {
@@ -49,7 +67,7 @@ class RadarScreen extends React.PureComponent {
 
 		let filteredObject = {};
 
-		if (Object.keys(filterRules).length) {
+		if (filterRules && Object.keys(filterRules).length) {
 			let {operator, indicatorLH, indicatorRH} = filterRules;
 
 			// console.log(dataObject[indicatorLH], 'lh');
@@ -58,29 +76,8 @@ class RadarScreen extends React.PureComponent {
 			if (dataObject && dataObject[indicatorLH] && dataObject[indicatorRH]) {
 				// console.log('valid');
 
-				// for (let i = 0; i < dataObject[indicatorLH].length; i++) {
-				// 	// if (dataObject[indicatorLH] > dataObject[indicatorRH]) {
-				// 	if (
-				// 		operatorFunction[operator](dataObject[indicatorLH][i], dataObject[indicatorRH][i])
-				// 	) {
-				// 		Object.keys(dataObject).forEach(key => {
-				// 			const currentArr = filteredObject[key] ?? [];
-				// 			filteredObject = {
-				// 				...filteredObject,
-				// 				[key]: [...currentArr, dataObject[key][i]],
-				// 			};
-				// 		});
-				// 	}
-				// }
-
 				Object.keys(dataObject).forEach(indicator => {
 					filteredObject[indicator] = dataObject[indicator].filter((value, index) => {
-						console.log(
-							operatorFunction[operator](
-								dataObject[indicatorLH][index],
-								dataObject[indicatorRH][index]
-							)
-						);
 						return operatorFunction[operator](
 							dataObject[indicatorLH][index],
 							dataObject[indicatorRH][index]
@@ -88,9 +85,13 @@ class RadarScreen extends React.PureComponent {
 					});
 				});
 
-				console.log(filteredObject, 'filteredObject');
+				// console.log(filteredObject, 'filteredObject');
+
+				return filteredObject;
 			}
 		}
+
+		return dataObject;
 	};
 
 	render() {
@@ -111,7 +112,7 @@ class RadarScreen extends React.PureComponent {
 			dataObject,
 		} = this.props;
 
-		const {Symbol} = dataObject;
+		const emptyFilter = this.state.filterRules === undefined ? true : false;
 
 		const usedIndicators = headers.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]
@@ -119,7 +120,10 @@ class RadarScreen extends React.PureComponent {
 
 		updateKey = headers;
 
-		this.filteredDataObject();
+		const filteredData = this.filteredDataObject();
+		// console.log(filteredData, 'filteredData');
+
+		const {Symbol} = filteredData;
 
 		return (
 			<div className='radarscreen' style={{display: 'flex'}}>
@@ -130,7 +134,7 @@ class RadarScreen extends React.PureComponent {
 						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
 					}}
 				>
-					<div className='indexation' style={{position: 'sticky', top: '0'}}>
+					<div className='indexation' style={{position: 'sticky', top: '-1px'}}>
 						#
 					</div>
 					{Symbol.map((s, index) => (
@@ -139,10 +143,11 @@ class RadarScreen extends React.PureComponent {
 						</div>
 					))}
 				</div>
+
 				<div
 					id='grid-container'
 					style={{
-						gridTemplateColumns: `20px repeat(${headers.length}, 1fr) 25px 0`,
+						gridTemplateColumns: `20px repeat(${headers.length}, 1fr)  0`,
 						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0 `,
 					}}
 				>
@@ -153,7 +158,26 @@ class RadarScreen extends React.PureComponent {
 						updateCustomIndicators={updateCustomIndicators}
 						setAllIntervals={handleSetAllIntervals}
 					/>
-					<AddColumnButton
+					{/* <div
+						className='table-buttons-container'
+						style={{
+							gridColumn: `${headers.length + 2}`,
+							gridRow: '1',
+						}}
+					>
+						<AddColumnButton
+							handleColumnUpdate={handleColumnUpdate}
+							usedIndicatorsDefault={usedIndicators}
+							key={updateKey}
+						/>
+						<FilterSymbolsButton
+							updateFilterRules={this.updateFilterRules}
+							usedIndicators={usedIndicators}
+							key={`${updateKey} filter`}
+							// emptyFilter={emptyFilter}
+						/>
+					</div> */}
+					{/* <AddColumnButton
 						style={{
 							gridColumn: `${headers.length + 2}`,
 							gridRow: '1',
@@ -161,7 +185,8 @@ class RadarScreen extends React.PureComponent {
 						handleColumnUpdate={handleColumnUpdate}
 						usedIndicatorsDefault={usedIndicators}
 						key={updateKey}
-					/>
+					/> */}
+					{/* 
 					<FilterSymbolsButton
 						style={{
 							gridColumn: `${headers.length + 3}`,
@@ -170,7 +195,7 @@ class RadarScreen extends React.PureComponent {
 						updateFilterRules={this.updateFilterRules}
 						usedIndicators={usedIndicators}
 						key={`${updateKey} filter`}
-					/>
+					/> */}
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
@@ -179,7 +204,7 @@ class RadarScreen extends React.PureComponent {
 						handleUniverseAdd={handleUniverseAdd}
 					/>
 					<GenerateGrid
-						{...dataObject}
+						{...filteredData}
 						header={headers}
 						onChange={onChange}
 						handleRowDelete={handleDeleteRow}
@@ -188,6 +213,32 @@ class RadarScreen extends React.PureComponent {
 					<DeleteAllRows
 						handleDeleteAllRows={handleDeleteAllRows}
 						gridRow={Symbol.length + 2}
+					/>
+				</div>
+				<div
+					id='table-settings-grid'
+					style={{
+						gridTemplateColumns: `20px 20px`,
+						gridTemplateRows: `40px`,
+					}}
+				>
+					<AddColumnButton
+						style={{
+							gridColumn: `1`,
+							gridRow: '1',
+						}}
+						handleColumnUpdate={handleColumnUpdate}
+						usedIndicatorsDefault={usedIndicators}
+						key={updateKey}
+					/>
+					<FilterSymbolsButton
+						style={{
+							gridColumn: `2`,
+							gridRow: '1',
+						}}
+						updateFilterRules={this.updateFilterRules}
+						usedIndicators={usedIndicators}
+						key={`${updateKey} filter`}
 					/>
 				</div>
 			</div>
