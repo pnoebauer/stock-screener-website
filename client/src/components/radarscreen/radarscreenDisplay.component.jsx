@@ -17,7 +17,81 @@ let updateKey = null;
 class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
+		this.state = {
+			// filterRules: [],
+			filterRules: {},
+		};
 	}
+
+	updateFilterRules = filterRules => {
+		this.setState({filterRules});
+	};
+
+	filteredDataObject = () => {
+		const operatorFunction = {
+			'=': (a, b) => a === b,
+			'>': (a, b) => a > b,
+			'>=': (a, b) => a >= b,
+			'<': (a, b) => a < b,
+			'<=': (a, b) => a <= b,
+		};
+
+		const {dataObject} = this.props;
+		const {filterRules} = this.state;
+
+		// filterRules.forEach(rule => {
+		// 	const {operator, indicatorLH, indicatorRH} = rule;
+
+		// 	console.log(dataObject[indicatorLH], 'lh');
+		// });
+
+		// console.log(Object.keys(filterRules).length, filterRules, 'l');
+
+		let filteredObject = {};
+
+		if (Object.keys(filterRules).length) {
+			let {operator, indicatorLH, indicatorRH} = filterRules;
+
+			// console.log(dataObject[indicatorLH], 'lh');
+			// console.log(dataObject[indicatorRH], 'rh');
+
+			if (dataObject && dataObject[indicatorLH] && dataObject[indicatorRH]) {
+				// console.log('valid');
+
+				// for (let i = 0; i < dataObject[indicatorLH].length; i++) {
+				// 	// if (dataObject[indicatorLH] > dataObject[indicatorRH]) {
+				// 	if (
+				// 		operatorFunction[operator](dataObject[indicatorLH][i], dataObject[indicatorRH][i])
+				// 	) {
+				// 		Object.keys(dataObject).forEach(key => {
+				// 			const currentArr = filteredObject[key] ?? [];
+				// 			filteredObject = {
+				// 				...filteredObject,
+				// 				[key]: [...currentArr, dataObject[key][i]],
+				// 			};
+				// 		});
+				// 	}
+				// }
+
+				Object.keys(dataObject).forEach(indicator => {
+					filteredObject[indicator] = dataObject[indicator].filter((value, index) => {
+						console.log(
+							operatorFunction[operator](
+								dataObject[indicatorLH][index],
+								dataObject[indicatorRH][index]
+							)
+						);
+						return operatorFunction[operator](
+							dataObject[indicatorLH][index],
+							dataObject[indicatorRH][index]
+						);
+					});
+				});
+
+				console.log(filteredObject, 'filteredObject');
+			}
+		}
+	};
 
 	render() {
 		// passed from the withSort HOC
@@ -45,6 +119,8 @@ class RadarScreen extends React.PureComponent {
 
 		updateKey = headers;
 
+		this.filteredDataObject();
+
 		return (
 			<div className='radarscreen' style={{display: 'flex'}}>
 				<div
@@ -62,9 +138,6 @@ class RadarScreen extends React.PureComponent {
 							{index + 1}
 						</div>
 					))}
-					{/* <div className='indexation' key={Symbol.length + 1}>
-						{Symbol.length + 1}
-					</div> */}
 				</div>
 				<div
 					id='grid-container'
@@ -94,10 +167,9 @@ class RadarScreen extends React.PureComponent {
 							gridColumn: `${headers.length + 3}`,
 							gridRow: '1',
 						}}
-						// handleColumnUpdate={handleColumnUpdate}
-						// usedIndicatorsDefault={usedIndicators}
+						updateFilterRules={this.updateFilterRules}
 						usedIndicators={usedIndicators}
-						key={updateKey}
+						key={`${updateKey} filter`}
 					/>
 					<AddStockUniverseButton
 						style={{

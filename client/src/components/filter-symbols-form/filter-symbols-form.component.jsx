@@ -21,7 +21,11 @@ class FilterSymbolsForm extends React.Component {
 		// const {parameter, lookBack} = config;
 
 		// this.state = {parameter, lookBack, errormessage: ''};
-		this.state = {operator: '', indicatorLH: '', indicatorRH: ''};
+		this.state = {
+			operator: '=',
+			indicatorLH: this.props.usedIndicators[0],
+			indicatorRH: this.props.usedIndicators[0],
+		};
 	}
 
 	selectionChange = event => {
@@ -33,49 +37,13 @@ class FilterSymbolsForm extends React.Component {
 
 	onTextChange = event => {
 		const {name, value} = event.target;
-
-		// let err = '';
-		// if (name === 'lookBack') {
-		// 	// if (value != '' && !Number(value)) {
-		// 	if (!Number(value)) {
-		// 		err = (
-		// 			<p>
-		// 				<strong>The lookback period has to be a number greater than 0</strong>
-		// 			</p>
-		// 		);
-		// 	}
-		// }
-		// this.setState({errormessage: err});
-		// this.setState({[name]: value});
 	};
 
 	handleSubmit = event => {
-		// console.log('submit', this.state);
+		const {updateFilterRules} = this.props;
 
-		// const {indicator, updateCustomIndicators} = this.props;
-		// const {errormessage, ...config} = this.state;
-
-		// console.log(indicator, config);
-
-		// console.log(
-		// 	localStorage.getItem(indicator),
-		// 	JSON.stringify(config),
-		// 	localStorage.getItem(indicator) !== JSON.stringify(config),
-		// 	'sss'
-		// );
-
-		// if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
-		// 	//if the config has changed
-		// 	localStorage.setItem(indicator, JSON.stringify(config));
-
-		// 	const indicatorConfig = {[indicator.toLowerCase()]: config};
-
-		// 	CUSTOM_INDICATORS[indicator] = config;
-		// 	// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
-
-		// 	// trigger a fetch call in the parent
-		// 	updateCustomIndicators(undefined, indicatorConfig);
-		// }
+		// trigger a fetch call in the parent
+		updateFilterRules(this.state);
 
 		this.props.closeForm();
 
