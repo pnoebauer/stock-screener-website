@@ -11,9 +11,7 @@ const RulesSelector = ({usedIndicators, rule, selectionChange, id, onDelete}) =>
 			<select
 				value={indicatorLH}
 				onChange={selectionChange}
-				// name='indicatorLH'
 				className='indicator-rule-selector'
-				// id={id}
 				name={`indicatorLH-${id}`}
 			>
 				{usedIndicators.map((value, index) => (
@@ -25,9 +23,7 @@ const RulesSelector = ({usedIndicators, rule, selectionChange, id, onDelete}) =>
 			<select
 				value={operator}
 				onChange={selectionChange}
-				// name='operator'
 				className='operator'
-				// id={id}
 				name={`operator-${id}`}
 			>
 				{['>', '>=', '=', '<=', '<'].map((value, index) => (
@@ -39,9 +35,7 @@ const RulesSelector = ({usedIndicators, rule, selectionChange, id, onDelete}) =>
 			<select
 				value={indicatorRH}
 				onChange={selectionChange}
-				// name='indicatorRH'
 				className='indicator-rule-selector'
-				// id={id}
 				name={`indicatorRH-${id}`}
 			>
 				{usedIndicators.map((value, index) => (

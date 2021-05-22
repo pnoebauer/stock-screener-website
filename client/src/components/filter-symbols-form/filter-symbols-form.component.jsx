@@ -21,26 +21,22 @@ class FilterSymbolsForm extends React.Component {
 	}
 
 	selectionChange = event => {
-		// console.log(event.target.name, event.target.id, event.target.value, 'etv');
-		console.log(event.target.name, event.target.value, 'etv');
+		// console.log(event.target.name, event.target.value, 'etv');
 
 		const [name, rowIndex] = event.target.name.split('-');
 
-		this.setState(
-			(state, props) => {
-				return {
-					rules: state.rules.map((item, index) => {
-						// console.log(index, 'in');
-						if (index === Number(rowIndex)) {
-							// console.log(index, 'i');
-							return {...item, [name]: event.target.value};
-						}
-						return item;
-					}),
-				};
-			},
-			() => console.log('upd', this.state.rules)
-		);
+		this.setState((state, props) => {
+			return {
+				rules: state.rules.map((item, index) => {
+					// console.log(index, 'in');
+					if (index === Number(rowIndex)) {
+						// console.log(index, 'i');
+						return {...item, [name]: event.target.value};
+					}
+					return item;
+				}),
+			};
+		});
 	};
 
 	onDelete = event => {
@@ -65,15 +61,13 @@ class FilterSymbolsForm extends React.Component {
 
 	handleSubmit = event => {
 		event.preventDefault();
-		// event.stopPropagation();
+
 		const {updateFilterRules} = this.props;
 
-		console.log(this.state, 's');
+		// trigger a fetch call in the parent
+		updateFilterRules(this.state);
 
-		// // trigger a fetch call in the parent
-		// updateFilterRules(this.state);
-
-		// this.props.closeForm();
+		this.props.closeForm();
 	};
 
 	render() {

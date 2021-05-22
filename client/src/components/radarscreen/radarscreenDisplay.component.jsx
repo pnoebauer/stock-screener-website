@@ -18,30 +18,26 @@ class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			// filterRules: [],
-			// filterRules: {},
+			// rules: [],
+			// rules: {},
+			rules: [],
 		};
 	}
 
-	updateFilterRules = filterRules => {
-		this.setState({filterRules});
+	updateFilterRules = rules => {
+		this.setState(rules);
 	};
 
 	componentDidUpdate(prevProps) {
 		let sameElements = (arr1, arr2) =>
 			[...arr1].sort().join() === [...arr2].sort().join(); //check if both arrays are equal (incl. duplicates)
 
-		// console.log(
-		// 	'same',
-		// 	sameElements(Object.keys(prevProps.dataObject), Object.keys(this.props.dataObject)),
-		// 	prevProps.dataObject,
-		// 	this.props.dataObject
-		// );
-
 		if (
 			!sameElements(Object.keys(prevProps.dataObject), Object.keys(this.props.dataObject))
 		) {
-			this.setState({filterRules: undefined});
+			// this.setState({rules: undefined});
+
+			this.setState({rules: []});
 		}
 	}
 
@@ -55,40 +51,70 @@ class RadarScreen extends React.PureComponent {
 		};
 
 		const {dataObject} = this.props;
-		const {filterRules} = this.state;
+		const {rules} = this.state;
 
-		// filterRules.forEach(rule => {
-		// 	const {operator, indicatorLH, indicatorRH} = rule;
-
-		// 	console.log(dataObject[indicatorLH], 'lh');
-		// });
-
-		// console.log(Object.keys(filterRules).length, filterRules, 'l');
+		// console.log(Object.keys(rules).length, rules, 'l');
 
 		let filteredObject = {};
 
-		if (filterRules && Object.keys(filterRules).length) {
-			let {operator, indicatorLH, indicatorRH} = filterRules;
+		// if (rules && Object.keys(rules).length) {
+		// 	let {operator, indicatorLH, indicatorRH} = rules;
 
-			// console.log(dataObject[indicatorLH], 'lh');
-			// console.log(dataObject[indicatorRH], 'rh');
+		// 	// console.log(dataObject[indicatorLH], 'lh');
+		// 	// console.log(dataObject[indicatorRH], 'rh');
 
-			if (dataObject && dataObject[indicatorLH] && dataObject[indicatorRH]) {
-				// console.log('valid');
+		// 	if (dataObject && dataObject[indicatorLH] && dataObject[indicatorRH]) {
+		// 		// console.log('valid');
 
-				Object.keys(dataObject).forEach(indicator => {
-					filteredObject[indicator] = dataObject[indicator].filter((value, index) => {
-						return operatorFunction[operator](
-							dataObject[indicatorLH][index],
-							dataObject[indicatorRH][index]
-						);
-					});
+		// 		Object.keys(dataObject).forEach(indicator => {
+		// 			filteredObject[indicator] = dataObject[indicator].filter((value, index) => {
+		// 				return operatorFunction[operator](
+		// 					dataObject[indicatorLH][index],
+		// 					dataObject[indicatorRH][index]
+		// 				);
+		// 			});
+		// 		});
+
+		// 		// console.log(filteredObject, 'filteredObject');
+
+		// 		return filteredObject;
+		// 	}
+		// }
+
+		// console.log('filtering', rules.length, dataObject, this.state);
+
+		if (rules.length && dataObject) {
+			Object.keys(dataObject).forEach(indicator => {
+				filteredObject[indicator] = dataObject[indicator].filter((value, index) => {
+					let pass = true;
+
+					for (let i = 0; i < rules.length; i++) {
+						const rule = rules[i];
+						const {operator, indicatorLH, indicatorRH} = rule;
+
+						// if the selected indicators do not exist in the table then do not filter that row
+						if (!dataObject[indicatorLH] && !dataObject[indicatorRH]) {
+							return true;
+						}
+
+						if (
+							!operatorFunction[operator](
+								dataObject[indicatorLH][index],
+								dataObject[indicatorRH][index]
+							)
+						) {
+							pass = false;
+							break;
+						}
+					}
+
+					return pass;
 				});
+			});
 
-				// console.log(filteredObject, 'filteredObject');
+			// console.log('filter', filteredObject);
 
-				return filteredObject;
-			}
+			return filteredObject;
 		}
 
 		return dataObject;
@@ -112,7 +138,7 @@ class RadarScreen extends React.PureComponent {
 			dataObject,
 		} = this.props;
 
-		const emptyFilter = this.state.filterRules === undefined ? true : false;
+		// const emptyFilter = this.state.rules === undefined ? true : false;
 
 		const usedIndicators = headers.flatMap(item =>
 			permanentHeaders.includes(item) ? [] : [item]
@@ -142,6 +168,13 @@ class RadarScreen extends React.PureComponent {
 							{index + 1}
 						</div>
 					))}
+					<div
+						className='indexation'
+						id='number-symbols'
+						key={dataObject.Symbol.length + 1}
+					>
+						{dataObject.Symbol.length + 1}
+					</div>
 				</div>
 
 				<div
@@ -158,44 +191,6 @@ class RadarScreen extends React.PureComponent {
 						updateCustomIndicators={updateCustomIndicators}
 						setAllIntervals={handleSetAllIntervals}
 					/>
-					{/* <div
-						className='table-buttons-container'
-						style={{
-							gridColumn: `${headers.length + 2}`,
-							gridRow: '1',
-						}}
-					>
-						<AddColumnButton
-							handleColumnUpdate={handleColumnUpdate}
-							usedIndicatorsDefault={usedIndicators}
-							key={updateKey}
-						/>
-						<FilterSymbolsButton
-							updateFilterRules={this.updateFilterRules}
-							usedIndicators={usedIndicators}
-							key={`${updateKey} filter`}
-							// emptyFilter={emptyFilter}
-						/>
-					</div> */}
-					{/* <AddColumnButton
-						style={{
-							gridColumn: `${headers.length + 2}`,
-							gridRow: '1',
-						}}
-						handleColumnUpdate={handleColumnUpdate}
-						usedIndicatorsDefault={usedIndicators}
-						key={updateKey}
-					/> */}
-					{/* 
-					<FilterSymbolsButton
-						style={{
-							gridColumn: `${headers.length + 3}`,
-							gridRow: '1',
-						}}
-						updateFilterRules={this.updateFilterRules}
-						usedIndicators={usedIndicators}
-						key={`${updateKey} filter`}
-					/> */}
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
@@ -239,7 +234,9 @@ class RadarScreen extends React.PureComponent {
 						updateFilterRules={this.updateFilterRules}
 						usedIndicators={usedIndicators}
 						key={`${updateKey} filter`}
-						emptyFilter={emptyFilter}
+						// emptyFilter={emptyFilter}
+
+						emptyFilter={!this.state.rules.length}
 					/>
 				</div>
 			</div>

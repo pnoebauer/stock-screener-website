@@ -364,6 +364,8 @@ function withDataUpdate(WrappedComponent) {
 					};
 				},
 				() => {
+					// if (rowAdded)
+					// 	console.log('change', this.state, updatedValue, headerCol, valueRow);
 					// already covered with startEventSource
 					// this.updateLocalStorage();
 					this.updateCustomIndicators(valueRow);

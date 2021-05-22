@@ -12,12 +12,26 @@ class Dropdown extends React.Component {
 		// console.log('ai', this.props.options.indexOf(children), children);
 		// console.log(Math.max(this.props.options.indexOf(children), 0), 'b');
 
+		// this.state = {
+		// 	showList: false,
+		// 	displayedOptions: this.props.options,
+		// 	shownValue: children,
+		// 	activeItem: this.props.options.indexOf(children),
+		// };
+
+		// const newFilteredOptions = options.filter(item => {
+		// 	return item.toLowerCase().indexOf(currentInput.toLowerCase()) === 0; //filter all with the same start
+		// });
+
+		const activeItem = this.props.options.indexOf(children);
+		// const displayedOptions = this.props.options.slice(activeItem, activeItem + 5);
+		const displayedOptions = this.props.options;
+
 		this.state = {
 			showList: false,
-			displayedOptions: this.props.options,
+			displayedOptions,
 			shownValue: children,
-			activeItem: this.props.options.indexOf(children),
-			// key: 0
+			activeItem,
 		};
 	}
 
@@ -150,9 +164,17 @@ class Dropdown extends React.Component {
 			case 13:
 				event.preventDefault();
 
+				// console.log('enter', this.state);
+
 				this.setState(
 					prevState => {
 						const displayedValue = prevState.displayedOptions[prevState.activeItem];
+						// console.log(
+						// 	'displayedValue',
+						// 	displayedValue,
+						// 	prevState.displayedOptions,
+						// 	prevState.activeItem
+						// );
 
 						return {
 							activeItem: 0,
@@ -161,10 +183,18 @@ class Dropdown extends React.Component {
 						};
 					},
 					() => {
+						// console.log('A dd enter', this.state.shownValue, headerCol, valueRow);
+
+						// console.log(
+						// 	'this.selectionDisplay.current.innerText',
+						// 	this.selectionDisplay.current.innerText
+						// );
 						if (this.selectionDisplay.current.innerText !== this.state.shownValue) {
 							this.selectionDisplay.current.innerText = this.state.shownValue;
 							// this.setState(prevState => ({key: prevState.key+1}));
 						}
+
+						// console.log('dd enter', this.state.shownValue, headerCol, valueRow);
 						return onChange(this.state.shownValue, headerCol, valueRow);
 					}
 				);
@@ -175,6 +205,28 @@ class Dropdown extends React.Component {
 			default:
 		}
 	};
+
+	// componentDidMount() {
+	// 	if (this.props.className === 'add-row') console.log(this.state, 'dd state');
+	// }
+
+	componentDidUpdate(prevProps) {
+		// if (this.props.className === 'add-row')
+		// 	console.log('updated child', this.props.children, prevProps.children);
+		if (prevProps.children !== this.props.children) {
+			const activeItem = this.props.options.indexOf(this.props.children);
+			// const displayedOptions = this.props.options.slice(activeItem, activeItem + 5);
+
+			this.setState(
+				// {activeItem, displayedOptions, shownValue: this.props.children},
+				{activeItem, shownValue: this.props.children}
+				// () => {
+				// 	if (this.props.className === 'add-row')
+				// 		console.log(this.state, 'upated dd state');
+				// }
+			);
+		}
+	}
 
 	render() {
 		const {gridRow, gridColumn, customStyles, className, children} = this.props;
@@ -188,6 +240,8 @@ class Dropdown extends React.Component {
 		// 	children,
 		// 	this.state.shownValue
 		// );
+
+		// if (this.props.className === 'add-row') console.log(children, 'children');
 
 		let number = displayedOptions.length;
 		number = number > 5 ? 5 : number < 1 ? 1 : number;

@@ -12,7 +12,6 @@ import './filter-symbols-button.styles.css';
 
 class FilterSymbolsButton extends React.Component {
 	constructor(props) {
-		// console.log('constructor add')
 		super(props);
 		this.state = {
 			visible: false,
