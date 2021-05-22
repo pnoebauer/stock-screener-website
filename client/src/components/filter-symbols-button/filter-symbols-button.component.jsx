@@ -49,7 +49,7 @@ class FilterSymbolsButton extends React.Component {
 				<Modal
 					visible={this.state.visible}
 					onClose={this.hide}
-					width={60}
+					width={50}
 					height={50}
 					measure={'%'}
 					showCloseButton={true}

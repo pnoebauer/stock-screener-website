@@ -1,20 +1,34 @@
 .filter-symbols-form {
 	margin-top: 15px;
+	height: 100%;
+	position: relative;
 }
 
-.operator {
-	width: 150px;
-	text-align-last: center;
+.filter-rule-label {
+	font-size: 20px;
 }
 
-.lookback-input {
-	width: 150px;
-	text-align: center;
+.submit-button-paragraph {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
 }
 
 .filter-symbols-submit-button {
 	cursor: pointer;
 	outline: none;
 	margin-top: 15px;
-	float: right;
+	/* float: right; */
+	font-size: 20px;
+}
+
+.rule-selection-container {
+	margin: 10px 0 10px 0;
+}
+
+.add-filter-rule-button {
+	float: left;
+	width: 5%;
+	margin: 0 0 5px 15px;
+	font-size: 20px;
 }

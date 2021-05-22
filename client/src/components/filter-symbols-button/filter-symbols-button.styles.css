@@ -14,6 +14,7 @@ button.filter-symbols-button {
 	border-top: 1px solid black;
 	border-bottom: 1px solid black;
 	border-right: 1px solid black;
+	margin-bottom: -1px;
 }
 
 .filter-symbols-icon {

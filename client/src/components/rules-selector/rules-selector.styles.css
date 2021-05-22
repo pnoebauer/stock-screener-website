@@ -1,0 +1,27 @@
+.rule-selection-row {
+	display: flex;
+	justify-content: center;
+	margin: 5px;
+}
+
+.rule-selection-row select {
+	font-size: 20px;
+	text-align-last: center;
+}
+
+.rule-selection-row * {
+	/* margin: 5px; */
+}
+
+.indicator-rule-selector {
+	width: 30%;
+}
+
+.operator {
+	width: 10%;
+}
+
+.delete-rule-button {
+	width: 5%;
+	margin: 0 5px;
+}

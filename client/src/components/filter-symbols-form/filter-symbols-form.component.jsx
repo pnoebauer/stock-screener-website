@@ -1,39 +1,79 @@
 import React from 'react';
 
+import RulesSelector from '../rules-selector/rules-selector.component';
+
 import './filter-symbols-form.styles.css';
 
 class FilterSymbolsForm extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// this.state = {parameter, lookBack, errormessage: ''};
-		this.state = {
+		this.defaultRule = {
 			operator: '=',
 			indicatorLH: this.props.usedIndicators[0],
 			indicatorRH: this.props.usedIndicators[0],
 		};
+
+		// this.state = {parameter, lookBack, errormessage: ''};
+		this.state = {
+			rules: [this.defaultRule],
+		};
 	}
 
 	selectionChange = event => {
-		// console.log(event.target.value, 'etv');
-		// this.setState({operator: event.target.value});
+		// console.log(event.target.name, event.target.id, event.target.value, 'etv');
+		console.log(event.target.name, event.target.value, 'etv');
 
-		this.setState({[event.target.name]: event.target.value});
+		const [name, rowIndex] = event.target.name.split('-');
+
+		this.setState(
+			(state, props) => {
+				return {
+					rules: state.rules.map((item, index) => {
+						// console.log(index, 'in');
+						if (index === Number(rowIndex)) {
+							// console.log(index, 'i');
+							return {...item, [name]: event.target.value};
+						}
+						return item;
+					}),
+				};
+			},
+			() => console.log('upd', this.state.rules)
+		);
 	};
 
-	onTextChange = event => {
-		const {name, value} = event.target;
+	onDelete = event => {
+		event.preventDefault();
+		// console.log(event.target.id, 'e');
+
+		this.setState(state => {
+			return {
+				rules: state.rules.filter((item, index) => index !== Number(event.target.name)),
+			};
+		});
+	};
+
+	addRule = event => {
+		event.preventDefault();
+		this.setState(state => {
+			return {
+				rules: [...state.rules, this.defaultRule],
+			};
+		});
 	};
 
 	handleSubmit = event => {
+		event.preventDefault();
+		// event.stopPropagation();
 		const {updateFilterRules} = this.props;
 
-		// trigger a fetch call in the parent
-		updateFilterRules(this.state);
+		console.log(this.state, 's');
 
-		this.props.closeForm();
+		// // trigger a fetch call in the parent
+		// updateFilterRules(this.state);
 
-		event.preventDefault();
+		// this.props.closeForm();
 	};
 
 	render() {
@@ -41,62 +81,26 @@ class FilterSymbolsForm extends React.Component {
 
 		return (
 			<form onSubmit={this.handleSubmit} className='filter-symbols-form'>
-				<label>
-					Select the price parameter for the indicator:
-					<p>
-						{/* <input type='text' /> */}
-						<select
-							value={this.state.indicatorLH}
-							onChange={this.selectionChange}
-							name='indicatorLH'
-							className='operator'
-						>
-							{usedIndicators.map((value, index) => (
-								// console.log(INDICATORS_TO_API[value], value, 'v') ||
-								<option value={value} key={index}>
-									{value}
-								</option>
-							))}
-						</select>
-						<select
-							value={this.state.operator}
-							onChange={this.selectionChange}
-							name='operator'
-							className='operator'
-						>
-							{['>', '>=', '=', '<=', '<'].map((value, index) => (
-								<option value={value} key={index}>
-									{value}
-								</option>
-							))}
-						</select>
-						<select
-							value={this.state.indicatorRH}
-							onChange={this.selectionChange}
-							name='indicatorRH'
-							className='operator'
-						>
-							{usedIndicators.map((value, index) => (
-								// console.log(INDICATORS_TO_API[value], value, 'v') ||
-								<option value={value} key={index}>
-									{value}
-								</option>
-							))}
-						</select>
-
-						{/* <input type='text' /> */}
-					</p>
+				<label className='filter-rule-label'>
+					Enter rules for filtering symbols:
+					<div className='rule-selection-container'>
+						{this.state.rules.map((rule, index) => (
+							<RulesSelector
+								usedIndicators={usedIndicators}
+								rule={rule}
+								selectionChange={this.selectionChange}
+								id={index}
+								key={index}
+								onDelete={this.onDelete}
+							/>
+						))}
+					</div>
+					<button className='add-filter-rule-button' onClick={this.addRule}>
+						+
+					</button>
 				</label>
-				<p>Enter the lookback period:</p>
-				<input
-					type='text'
-					name='lookBack'
-					// onChange={this.onTextChange}
-					// value={this.state.lookBack}
-					className='lookback-input'
-				/>
-				{/* {this.state.errormessage} */}
-				<p>
+
+				<p className='submit-button-paragraph'>
 					<input
 						type='submit'
 						value='Apply'

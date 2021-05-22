@@ -239,6 +239,7 @@ class RadarScreen extends React.PureComponent {
 						updateFilterRules={this.updateFilterRules}
 						usedIndicators={usedIndicators}
 						key={`${updateKey} filter`}
+						emptyFilter={emptyFilter}
 					/>
 				</div>
 			</div>
