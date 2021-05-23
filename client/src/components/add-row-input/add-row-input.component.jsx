@@ -6,7 +6,7 @@ import Dropdown from '../dropdown/dropdown.component';
 
 import {SYMBOLS} from '../../assets/constants';
 
-const AddRowInput = ({rowNumber, onRowAdd}) => {
+const AddRowInput = ({rowNumber, onRowAdd, numberSymbols}) => {
 	return (
 		<Dropdown
 			options={SYMBOLS}
@@ -21,7 +21,8 @@ const AddRowInput = ({rowNumber, onRowAdd}) => {
 			}}
 			className={'add-row'}
 		>
-			{SYMBOLS[rowNumber]}
+			{/* {SYMBOLS[rowNumber]} */}
+			{SYMBOLS[numberSymbols]}
 		</Dropdown>
 	);
 };

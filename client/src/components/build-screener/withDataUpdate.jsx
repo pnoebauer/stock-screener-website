@@ -343,32 +343,75 @@ function withDataUpdate(WrappedComponent) {
 		onChange = (updatedValue, headerCol, valueRow, rowAdded) => {
 			const header = this.getHeaderTitle(this.state);
 
+			// if (rowAdded) valueRow = this.state.Symbol.length - 1;
+
+			let index = valueRow;
+
 			//update the changed cell (Symbol, Interval)
 			this.setState(
 				prevState => {
+					if (rowAdded) {
+						console.log(index, prevState.Symbol.length, 'ra');
+						index = prevState.Symbol.length;
+					}
+
 					const columnName = header[headerCol]; //which column changed (Symbol, Interval)
 					const maxID = Math.max(...prevState.ID, 1);
+
+					if (rowAdded)
+						console.log(
+							'change A',
+							updatedValue,
+							headerCol,
+							valueRow,
+							prevState.Symbol.length
+						);
 
 					return {
 						// if a row was added set interval to a default of 'Day' and increment its ID by 1 above the max
 						Interval: rowAdded
-							? Object.assign([], prevState.Interval, {[valueRow]: INTERVALS[0]})
-							: prevState.Interval,
+							? Object.assign([], prevState.Interval, {[index]: INTERVALS[0]})
+							: //   Object.assign([], prevState.Interval, {
+							  // 		[prevState.Symbol.length - 1]: INTERVALS[0],
+							  //   })
+							  prevState.Interval,
 						ID: rowAdded
-							? Object.assign([], prevState.ID, {[valueRow]: maxID + 1})
-							: prevState.ID,
+							? Object.assign([], prevState.ID, {[index]: maxID + 1})
+							: //   Object.assign([], prevState.ID, {
+							  // 		[prevState.Symbol.length - 1]: maxID + 1,
+							  //   })
+							  prevState.ID,
 						// updates that one value that changed in the array
 						[columnName]: Object.assign([], prevState[columnName], {
-							[valueRow]: updatedValue,
+							[index]: updatedValue,
 						}),
+						// [columnName]: rowAdded
+						// 	? Object.assign([], prevState[columnName], {
+						// 			[prevState.Symbol.length - 1]: updatedValue,
+						// 	  })
+						// 	: Object.assign([], prevState[columnName], {
+						// 			[valueRow]: updatedValue,
+						// 	  }),
 					};
 				},
 				() => {
 					// if (rowAdded)
-					// 	console.log('change', this.state, updatedValue, headerCol, valueRow);
+					// 	console.log(
+					// 		'change',
+					// 		this.state,
+					// 		updatedValue,
+					// 		headerCol,
+					// 		valueRow,
+					// 		this.state.Symbol.length - 1
+					// 	);
 					// already covered with startEventSource
 					// this.updateLocalStorage();
-					this.updateCustomIndicators(valueRow);
+
+					// this.updateCustomIndicators(valueRow);
+
+					if (rowAdded) index = this.state.Symbol.length - 1;
+
+					this.updateCustomIndicators(index);
 				}
 			);
 		};

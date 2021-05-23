@@ -1,9 +1,16 @@
 .radarscreen {
 	margin-top: 30px;
 	margin-left: 10px;
+
+	/* for sizing and scrolling */
+	/* height: 500px;
+	overflow: auto; */
 }
 
 #grid-container {
+	/* for sizing and scrolling: need to do the same for the other grids, change height setting */
+	/* height: 100%; */
+
 	width: 90%;
 	display: grid;
 	/* grid-gap: 1px; */
