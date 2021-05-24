@@ -8,6 +8,8 @@ import AddStockUniverseButton from '../add-stock-universe-button/add-stock-unive
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
 
+// import {UNIVERSES} from '../../assets/constants';
+
 import './radarscreen.styles.css';
 
 const permanentHeaders = ['ID', 'Symbol', 'Interval'];
@@ -39,6 +41,24 @@ class RadarScreen extends React.PureComponent {
 
 			this.setState({rules: []});
 		}
+
+		// if (!sameElements(prevProps.dataObject.Symbol, this.props.dataObject.Symbol)) {
+		// 	console.log('symbols changed');
+
+		// 	let symbolCount = {};
+
+		// 	Object.keys(UNIVERSES).forEach(universe => {
+		// 		let count = 0;
+		// 		for (const symbol of this.props.dataObject.Symbol) {
+		// 			if (UNIVERSES[universe].includes(symbol)) {
+		// 				count++;
+		// 			}
+		// 		}
+		// 		symbolCount[universe] = count;
+		// 	});
+
+		// 	console.log(symbolCount, 'symbolCount');
+		// }
 	}
 
 	filteredDataObject = () => {
@@ -53,35 +73,7 @@ class RadarScreen extends React.PureComponent {
 		const {dataObject} = this.props;
 		const {rules} = this.state;
 
-		// console.log(Object.keys(rules).length, rules, 'l');
-
 		let filteredObject = {};
-
-		// if (rules && Object.keys(rules).length) {
-		// 	let {operator, indicatorLH, indicatorRH} = rules;
-
-		// 	// console.log(dataObject[indicatorLH], 'lh');
-		// 	// console.log(dataObject[indicatorRH], 'rh');
-
-		// 	if (dataObject && dataObject[indicatorLH] && dataObject[indicatorRH]) {
-		// 		// console.log('valid');
-
-		// 		Object.keys(dataObject).forEach(indicator => {
-		// 			filteredObject[indicator] = dataObject[indicator].filter((value, index) => {
-		// 				return operatorFunction[operator](
-		// 					dataObject[indicatorLH][index],
-		// 					dataObject[indicatorRH][index]
-		// 				);
-		// 			});
-		// 		});
-
-		// 		// console.log(filteredObject, 'filteredObject');
-
-		// 		return filteredObject;
-		// 	}
-		// }
-
-		// console.log('filtering', rules.length, dataObject, this.state);
 
 		if (rules.length && dataObject) {
 			Object.keys(dataObject).forEach(indicator => {

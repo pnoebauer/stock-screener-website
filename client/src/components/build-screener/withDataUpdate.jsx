@@ -255,6 +255,8 @@ function withDataUpdate(WrappedComponent) {
 			const {Symbol} = this.state;
 			const header = this.getHeaderTitle(this.state);
 
+			// console.log(apiObject, 'ao');
+
 			// map the header (= state keys) to INDICATORS_TO_API; do not include permanent headers or customIndicators
 			const customIndicators = Object.keys(CUSTOM_INDICATORS);
 			const permanentOrCustomIndicators = [...permanentHeaders, ...customIndicators];
@@ -273,11 +275,18 @@ function withDataUpdate(WrappedComponent) {
 					// look up the name used for the column header (and state key)
 					const stateIndicatorName = API_TO_INDICATORS[apiIndicatorName];
 
+					// console.log(apiIndicatorName, 'apiIndicatorName', stateIndicatorName);
+
 					// converts api object to state array format
 					stateIndicatorObject = {
 						...stateIndicatorObject,
 						[stateIndicatorName]: Symbol.map(
-							symbolName => apiObject[symbolName][apiIndicatorName]
+							symbolName =>
+								// apiObject[symbolName][apiIndicatorName]
+								(apiObject &&
+									apiObject[symbolName] &&
+									apiObject[symbolName][apiIndicatorName]) ??
+								0
 						),
 					};
 				});
