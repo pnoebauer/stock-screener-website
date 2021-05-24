@@ -253,26 +253,41 @@ function sendEventsToAll(data) {
 const dbConnect = require('./dbConnect');
 const calculateIndicators = require('./calculateIndicators');
 
+// calculates the indicators after retrieving the data
 const getLatestIndicators = async (queryObject, data, maxLookBack) => {
-	// calculate the indicators after retrieving the data
 	let currentDataSeries = [];
 
+	// used to store the end result
 	let latestIndicators = {};
 
 	data.forEach((candle, index) => {
+		// console.log(candle, 'candle', currentDataSeries, index);
+		// push the candle into the currentDataSeries array (due to pushing (pass by ref), if the candle is mutated later on it will also updated in the series)
 		currentDataSeries.push(candle);
+		// console.log(currentDataSeries, 'currentDataSeries', index);
 
+		// loop over all requested indicators
 		Object.keys(queryObject.indicators).forEach(indicator => {
+			// get the requested lookback and parameter from the queryObject
 			let {parameter, lookBack} = queryObject.indicators[indicator];
 			lookBack = Number(lookBack);
 
-			// start the calculation once the index is within the lookback of the current bar
+			// console.log(index, maxLookBack, lookBack, indicator);
+
+			// start the calculation once the index is within the lookback (+UNSTABLEPERIOD) of the current bar
 			if (index >= maxLookBack - lookBack) {
-				// console.log(indicator);
+				// console.log(
+				// 	indicator,
+				// 	maxLookBack,
+				// 	maxLookBack + constants.UNSTABLEPERIOD - 1,
+				// 	index
+				// );
+				// at the calculated indicator to the candle object (will also update in the currentDataSeries array due to pass by ref)
 				candle[indicator] = calculateIndicators[indicator](
 					currentDataSeries,
 					lookBack,
-					parameter
+					parameter,
+					maxLookBack
 				);
 				// round the final result
 				if (index === data.length - 1) {
@@ -302,19 +317,20 @@ const retrieveSymbolWithIndicators = async queryObject => {
 			const {[indicator]: indObj} = queryObject.indicators; // destructure out the indicator
 			// console.log(indObj, indicator);
 
-			queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+			if (!indObj.parameter) {
+				['openPrice', 'highPrice', 'lowPrice', 'closePrice'].forEach(parameter =>
+					queryParameters.add(parameter)
+				);
+			} else {
+				queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+			}
+
 			maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
 		});
 
 		// console.log(queryParameters, maxLookBack);
 
 		// retrieve data
-		// const latestPriceData = await dbConnect.retrieveData(
-		// 	queryObject.symbol,
-		// 	constants.UNSTABLEPERIOD + maxLookBack,
-		// 	Array.from(queryParameters)
-		// );
-
 		const latestPriceData = await dbConnect.retrieveSampledData(
 			queryObject.symbol,
 			constants.UNSTABLEPERIOD + maxLookBack,
@@ -322,7 +338,8 @@ const retrieveSymbolWithIndicators = async queryObject => {
 			queryObject.interval
 		);
 
-		// console.log(latestPriceData, 'latestPriceData');
+		// console.log(latestPriceData);
+
 		const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
 
 		return lastCandle;
@@ -338,11 +355,14 @@ const queryObject = {
 	indicators: {
 		sma: {
 			parameter: 'closePrice',
-			lookBack: 90,
+			lookBack: 35,
 		},
 		ema: {
 			parameter: 'openPrice',
-			lookBack: 210,
+			lookBack: 20,
+		},
+		atr: {
+			lookBack: 5,
 		},
 	},
 };

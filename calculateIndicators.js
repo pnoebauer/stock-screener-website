@@ -40,7 +40,7 @@ const ema = (dataRaw, time_period, parameter) => {
 //      N=number of days in SMA
 //      k=1÷N
 const sma = (dataRaw, timePeriod, parameter) => {
-	// console.log(timePeriod);
+	// console.log(timePeriod, dataRaw.length);
 	const k = 1 / timePeriod;
 
 	const currentCandle = dataRaw[dataRaw.length - 1];
@@ -63,4 +63,48 @@ const sma = (dataRaw, timePeriod, parameter) => {
 	return sma; //.toFixed(2);
 };
 
-module.exports = {sma, ema};
+// Current ATR = [(Prior ATR x 13) + Current TR] / 14
+//   - Multiply the previous 14-day ATR by 13.
+//   - Add the most recent day's TR value.
+//   - Divide the total by 14
+
+// ATR=(TR(t)+ATR(y)*(N-1))×k
+//   where:
+//      t=today
+//      y=yesterday
+//      N=number of days in ATR
+//      k=1÷N
+
+// TR = max(high(t), close(y)) - min(low(t), close(y))
+
+const calculateTR = (candle, priorCandle) => {
+	// console.log(candle, priorCandle);
+	const tr =
+		Math.max(candle.highPrice, priorCandle.closePrice ?? candle.highPrice) -
+		Math.min(candle.lowPrice, priorCandle.closePrice ?? candle.lowPrice);
+
+	return tr;
+};
+
+const atr = (dataRaw, timePeriod, parameter, maxLookBack) => {
+	// console.log(timePeriod, dataRaw.length, maxLookBack);
+
+	const currentCandle = dataRaw[dataRaw.length - 1];
+	const priorCandle = dataRaw[dataRaw.length - 2] || 0;
+
+	// console.log(currentCandle, priorCandle);
+
+	const TR = calculateTR(currentCandle, priorCandle) / timePeriod;
+
+	if (dataRaw.length <= maxLookBack) {
+		// console.log('within initial lookback');
+
+		return TR;
+	}
+
+	const atr = (priorCandle.atr * (timePeriod - 1) + TR) / timePeriod;
+
+	return atr;
+};
+
+module.exports = {sma, ema, atr};
