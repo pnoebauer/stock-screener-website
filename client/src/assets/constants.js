@@ -735,4 +735,15 @@ export const CUSTOM_INDICATORS = {
 		parameter: 'closePrice',
 		lookBack: 20,
 	},
+	ATR: {
+		lookBack: 5,
+	},
+	REG: {
+		parameter: 'closePrice',
+		lookBack: 5,
+	},
+	MOM: {
+		parameter: 'closePrice',
+		lookBack: 5,
+	},
 };

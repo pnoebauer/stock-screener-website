@@ -73,6 +73,7 @@ function withSorting(WrappedComponent) {
 				// console.log(idMap, 'idMap', stateClone.ID, 'ids');
 				// const key = `${sortedField} ${direction}`;
 
+				// add the sortedTable to the 'sortedTable' local storage item with a key denoting the configuration
 				const sortedTable = {...retrievedObject, [currentKey]: idMap};
 				// console.log(sortedTable, 'sortedTable');
 

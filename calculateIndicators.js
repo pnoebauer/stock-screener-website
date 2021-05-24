@@ -107,4 +107,78 @@ const atr = (dataRaw, timePeriod, parameter, maxLookBack) => {
 	return atr;
 };
 
-module.exports = {sma, ema, atr};
+// import regression from 'regression';
+// const result = regression.linear([[0, 1], [32, 67], [12, 79]]);
+// const gradient = result.equation[0];
+// const yIntercept = result.equation[1];
+
+const regression = require('regression');
+
+const reg = (dataRaw, timePeriod, parameter) => {
+	// const currentCandle = dataRaw[dataRaw.length - 1];
+	// const startCandle = dataRaw[dataRaw.length - timePeriod];
+
+	let data = [];
+	// console.log(currentCandle, startCandle);
+
+	for (let i = dataRaw.length - timePeriod; i <= dataRaw.length - 1; i++) {
+		// data.push([i - (dataRaw.length - timePeriod), Number(dataRaw[i][parameter])]);
+
+		// natural log of price
+		const lnPrice = Math.log(Number(dataRaw[i][parameter]));
+		data.push([i - (dataRaw.length - timePeriod), lnPrice]);
+	}
+
+	// console.log(data[0], data[timePeriod - 1], 'data', symbol);
+
+	// console.log(data, 'data');
+
+	// const result = regression.exponential(data, {order: 3, precision: 3});
+	// console.log(result);
+
+	// regression of the log series
+	const result = regression.linear(data, {order: 3, precision: 20});
+	const slope = result.equation[0];
+	// console.log(result);
+
+	const percChangePerDay = Math.E ** slope;
+	const annualizedChange = (percChangePerDay ** 250 - 1) * 100;
+
+	// console.log(
+	// 	result,
+	// 	'result',
+	// 	slope,
+	// 	'slope',
+	// 	percChangePerDay,
+	// 	'percChangePerDay',
+	// 	annualizedChange,
+	// 	'annualizedChange'
+	// );
+
+	// console.log(
+	// 	slope,
+	// 	'slope',
+	// 	percChangePerDay,
+	// 	'percChangePerDay',
+	// 	annualizedChange,
+	// 	'annualizedChange',
+	// 	symbol
+	// );
+
+	return annualizedChange;
+};
+
+const mom = (dataRaw, timePeriod, parameter) => {
+	const currentCandle = dataRaw[dataRaw.length - 1];
+	const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
+
+	const mom =
+		(100 * (currentCandle[parameter] - nBarsAgoCandle[parameter])) /
+		currentCandle[parameter];
+
+	// console.log(currentCandle[parameter], nBarsAgoCandle[parameter]);
+
+	return mom;
+};
+
+module.exports = {sma, ema, atr, reg, mom};

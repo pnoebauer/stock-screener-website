@@ -253,12 +253,22 @@ function sendEventsToAll(data) {
 const dbConnect = require('./dbConnect');
 const calculateIndicators = require('./calculateIndicators');
 
+const serialIndicators = ['reg', 'mom'];
+
 // calculates the indicators after retrieving the data
 const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 	let currentDataSeries = [];
 
 	// used to store the end result
 	let latestIndicators = {};
+
+	// indicators that do not require the whole series
+	const reqDiscreteIndicators = Object.keys(queryObject.indicators).filter(
+		indicator => !serialIndicators.includes(indicator)
+	);
+	const reqSerialIndicators = Object.keys(queryObject.indicators).filter(indicator =>
+		serialIndicators.includes(indicator)
+	);
 
 	data.forEach((candle, index) => {
 		// console.log(candle, 'candle', currentDataSeries, index);
@@ -267,7 +277,8 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 		// console.log(currentDataSeries, 'currentDataSeries', index);
 
 		// loop over all requested indicators
-		Object.keys(queryObject.indicators).forEach(indicator => {
+		// Object.keys(reqDiscreteIndicators).forEach(indicator => {
+		for (const indicator of reqDiscreteIndicators) {
 			// get the requested lookback and parameter from the queryObject
 			let {parameter, lookBack} = queryObject.indicators[indicator];
 			lookBack = Number(lookBack);
@@ -296,13 +307,23 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 					latestIndicators[indicator] = candle[indicator];
 				}
 			}
-		});
-
+			// });
+		}
 		// console.log(candle, index);
 	});
 
-	// console.log(currentDataSeries[currentDataSeries.length - 1], 'candle');
-	// return currentDataSeries[currentDataSeries.length - 1];
+	for (const indicator of reqSerialIndicators) {
+		let {parameter, lookBack} = queryObject.indicators[indicator];
+		lookBack = Number(lookBack);
+
+		latestIndicators[indicator] = calculateIndicators[indicator](
+			data,
+			lookBack,
+			parameter
+		).toFixed(2);
+		// calculateIndicators[indicator](data, lookBack, parameter);
+	}
+
 	return latestIndicators;
 };
 
@@ -351,7 +372,7 @@ const retrieveSymbolWithIndicators = async queryObject => {
 
 const queryObject = {
 	symbol: 'MMM',
-	interval: 'week',
+	interval: 'day',
 	indicators: {
 		sma: {
 			parameter: 'closePrice',
@@ -363,6 +384,14 @@ const queryObject = {
 		},
 		atr: {
 			lookBack: 5,
+		},
+		reg: {
+			parameter: 'closePrice',
+			lookBack: 250,
+		},
+		mom: {
+			parameter: 'closePrice',
+			lookBack: 250,
 		},
 	},
 };

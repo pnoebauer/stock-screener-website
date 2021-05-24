@@ -20,7 +20,8 @@
     "express": "^4.16.4",
     "express-sslify": "^1.2.0",
     "knex": "^0.95.4",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "regression": "^2.0.1"
   },
   "devDependencies": {
     "concurrently": "^4.0.1",

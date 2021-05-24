@@ -358,14 +358,14 @@ function withDataUpdate(WrappedComponent) {
 					const columnName = header[headerCol]; //which column changed (Symbol, Interval)
 					const maxID = Math.max(...prevState.ID, 1);
 
-					if (rowAdded)
-						console.log(
-							'change A',
-							updatedValue,
-							headerCol,
-							valueRow,
-							prevState.Symbol.length
-						);
+					// if (rowAdded)
+					// 	console.log(
+					// 		'change A',
+					// 		updatedValue,
+					// 		headerCol,
+					// 		valueRow,
+					// 		prevState.Symbol.length
+					// 	);
 
 					return {
 						// if a row was added set interval to a default of 'Day' and increment its ID by 1 above the max

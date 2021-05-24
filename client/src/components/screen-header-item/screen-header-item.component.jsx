@@ -54,11 +54,12 @@ class ScreenHeaderItem extends React.Component {
 							visible={this.state.visible}
 							onClose={this.hide}
 							width={30}
-							height={22}
+							height={30}
 							measure={'%'}
 							showCloseButton={false}
 							closeOnEsc={false}
 							closeMaskOnClick={false}
+							// showMask={false}
 						>
 							<IndicatorConfigurationForm
 								indicator={id}

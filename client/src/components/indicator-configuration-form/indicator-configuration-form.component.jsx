@@ -84,26 +84,28 @@ class IndicatorConfigurationForm extends React.Component {
 
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>
-				<label>
-					Select the price parameter for the indicator:
-					<p>
-						<select
-							value={this.state.parameter}
-							onChange={this.selectionChange}
-							name='selector'
-							className='price-parameter-selector'
-						>
-							{['Open Price', 'High Price', 'Low Price', 'Close Price'].map(
-								(value, index) => (
-									// console.log(INDICATORS_TO_API[value], value, 'v') ||
-									<option value={INDICATORS_TO_API[value]} key={index}>
-										{value}
-									</option>
-								)
-							)}
-						</select>
-					</p>
-				</label>
+				{this.state.parameter ? (
+					<label>
+						Select the price parameter for the indicator:
+						<p>
+							<select
+								value={this.state.parameter}
+								onChange={this.selectionChange}
+								name='selector'
+								className='price-parameter-selector'
+							>
+								{['Open Price', 'High Price', 'Low Price', 'Close Price'].map(
+									(value, index) => (
+										// console.log(INDICATORS_TO_API[value], value, 'v') ||
+										<option value={INDICATORS_TO_API[value]} key={index}>
+											{value}
+										</option>
+									)
+								)}
+							</select>
+						</p>
+					</label>
+				) : null}
 				<p>Enter the lookback period:</p>
 				<input
 					type='text'
@@ -113,7 +115,7 @@ class IndicatorConfigurationForm extends React.Component {
 					className='lookback-input'
 				/>
 				{this.state.errormessage}
-				<p>
+				<p className='indicator-configuration-submit-container'>
 					<input
 						type='submit'
 						value='Apply'

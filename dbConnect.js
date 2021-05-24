@@ -235,6 +235,7 @@ const insertIntoTableSymbols = async stockUniverses => {
 
 const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) => {
 	try {
+		// console.log(parameters, 'parameters');
 		// 	console.log(data, 'data');
 		// 	console.log(data.reverse(), 'data reversed');
 		// });
@@ -283,6 +284,7 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 					.limit(lookBack);
 			})
 			.select(...parameters)
+			// .select(...[...parameters, 'date_time_s'])
 			// .select('date_time_s', 'closePrice')
 			.from('with_alias');
 		// .then(data => {
