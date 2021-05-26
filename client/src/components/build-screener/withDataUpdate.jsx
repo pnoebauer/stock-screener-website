@@ -360,7 +360,7 @@ function withDataUpdate(WrappedComponent) {
 			this.setState(
 				prevState => {
 					if (rowAdded) {
-						console.log(index, prevState.Symbol.length, 'ra');
+						// console.log(index, prevState.Symbol.length, 'ra');
 						index = prevState.Symbol.length;
 					}
 

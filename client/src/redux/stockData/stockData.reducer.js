@@ -11,7 +11,30 @@ const initialState = {
 const stockDataReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case StockDataTypes.SET_INPUT_FIELD:
-			return {...state};
+			// const {value, headerCol, valueRow} = action.payload;
+			// const headerName = Object.keys(state)[headerCol];
+			// console.log(headerName, 'headerName');
+
+			// return {
+			// 	...state,
+			// 	[headerName]: state[headerName].map((cellValue, index) => {
+			// 		if (index === valueRow) {
+			// 			return value;
+			// 		}
+			// 		return cellValue;
+			// 	}),
+			// };
+			const {value, headerName, valueRow} = action.payload;
+
+			return {
+				...state,
+				[headerName]: state[headerName].map((cellValue, index) => {
+					if (index === valueRow) {
+						return value;
+					}
+					return cellValue;
+				}),
+			};
 		default:
 			return state;
 	}

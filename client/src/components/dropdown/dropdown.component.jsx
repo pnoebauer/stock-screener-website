@@ -1,5 +1,8 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+import {setInputField} from '../../redux/stockData/stockData.actions';
+
 import './dropdown.styles.css';
 
 class Dropdown extends React.Component {
@@ -102,6 +105,17 @@ class Dropdown extends React.Component {
 		});
 
 		onChange(event.target.innerText, headerCol, valueRow);
+
+		// dispatch action !!!!
+		// const fieldInfo = {value: event.target.innerText, headerCol, valueRow};
+		// console.log(fieldInfo);
+
+		const {headerName} = this.props;
+		const fieldInfo = {value: event.target.innerText, headerName, valueRow};
+		// console.log(fieldInfo);
+
+		// this.props.updateInputField(fieldInfo);
+		this.props.updateInputField(fieldInfo);
 
 		if (this.selectionDisplay.current.innerText !== event.target.innerText) {
 			// occurs when we type in, the text is not completed and then click on the same value that was in before
@@ -232,6 +246,8 @@ class Dropdown extends React.Component {
 		const {gridRow, gridColumn, customStyles, className, children} = this.props;
 		const {showList, displayedOptions, activeItem} = this.state;
 
+		console.log(this.props.cellValue, 'redux cellValue');
+
 		// console.log(displayedOptions, 'displayedOptions', showList);
 		// console.log(
 		// 	'activeItem',
@@ -315,4 +331,28 @@ Dropdown.defaultProps = {
 	customStyles: {},
 };
 
-export default Dropdown;
+const mapStateToProps = (state, {headerName, gridRow, className}) => {
+	// console.log(state, headerName, gridRow - 2, className, 'state,ownProps');
+	// const cellValue =
+	// 	(state.stockData[headerName] && state.stockData[headerName][gridRow - 2]) ?? 0;
+
+	const cellValue = className ? 0 : state.stockData[headerName][gridRow - 2];
+
+	return {
+		cellValue,
+	};
+};
+
+// const mapStateToProps = (state, ownProps) => {
+// 	console.log(state, ownProps, 'state,ownProps');
+// 	return {
+// 		cV: 0,
+// 	};
+// };
+
+const mapDispatchToProps = dispatch => ({
+	updateInputField: fieldInfo => dispatch(setInputField(fieldInfo)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dropdown);
+// export default Dropdown;

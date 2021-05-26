@@ -22,6 +22,7 @@ const GenerateGridCell = ({type, gridLocation, onChange, children}) => {
 				gridRow={gridRow}
 				gridColumn={gridColumn}
 				onChange={onChange}
+				headerName={type}
 			>
 				{children}
 			</Dropdown>
