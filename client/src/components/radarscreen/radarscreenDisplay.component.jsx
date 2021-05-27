@@ -20,8 +20,6 @@ class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			// rules: [],
-			// rules: {},
 			rules: [],
 		};
 	}

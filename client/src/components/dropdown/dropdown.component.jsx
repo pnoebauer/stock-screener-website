@@ -1,7 +1,14 @@
 import React from 'react';
 
 import {connect} from 'react-redux';
+
+import {createStructuredSelector} from 'reselect';
+
+// import {selectField} from '../../redux/stockData/stockData.selectors';
 import {setInputField} from '../../redux/stockData/stockData.actions';
+
+import {getField} from '../../redux/stockData/stockData.selectors';
+// import {getColumn} from '../../redux/stockData/stockData.selectors';
 
 import './dropdown.styles.css';
 
@@ -331,24 +338,28 @@ Dropdown.defaultProps = {
 	customStyles: {},
 };
 
-const mapStateToProps = (state, {headerName, gridRow, className}) => {
-	// console.log(state, headerName, gridRow - 2, className, 'state,ownProps');
-	// const cellValue =
-	// 	(state.stockData[headerName] && state.stockData[headerName][gridRow - 2]) ?? 0;
+// const mapStateToProps = (state, {headerName, gridRow, className}) => {
+// 	// console.log(state, headerName, gridRow - 2, className, 'state,ownProps');
+// 	const cellValue =
+// 		(state.stockData[headerName] && state.stockData[headerName][gridRow - 2]) ?? 0;
 
-	const cellValue = className ? 0 : state.stockData[headerName][gridRow - 2];
+// 	// const cellValue = className ? 0 : state.stockData[headerName][gridRow - 2];
 
-	return {
-		cellValue,
-	};
-};
-
-// const mapStateToProps = (state, ownProps) => {
-// 	console.log(state, ownProps, 'state,ownProps');
 // 	return {
-// 		cV: 0,
+// 		cellValue,
 // 	};
 // };
+
+// const mapStateToProps = (state, {headerName, gridRow}) => ({
+// 	cellValue: selectField({headerName, index: gridRow - 2})(state),
+// });
+
+const mapStateToProps = (state, {headerName, gridRow}) => {
+	const index = gridRow - 2;
+	return {
+		cellValue: getField(state, headerName, index),
+	};
+};
 
 const mapDispatchToProps = dispatch => ({
 	updateInputField: fieldInfo => dispatch(setInputField(fieldInfo)),

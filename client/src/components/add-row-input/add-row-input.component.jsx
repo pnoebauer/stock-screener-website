@@ -20,6 +20,7 @@ const AddRowInput = ({rowNumber, onRowAdd, numberSymbols}) => {
 				marginLeft: '-1px',
 			}}
 			className={'add-row'}
+			headerName={'Symbol'}
 		>
 			{/* {SYMBOLS[rowNumber]} */}
 			{SYMBOLS[numberSymbols]}
