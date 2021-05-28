@@ -11,3 +11,18 @@ export const doSetColumns = payload => ({
 	type: StockDataTypes.SET_COLUMNS,
 	payload,
 });
+
+// payload is the row index
+export const doDeleteRow = payload => ({
+	type: StockDataTypes.DELETE_ROW,
+	payload,
+});
+
+export const doDeleteAllRows = () => ({
+	type: StockDataTypes.DELETE_ALL_ROWS,
+});
+
+export const doAddRow = payload => ({
+	type: StockDataTypes.ADD_ROW,
+	payload,
+});

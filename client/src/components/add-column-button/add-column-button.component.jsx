@@ -69,7 +69,7 @@ class AddColumnButton extends React.Component {
 		const {usedIndicatorsDefault} = this.props;
 		// console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
 
-		console.log(this.props.columns, 'redux cols');
+		// console.log(this.props.columns, 'redux cols');
 
 		const apiAndCustomIndicators = [
 			...Object.keys(INDICATORS_TO_API),

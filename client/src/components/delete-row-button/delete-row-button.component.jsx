@@ -1,21 +1,36 @@
 import React from 'react';
 
-import './delete-row-button.styles.css';
+import {connect} from 'react-redux';
 
 import {IoIosRemoveCircleOutline} from 'react-icons/io';
 
-const DeleteRowButton = ({rowIdx, handleRowDelete}) => {
+import {doDeleteRow} from '../../redux/stockData/stockData.actions';
+
+import './delete-row-button.styles.css';
+
+const DeleteRowButton = ({rowIdx, handleRowDelete, removeRow}) => {
+	const deleteRow = event => {
+		removeRow(rowIdx);
+		return handleRowDelete(event);
+	};
+
 	return (
 		<div
 			className='delete-row-button'
 			style={{gridRow: rowIdx + 2, position: 'relative'}}
 			id={rowIdx}
-			onClick={handleRowDelete}
+			onClick={deleteRow}
+			// onClick={removeRow}
+			// onClick={()=>removeRow(rowIdx)}
 		>
 			<IoIosRemoveCircleOutline size='40px' className='delete-row-button-icon' />
 		</div>
-		// <div style={{gridRow: rowIdx + 2, position: 'relative'}}>x</div>
 	);
 };
 
-export default DeleteRowButton;
+const mapDispatchToProps = dispatch => ({
+	removeRow: rowIdx => dispatch(doDeleteRow(rowIdx)),
+	// removeRow: e => dispatch(doDeleteRow(e.currentTarget.id)),
+});
+
+export default connect(null, mapDispatchToProps)(DeleteRowButton);
