@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 
 // import {selectField} from '../../redux/stockData/stockData.selectors';
-import {setInputField} from '../../redux/stockData/stockData.actions';
+import {doSetInputField} from '../../redux/stockData/stockData.actions';
 
 import {getField} from '../../redux/stockData/stockData.selectors';
 // import {getColumn} from '../../redux/stockData/stockData.selectors';
@@ -47,7 +47,15 @@ class Dropdown extends React.Component {
 
 	//if click happens outside the dropdown area close the list
 	handleClickOutside = event => {
-		const {options, onChange, gridColumn, gridRow, children} = this.props;
+		const {
+			updateInputField,
+			headerName,
+			options,
+			onChange,
+			gridColumn,
+			gridRow,
+			children,
+		} = this.props;
 
 		const headerCol = gridColumn - 1;
 		const valueRow = gridRow - 2;
@@ -76,6 +84,12 @@ class Dropdown extends React.Component {
 						// this.setState(prevState => ({key: prevState.key+1}))
 					}
 					document.removeEventListener('mousedown', this.handleClickOutside);
+
+					const fieldInfo = {value: insertValue, headerName, valueRow};
+					// console.log(fieldInfo);
+
+					updateInputField(fieldInfo);
+
 					return onChange(insertValue, headerCol, valueRow);
 				}
 			);
@@ -104,25 +118,23 @@ class Dropdown extends React.Component {
 
 	// set text based on click in displayed list
 	handleOptionClick = (event, headerCol, valueRow) => {
-		const {onChange} = this.props;
+		const {updateInputField, headerName, onChange} = this.props;
 
 		this.setState({
 			showList: false,
 			shownValue: event.target.innerText,
 		});
 
+		const fieldInfo = {value: event.target.innerText, headerName, valueRow};
+		// console.log(fieldInfo);
+
+		updateInputField(fieldInfo);
+
 		onChange(event.target.innerText, headerCol, valueRow);
 
 		// dispatch action !!!!
 		// const fieldInfo = {value: event.target.innerText, headerCol, valueRow};
 		// console.log(fieldInfo);
-
-		const {headerName} = this.props;
-		const fieldInfo = {value: event.target.innerText, headerName, valueRow};
-		// console.log(fieldInfo);
-
-		// this.props.updateInputField(fieldInfo);
-		this.props.updateInputField(fieldInfo);
 
 		if (this.selectionDisplay.current.innerText !== event.target.innerText) {
 			// occurs when we type in, the text is not completed and then click on the same value that was in before
@@ -186,6 +198,7 @@ class Dropdown extends React.Component {
 				event.preventDefault();
 
 				// console.log('enter', this.state);
+				const {headerName, updateInputField} = this.props;
 
 				this.setState(
 					prevState => {
@@ -214,6 +227,11 @@ class Dropdown extends React.Component {
 							this.selectionDisplay.current.innerText = this.state.shownValue;
 							// this.setState(prevState => ({key: prevState.key+1}));
 						}
+
+						const fieldInfo = {value: this.state.shownValue, headerName, valueRow};
+						// console.log(fieldInfo);
+
+						updateInputField(fieldInfo);
 
 						// console.log('dd enter', this.state.shownValue, headerCol, valueRow);
 						return onChange(this.state.shownValue, headerCol, valueRow);
@@ -253,7 +271,7 @@ class Dropdown extends React.Component {
 		const {gridRow, gridColumn, customStyles, className, children} = this.props;
 		const {showList, displayedOptions, activeItem} = this.state;
 
-		console.log(this.props.cellValue, 'redux cellValue');
+		// console.log(this.props.cellValue, 'redux cellValue', gridRow);
 
 		// console.log(displayedOptions, 'displayedOptions', showList);
 		// console.log(
@@ -362,7 +380,7 @@ const mapStateToProps = (state, {headerName, gridRow}) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-	updateInputField: fieldInfo => dispatch(setInputField(fieldInfo)),
+	updateInputField: fieldInfo => dispatch(doSetInputField(fieldInfo)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dropdown);

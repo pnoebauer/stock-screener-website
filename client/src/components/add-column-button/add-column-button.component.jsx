@@ -1,5 +1,9 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
+import {doSetColumns} from '../../redux/stockData/stockData.actions';
+
 import {GrSettingsOption} from 'react-icons/gr';
 
 import Modal from '../modal/modal.component';
@@ -54,12 +58,18 @@ class AddColumnButton extends React.Component {
 				};
 			});
 			this.props.handleColumnUpdate(columnNames);
+
+			const columns = updatedState.usedIndicators.map(item => item.name);
+
+			this.props.updateColumns(columns);
 		}
 	};
 
 	render() {
 		const {usedIndicatorsDefault} = this.props;
 		// console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
+
+		console.log(this.props.columns, 'redux cols');
 
 		const apiAndCustomIndicators = [
 			...Object.keys(INDICATORS_TO_API),
@@ -105,4 +115,12 @@ class AddColumnButton extends React.Component {
 	}
 }
 
-export default AddColumnButton;
+const mapDispatchToProps = dispatch => ({
+	updateColumns: columnNames => dispatch(doSetColumns(columnNames)),
+});
+
+const mapStateToProps = state => ({
+	columns: Object.keys(state.stockData),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddColumnButton);

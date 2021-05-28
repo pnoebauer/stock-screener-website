@@ -194,7 +194,6 @@ class RadarScreen extends React.PureComponent {
 						onChange={onChange}
 						handleRowDelete={handleDeleteRow}
 					/>
-					{/* <AddRowInput rowNumber={Symbol.length} onRowAdd={onRowAdd} /> */}
 					<AddRowInput
 						rowNumber={Symbol.length}
 						onRowAdd={onRowAdd}
