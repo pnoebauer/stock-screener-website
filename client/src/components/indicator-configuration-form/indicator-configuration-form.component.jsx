@@ -1,10 +1,14 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
 import {
 	API_TO_INDICATORS,
 	INDICATORS_TO_API,
 	CUSTOM_INDICATORS,
 } from '../../assets/constants';
+
+import {doSetIndicatorConfiguration} from '../../redux/configuration/configuration.actions';
 
 import './indicator-configuration-form.styles.css';
 
@@ -74,6 +78,10 @@ class IndicatorConfigurationForm extends React.Component {
 			updateCustomIndicators(undefined, indicatorConfig);
 		}
 
+		const indicatorConfiguration = {[indicator]: config};
+
+		this.props.updateIndicatorConfiguration(indicatorConfiguration);
+
 		this.props.closeForm();
 
 		event.preventDefault();
@@ -128,72 +136,9 @@ class IndicatorConfigurationForm extends React.Component {
 	}
 }
 
-export default IndicatorConfigurationForm;
+const mapDispatchToProps = dispatch => ({
+	updateIndicatorConfiguration: indicatorConfig =>
+		dispatch(doSetIndicatorConfiguration(indicatorConfig)),
+});
 
-// import Dropdown from '../dropdown/dropdown.component';
-
-// class IndicatorConfigurationForm extends React.Component {
-// 	constructor(props) {
-// 		super(props);
-// 		this.state = {
-// 			username: '',
-// 			age: null,
-// 			errormessage: '',
-// 		};
-// 	}
-// 	myChangeHandler = event => {
-// 		let nam = event.target.name;
-// 		let val = event.target.value;
-// 		let err = '';
-// 		if (nam === 'age') {
-// 			if (val != '' && !Number(val)) {
-// 				err = <strong>Your age must be a number</strong>;
-// 			}
-// 		}
-// 		this.setState({errormessage: err});
-// 		this.setState({[nam]: val});
-// 	};
-
-// 	handleSubmit = event => {
-// 		console.log('submit', this.state);
-// 		event.preventDefault();
-// 	};
-
-// 	render() {
-// 		return (
-// 			<form onSubmit={this.handleSubmit}>
-// 				<div>
-// 					<Dropdown
-// 						options={['Open', 'High', 'Low', 'Close']}
-// 						// gridRow={Symbol.length + 2}
-// 						// gridColumn={1}
-// 						// key={colIdx.toString()+rowIdx.toString()}
-// 						// onChange={this.onRowAdd}
-// 						customStyles={{
-// 							height: '30px',
-// 							width: '150px',
-// 							borderBottom: '1px solid black',
-// 							borderLeft: '1px solid black',
-// 							// marginLeft: '-1px',
-// 						}}
-// 						// className={'add-row'}
-// 						contentEditable={false}
-// 					>
-// 						Close
-// 					</Dropdown>
-// 				</div>
-
-// 				<h1>
-// 					Hello {this.state.username} {this.state.age}
-// 				</h1>
-// 				<p>Enter your name:</p>
-// 				<input type='text' name='username' onChange={this.myChangeHandler} />
-// 				<p>Enter your age:</p>
-// 				<input type='text' name='age' onChange={this.myChangeHandler} />
-// 				{this.state.errormessage}
-
-// 				<input type='submit' value='Submit' />
-// 			</form>
-// 		);
-// 	}
-// }
+export default connect(null, mapDispatchToProps)(IndicatorConfigurationForm);

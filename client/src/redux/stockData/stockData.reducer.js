@@ -50,7 +50,6 @@ const applyDeleteRow = (state, action) => {
 
 const applyAddRow = (state, action) => {
 	const {value, headerName, valueRow} = action.payload;
-	// console.log(state, action, 'sac');
 
 	const nextState = {};
 
