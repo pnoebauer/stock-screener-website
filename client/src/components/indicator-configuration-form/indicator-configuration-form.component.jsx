@@ -10,6 +10,8 @@ import {
 
 import {doSetIndicatorConfiguration} from '../../redux/configuration/configuration.actions';
 
+import {getIndicatorConfiguration} from '../../redux/configuration/configuration.selectors';
+
 import './indicator-configuration-form.styles.css';
 
 class IndicatorConfigurationForm extends React.Component {
@@ -89,6 +91,7 @@ class IndicatorConfigurationForm extends React.Component {
 
 	render() {
 		// console.log(this.state, 's');
+		console.log(this.props.configuration, 'redux config', this.props.indicator);
 
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>
@@ -136,9 +139,13 @@ class IndicatorConfigurationForm extends React.Component {
 	}
 }
 
+const mapStateToProps = (state, {indicator}) => ({
+	configuration: getIndicatorConfiguration(state, indicator),
+});
+
 const mapDispatchToProps = dispatch => ({
 	updateIndicatorConfiguration: indicatorConfig =>
 		dispatch(doSetIndicatorConfiguration(indicatorConfig)),
 });
 
-export default connect(null, mapDispatchToProps)(IndicatorConfigurationForm);
+export default connect(mapStateToProps, mapDispatchToProps)(IndicatorConfigurationForm);
