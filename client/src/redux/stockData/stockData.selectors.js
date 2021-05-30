@@ -23,5 +23,6 @@ export const getColumn = createCachedSelector(
 export const getField = createCachedSelector(
 	getColumn,
 	(state, headerName, index) => index,
-	(columnData, index) => columnData[index] ?? 0
-)((state, headerName, index) => `${headerName}:${index}`);
+	(columnData, index) =>
+		console.log(columnData, index, 'run getField') || (columnData[index] ?? 0)
+)({keySelector: (state, headerName, index) => `${headerName}:${index}`});
