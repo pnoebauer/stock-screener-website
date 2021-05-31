@@ -1,6 +1,6 @@
-import React from 'react';
+// import React from 'react';
 
-import GridRow from './grid-row.component';
+// import GridRow from './grid-row.component';
 
 // const GenerateGrid = ({onChange, handleRowDelete, header, ...props}) => {
 // 	const {Symbol} = props;
@@ -28,32 +28,34 @@ import GridRow from './grid-row.component';
 // 		</>
 // 	);
 // };
-
+//
 // export default GenerateGrid;
 
+import React from 'react';
+
+import GridRow from './grid-row.component';
 import {connect} from 'react-redux';
 
 import {getSortingMap} from '../../redux/sorting/sorting.selectors';
 
-const GenerateGrid = ({onChange, handleRowDelete, header, ...props}) => {
-	const {Symbol} = props;
-	const itemNum = Symbol.length;
-	// console.log('map', header, Symbol, props);
+const GenerateGrid = ({onChange, handleRowDelete, header, sortingMap, ...props}) => {
+	// console.log('sortingMap', sortingMap);
 	return (
 		<>
 			{
-				//loop through rows
-				[...Array(itemNum)].map((val, rowIdx) => {
-					const rowValues = header.map(type => props[type][rowIdx] || '...');
+				// //loop through rows
+				// Object.keys(sortingMap).map((val, rowIdx) => {
+				// 	const stockDataIdx = sortingMap[rowIdx];
 
+				sortingMap.map((stockDataIdx, rowIdx) => {
 					return (
 						<GridRow
-							rowValues={rowValues}
+							stockDataIdx={stockDataIdx}
 							rowIdx={rowIdx}
 							header={header}
 							onChange={onChange}
 							handleRowDelete={handleRowDelete}
-							key={props.ID[rowIdx]}
+							key={stockDataIdx}
 						/>
 					);
 				})

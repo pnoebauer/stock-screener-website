@@ -29,8 +29,14 @@ export const getColumn = createCachedSelector(
 export const getRowValues = createCachedSelector(
 	getStockData,
 	(state, rowIdx) => rowIdx,
-	(stockData, rowIdx) =>
-		Object.keys(stockData).map(columnName => stockData[columnName][rowIdx] ?? '...')
+	(stockData, rowIdx) => {
+		const rowVal = Object.keys(stockData).flatMap(columnName =>
+			columnName !== 'ID' ? [stockData[columnName][rowIdx] ?? '...'] : []
+		);
+
+		// console.log(rowVal, 'rowVal');
+		return rowVal;
+	}
 )((state, rowIdx) => rowIdx);
 
 // createDeepEqualSelector --> selector won't recalculate if the exact same value is selected in the dropdown as before
