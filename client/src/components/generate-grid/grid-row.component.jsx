@@ -1,10 +1,22 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
 import GenerateGridCell from '../generate-grid-cell/generate-grid-cell.component';
 import DeleteRowButton from '../delete-row-button/delete-row-button.component';
 
-const GridRow = ({rowValues, rowIdx, header, onChange, handleRowDelete}) => {
-	// console.log(rowValues, rowIdx)
+import {getRowValues} from '../../redux/stockData/stockData.selectors';
+
+const GridRow = ({
+	rowValues,
+	rowIdx,
+	header,
+	onChange,
+	handleRowDelete,
+	rowValueArray,
+}) => {
+	// console.log(rowValues, rowIdx, this.props.rowValueArray, 'red');
+	// console.log(rowValueArray, 'grid row values redux');
 	return (
 		<>
 			{rowValues.map((value, colIdx) => {
@@ -26,4 +38,10 @@ const GridRow = ({rowValues, rowIdx, header, onChange, handleRowDelete}) => {
 	);
 };
 
-export default GridRow;
+const mapStateToProps = (state, {rowIdx}) => {
+	return {
+		rowValueArray: getRowValues(state, rowIdx),
+	};
+};
+
+export default connect(mapStateToProps)(GridRow);

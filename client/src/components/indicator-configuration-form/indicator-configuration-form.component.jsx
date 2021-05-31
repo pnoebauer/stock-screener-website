@@ -91,7 +91,7 @@ class IndicatorConfigurationForm extends React.Component {
 
 	render() {
 		// console.log(this.state, 's');
-		console.log(this.props.configuration, 'redux config', this.props.indicator);
+		// console.log(this.props.configuration, 'redux config', this.props.indicator);
 
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>

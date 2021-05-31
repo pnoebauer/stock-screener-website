@@ -6,8 +6,8 @@ import sortingReducer from './sorting/sorting.reducer';
 
 const rootReducer = combineReducers({
 	stockData: stockDataReducer,
-	configuration: configurationReducer,
-	sorting: sortingReducer,
+	indicatorConfiguration: configurationReducer,
+	sortingConfiguration: sortingReducer,
 });
 
 export default rootReducer;

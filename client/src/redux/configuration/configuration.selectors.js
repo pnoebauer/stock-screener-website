@@ -1,6 +1,6 @@
 // import {createCachedSelector} from 're-reselect';
 
-// const getConfiguration = state => state.configuration;
+// const getConfiguration = state => state.indicatorConfiguration;
 
 // export const getIndicatorConfiguration = createCachedSelector(
 // 	getConfiguration,
@@ -16,13 +16,14 @@ import isEqual from 'lodash.isequal';
 // create a "selector creator" that uses lodash.isequal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
-const getConfiguration = state => state.configuration;
+const getConfiguration = state => state.indicatorConfiguration;
 
 export const getIndicatorConfiguration = createCachedSelector(
 	getConfiguration,
 	(_, indicator) => indicator,
 	(configuration, indicator) =>
-		console.log(configuration, indicator, 'run') || configuration[indicator]
+		// console.log(configuration, indicator, 'run') ||
+		configuration[indicator]
 )({
 	keySelector: (_, indicator) => indicator,
 	selectorCreator: createDeepEqualSelector,
