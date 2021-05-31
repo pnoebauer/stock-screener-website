@@ -1,0 +1,3 @@
+export const SortingTypes = {
+	SET_SORTING_CONFIGURATION: 'SET_SORTING_CONFIGURATION',
+};

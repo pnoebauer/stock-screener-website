@@ -1,5 +1,9 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
+import {doSetSortingConfiguration} from '../../redux/sorting/sorting.actions';
+
 import Modal from '../modal/modal.component';
 
 import IndicatorConfigurationForm from '../indicator-configuration-form/indicator-configuration-form.component';
@@ -24,6 +28,11 @@ class ScreenHeaderItem extends React.Component {
 
 	hide = () => this.setState({visible: false});
 
+	sorting = e => {
+		this.props.setSorting(this.props.headerName);
+		return this.props.onSort(e);
+	};
+
 	render() {
 		const {
 			gridColumn,
@@ -38,7 +47,8 @@ class ScreenHeaderItem extends React.Component {
 		return (
 			<div
 				style={{gridColumn}}
-				onClick={onSort}
+				// onClick={onSort}
+				onClick={this.sorting}
 				id={id}
 				className={className}
 				name='screen-header'
@@ -99,4 +109,8 @@ class ScreenHeaderItem extends React.Component {
 	}
 }
 
-export default ScreenHeaderItem;
+const mapDispatchToProps = dispatch => ({
+	setSorting: headerName => dispatch(doSetSortingConfiguration(headerName)),
+});
+
+export default connect(null, mapDispatchToProps)(ScreenHeaderItem);
