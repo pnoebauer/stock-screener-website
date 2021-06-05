@@ -1,4 +1,4 @@
-import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
+import {INDICATORS_TO_API, CUSTOM_INDICATORS, SYMBOLS} from '../../assets/constants';
 
 import {createSelector} from 'reselect';
 
@@ -58,9 +58,14 @@ export const getRowValues = createCachedSelector(
 export const getField = createCachedSelector(
 	getColumn,
 	(state, headerName, index) => index,
-	(columnData, index) =>
-		// console.log(columnData, index, 'run getField') ||
-		columnData[index] ?? 0
+	(columnData, index) => {
+		// add row input has no data in the main stockData state object
+		// use the stock symbol with that row index as a default value
+		if (index >= columnData.length) {
+			return SYMBOLS[index];
+		}
+		return columnData[index] ?? 0;
+	}
 )({
 	keySelector: (state, headerName, index) => `${headerName}:${index}`,
 	selectorCreator: createDeepEqualSelector,

@@ -374,6 +374,12 @@ Dropdown.defaultProps = {
 
 const mapStateToProps = (state, {headerName, gridRow}) => {
 	const index = gridRow - 2;
+	console.log(
+		headerName,
+		gridRow,
+		'headerName, gridRow',
+		getField(state, headerName, index)
+	);
 	return {
 		cellValue: getField(state, headerName, index),
 	};
