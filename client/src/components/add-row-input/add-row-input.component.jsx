@@ -23,9 +23,9 @@ const AddRowInput = ({rowNumber, onRowAdd, numberSymbols}) => {
 			customStyles={customStyles}
 			className={'add-row'}
 			headerName={'Symbol'}
-		>
-			{SYMBOLS[numberSymbols]}
-		</Dropdown>
+		/>
+		// 	{SYMBOLS[numberSymbols]}
+		// </Dropdown>
 	);
 };
 

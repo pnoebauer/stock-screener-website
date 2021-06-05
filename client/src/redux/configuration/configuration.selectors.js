@@ -20,11 +20,11 @@ const getConfiguration = state => state.indicatorConfiguration;
 
 export const getIndicatorConfiguration = createCachedSelector(
 	getConfiguration,
-	(_, indicator) => indicator,
+	(state, indicator) => indicator,
 	(configuration, indicator) =>
 		// console.log(configuration, indicator, 'run') ||
 		configuration[indicator]
 )({
-	keySelector: (_, indicator) => indicator,
+	keySelector: (state, indicator) => indicator,
 	selectorCreator: createDeepEqualSelector,
 });

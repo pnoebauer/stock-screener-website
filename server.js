@@ -402,7 +402,7 @@ app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
 	// console.log(req.body, symbol);
 	const queryObject = req.body;
-	// console.log(queryObject, new Date().getSeconds(), 'qo');
+	console.log(queryObject, new Date().getSeconds(), 'qo');
 
 	retrieveSymbolWithIndicators(queryObject).then(data => {
 		// console.log(queryObject, data);

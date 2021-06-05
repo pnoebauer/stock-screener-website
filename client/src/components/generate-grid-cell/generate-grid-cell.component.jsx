@@ -23,9 +23,9 @@ const GenerateGridCell = ({type, gridLocation, onChange, children}) => {
 				gridColumn={gridColumn}
 				onChange={onChange}
 				headerName={type}
-			>
-				{children}
-			</Dropdown>
+			/>
+			// 	{children}
+			// </Dropdown>
 		);
 	} else {
 		return (

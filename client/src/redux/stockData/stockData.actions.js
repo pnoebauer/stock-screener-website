@@ -26,3 +26,8 @@ export const doAddRow = payload => ({
 	type: StockDataTypes.ADD_ROW,
 	payload,
 });
+
+export const doSetRow = payload => ({
+	type: StockDataTypes.SET_ROW,
+	payload,
+});

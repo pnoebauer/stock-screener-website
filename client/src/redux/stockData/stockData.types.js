@@ -4,4 +4,5 @@ export const StockDataTypes = {
 	DELETE_ROW: 'DELETE_ROW',
 	DELETE_ALL_ROWS: 'DELETE_ALL_ROWS',
 	ADD_ROW: 'ADD_ROW',
+	SET_ROW: 'SET_ROW',
 };

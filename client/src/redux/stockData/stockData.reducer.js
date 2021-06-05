@@ -18,12 +18,32 @@ const stockDataReducer = (state = initialState, action) => {
 			return applyDeleteRow(state, action);
 		case StockDataTypes.DELETE_ALL_ROWS:
 			return applyDeleteAllRows(state, action);
+		case StockDataTypes.SET_ROW:
+			return applySetRow(state, action);
 		// case StockDataTypes.ADD_ROW:
 		// 	return applyAddRow(state, action);
 
 		default:
 			return state;
 	}
+};
+
+const applySetRow = (state, action) => {
+	const nextState = {...state};
+
+	const {data, rowIndex} = action.payload;
+
+	console.log(data, rowIndex, 'data,rowIndex', state);
+
+	for (const column in data) {
+		nextState[column.toUpperCase()] = nextState[column.toUpperCase()].map(
+			(value, index) => (index === rowIndex ? data[column] : value)
+		);
+	}
+
+	console.log(nextState, 'nextState');
+
+	return nextState;
 };
 
 const applyDeleteAllRows = (state, action) => {
@@ -101,9 +121,12 @@ const applySetColumns = (state, action) => {
 	const nextState = {};
 
 	// loop through fixed (symbol, interval, etc) and set columns
-	// if it exists in current state use, else set it to an empty array (will be updated by another action)
-	[...updatedColumnNames, ...Object.keys(initialState)].forEach(columnName => {
-		nextState[columnName] = state[columnName] ? [...state[columnName]] : [];
+	// if it exists in current state use it, else set it to an empty array (will be updated by another action)
+	[...Object.keys(initialState), ...updatedColumnNames].forEach(columnName => {
+		// nextState[columnName] = state[columnName] ? [...state[columnName]] : [];
+		nextState[columnName] = state[columnName]
+			? [...state[columnName]]
+			: Array(state.Symbol.length).fill(0);
 	});
 
 	return nextState;

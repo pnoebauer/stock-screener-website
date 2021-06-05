@@ -5,7 +5,10 @@ import {createSelector} from 'reselect';
 import {createCachedSelector} from 're-reselect';
 
 import {createSelectorCreator, defaultMemoize} from 'reselect';
+
 import isEqual from 'lodash.isequal';
+
+import {getIndicatorConfiguration} from '../configuration/configuration.selectors';
 
 const availableIndicators = [
 	...Object.keys(INDICATORS_TO_API),
@@ -19,6 +22,10 @@ const getStockData = state => state.stockData;
 
 export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
 	Object.keys(stockData)
+);
+
+export const getCustomIndicators = createDeepEqualSelector(getColumnNames, columnNames =>
+	columnNames.filter(columnName => Object.keys(CUSTOM_INDICATORS).includes(columnName))
 );
 
 export const getUsedIndicators = createDeepEqualSelector(
@@ -49,10 +56,43 @@ export const getRowValues = createCachedSelector(
 			columnName !== 'ID' ? [stockData[columnName][rowIdx] ?? '...'] : []
 		);
 
-		// console.log(rowVal, 'rowVal');
+		// console.log(rowVal, 'rowVal', Object.keys(stockData));
 		return rowVal;
 	}
 )((state, rowIdx) => rowIdx);
+
+// export const getRowSetValues = createCachedSelector(getRowValues, rowValues =>
+// 	rowValues.slice(0, 2)
+// )((state, rowIdx) => rowIdx);
+
+export const getCustomIndicatorReqObj = createCachedSelector(
+	getStockData,
+	(state, rowIdx) => rowIdx,
+	(state, rowIdx) => {
+		const customIndicators = getCustomIndicators(state);
+		let indicators = {};
+		customIndicators.forEach(indicator => {
+			const config = getIndicatorConfiguration(state, indicator);
+			indicators[indicator.toLowerCase()] = config;
+		});
+
+		return indicators;
+	},
+	(stockData, rowIdx, indicators) => {
+		const symbol = stockData.Symbol[rowIdx];
+		const interval = stockData.Interval[rowIdx];
+
+		const requestObj = {
+			symbol,
+			interval,
+			indicators,
+		};
+		return requestObj;
+	}
+)({
+	keySelector: (state, rowIdx) => rowIdx,
+	selectorCreator: createDeepEqualSelector,
+});
 
 // createDeepEqualSelector --> selector won't recalculate if the exact same value is selected in the dropdown as before
 export const getField = createCachedSelector(

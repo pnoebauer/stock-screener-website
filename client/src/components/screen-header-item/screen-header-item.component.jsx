@@ -44,6 +44,8 @@ class ScreenHeaderItem extends React.Component {
 			headerName,
 		} = this.props;
 
+		console.log(id, CUSTOM_INDICATORS[id], 'id');
+
 		return (
 			<div
 				style={{gridColumn}}
