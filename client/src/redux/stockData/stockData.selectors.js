@@ -21,8 +21,12 @@ const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 const getStockData = state => state.stockData;
 export const getStockNumber = state => state.stockData.Symbol.length;
 
+// export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
+// 	Object.keys(stockData)
+// );
+
 export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
-	Object.keys(stockData)
+	Object.keys(stockData).filter(keyName => keyName !== 'ID')
 );
 
 export const getCustomIndicators = createDeepEqualSelector(getColumnNames, columnNames =>

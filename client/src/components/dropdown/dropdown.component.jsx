@@ -15,6 +15,7 @@ import './dropdown.styles.css';
 class Dropdown extends React.Component {
 	constructor(props) {
 		const {cellValue} = props;
+		const {children} = props;
 		super(props);
 		this.container = React.createRef();
 		this.selectionDisplay = React.createRef();
@@ -33,14 +34,16 @@ class Dropdown extends React.Component {
 		// 	return item.toLowerCase().indexOf(currentInput.toLowerCase()) === 0; //filter all with the same start
 		// });
 
-		const activeItem = this.props.options.indexOf(cellValue);
+		// const activeItem = this.props.options.indexOf(cellValue);
+		const activeItem = this.props.options.indexOf(children);
 		// const displayedOptions = this.props.options.slice(activeItem, activeItem + 5);
 		const displayedOptions = this.props.options;
 
 		this.state = {
 			showList: false,
 			displayedOptions,
-			shownValue: cellValue,
+			// shownValue: cellValue,
+			shownValue: children,
 			activeItem,
 		};
 	}
@@ -51,10 +54,11 @@ class Dropdown extends React.Component {
 			updateInputField,
 			headerName,
 			options,
-			onChange,
+			// onChange,
 			gridColumn,
 			gridRow,
 			cellValue,
+			children,
 		} = this.props;
 
 		const headerCol = gridColumn - 1;
@@ -70,7 +74,8 @@ class Dropdown extends React.Component {
 					// if it does not exist replace it with the value that was in the cell before typing in
 					insertValue = options.includes(prevState.shownValue)
 						? prevState.shownValue
-						: cellValue;
+						: // : cellValue;
+						  children;
 
 					return {
 						showList: false,
@@ -90,7 +95,7 @@ class Dropdown extends React.Component {
 
 					updateInputField(fieldInfo);
 
-					return onChange(insertValue, headerCol, valueRow);
+					// return onChange(insertValue, headerCol, valueRow);
 				}
 			);
 		}
@@ -98,7 +103,7 @@ class Dropdown extends React.Component {
 
 	//handle the displaying of the list (if currently shown, then hide and vice versa)
 	handleDisplay = (clickEvent, headerCol, valueRow) => {
-		const {options, cellValue} = this.props;
+		const {options, cellValue, children} = this.props;
 		const {shownValue} = this.state;
 		// comment if statement to allow closing the list even if value does not exist in options list
 		if (options.includes(shownValue)) {
@@ -110,7 +115,8 @@ class Dropdown extends React.Component {
 				}
 				return {
 					showList: !prevState.showList,
-					activeItem: Math.max(prevState.displayedOptions.indexOf(cellValue), 0),
+					// activeItem: Math.max(prevState.displayedOptions.indexOf(cellValue), 0),
+					activeItem: Math.max(prevState.displayedOptions.indexOf(children), 0),
 				};
 			});
 		}
@@ -118,7 +124,8 @@ class Dropdown extends React.Component {
 
 	// set text based on click in displayed list
 	handleOptionClick = (event, headerCol, valueRow) => {
-		const {updateInputField, headerName, onChange} = this.props;
+		const {updateInputField, headerName} = this.props;
+		// const {onChange} = this.props;
 
 		this.setState({
 			showList: false,
@@ -130,7 +137,7 @@ class Dropdown extends React.Component {
 
 		updateInputField(fieldInfo);
 
-		onChange(event.target.innerText, headerCol, valueRow);
+		// onChange(event.target.innerText, headerCol, valueRow);
 
 		// dispatch action !!!!
 		// const fieldInfo = {value: event.target.innerText, headerCol, valueRow};
@@ -169,7 +176,7 @@ class Dropdown extends React.Component {
 
 	onKeyDown = (event, headerCol, valueRow) => {
 		// console.log('kd');
-		const {onChange} = this.props;
+		// const {onChange} = this.props;
 		const {activeItem, displayedOptions} = this.state;
 
 		switch (event.keyCode) {
@@ -234,7 +241,7 @@ class Dropdown extends React.Component {
 						updateInputField(fieldInfo);
 
 						// console.log('dd enter', this.state.shownValue, headerCol, valueRow);
-						return onChange(this.state.shownValue, headerCol, valueRow);
+						// return onChange(this.state.shownValue, headerCol, valueRow);
 					}
 				);
 
@@ -252,13 +259,16 @@ class Dropdown extends React.Component {
 	componentDidUpdate(prevProps) {
 		// if (this.props.className === 'add-row')
 		// 	console.log('updated child', this.props.cellValue, prevProps.cellValue);
-		if (prevProps.cellValue !== this.props.cellValue) {
-			const activeItem = this.props.options.indexOf(this.props.cellValue);
+		// if (prevProps.cellValue !== this.props.cellValue) {
+		if (prevProps.children !== this.props.children) {
+			// const activeItem = this.props.options.indexOf(this.props.cellValue);
+			const activeItem = this.props.options.indexOf(this.props.children);
 			// const displayedOptions = this.props.options.slice(activeItem, activeItem + 5);
 
 			this.setState(
 				// {activeItem, displayedOptions, shownValue: this.props.cellValue},
-				{activeItem, shownValue: this.props.cellValue}
+				// {activeItem, shownValue: this.props.cellValue}
+				{activeItem, shownValue: this.props.children}
 				// () => {
 				// 	if (this.props.className === 'add-row')
 				// 		console.log(this.state, 'upated dd state');
@@ -268,7 +278,8 @@ class Dropdown extends React.Component {
 	}
 
 	render() {
-		const {gridRow, gridColumn, customStyles, className, cellValue} = this.props;
+		const {gridRow, gridColumn, customStyles, className, cellValue, children} =
+			this.props;
 		const {showList, displayedOptions, activeItem} = this.state;
 
 		// console.log(this.props.cellValue, 'redux cellValue', gridRow);
@@ -314,7 +325,8 @@ class Dropdown extends React.Component {
 					ref={this.selectionDisplay}
 					// key={key}
 				>
-					{cellValue}
+					{/* {cellValue} */}
+					{children}
 				</div>
 
 				{showList && (

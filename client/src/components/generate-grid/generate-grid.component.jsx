@@ -50,7 +50,7 @@ const GenerateGrid = ({onChange, handleRowDelete, header, sortingMap, ...props})
 							stockDataIdx={stockDataIdx}
 							rowIdx={rowIdx}
 							header={header}
-							onChange={onChange}
+							// onChange={onChange}
 							handleRowDelete={handleRowDelete}
 							key={stockDataIdx}
 						/>

@@ -33,7 +33,7 @@ const applySetRow = (state, action) => {
 
 	const {data, rowIndex} = action.payload;
 
-	console.log(data, rowIndex, 'data,rowIndex', state);
+	// console.log(data, rowIndex, 'data,rowIndex', state);
 
 	for (const column in data) {
 		nextState[column.toUpperCase()] = nextState[column.toUpperCase()].map(
@@ -41,7 +41,7 @@ const applySetRow = (state, action) => {
 		);
 	}
 
-	console.log(nextState, 'nextState');
+	// console.log(nextState, 'nextState');
 
 	return nextState;
 };

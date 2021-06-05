@@ -26,11 +26,13 @@ export function* fetchCustomIndicators(requestObj, rowIndex) {
 		});
 
 		const data = yield response.json();
-		console.log(data, 'data');
+		// console.log(data, 'data');
 
 		const payload = {data, rowIndex};
-
+		// console.log('saga row set');
 		yield put(doSetRow(payload));
+
+		// check that sorting selector works correctly once the data has been updated
 
 		// yield put(fetchSuccess()); //put saga's equivalent to dispatch
 	} catch (error) {
@@ -42,7 +44,13 @@ export function* updateRow({payload}) {
 	const {valueRow} = payload;
 
 	const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
-	console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
+
+	// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
+
+	if (!Object.keys(customIndicatorReqObj.indicators).length) {
+		// console.log('empty');
+		return;
+	}
 
 	yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
 
@@ -57,7 +65,7 @@ export function* updateAllIndicatorRows({payload}) {
 
 	for (let valueRow = 0; valueRow < numberStocks; valueRow++) {
 		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
-		console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
+		// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
 
 		yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
 	}

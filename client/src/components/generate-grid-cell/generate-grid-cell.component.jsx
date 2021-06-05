@@ -21,11 +21,11 @@ const GenerateGridCell = ({type, gridLocation, onChange, children}) => {
 				options={dropdownOptions[type]}
 				gridRow={gridRow}
 				gridColumn={gridColumn}
-				onChange={onChange}
+				// onChange={onChange}
 				headerName={type}
-			/>
-			// 	{children}
-			// </Dropdown>
+			>
+				{children}
+			</Dropdown>
 		);
 	} else {
 		return (

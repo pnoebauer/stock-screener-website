@@ -30,13 +30,13 @@ class ScreenHeaderItem extends React.Component {
 
 	sorting = e => {
 		this.props.setSorting(this.props.headerName);
-		return this.props.onSort(e);
+		// return this.props.onSort(e);
 	};
 
 	render() {
 		const {
 			gridColumn,
-			onSort,
+			// onSort,
 			id,
 			className,
 			updateCustomIndicators,
@@ -44,7 +44,7 @@ class ScreenHeaderItem extends React.Component {
 			headerName,
 		} = this.props;
 
-		console.log(id, CUSTOM_INDICATORS[id], 'id');
+		// console.log(id, CUSTOM_INDICATORS[id], 'id');
 
 		return (
 			<div

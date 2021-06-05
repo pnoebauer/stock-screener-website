@@ -6,7 +6,7 @@ import isEqual from 'lodash.isequal';
 // create a "selector creator" that uses lodash.isequal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
-const getSortingConfiguration = state => state.sortingConfiguration;
+export const getSortingConfiguration = state => state.sortingConfiguration;
 const getStockData = state => state.stockData;
 
 export const getSortingMap = createCachedSelector(

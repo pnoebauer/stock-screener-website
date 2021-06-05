@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
 import ScreenHeader from '../screen-header/screen-header.component';
 import GenerateGrid from '../generate-grid/generate-grid.component';
 import AddColumnButton from '../add-column-button/add-column-button.component';
@@ -7,6 +9,8 @@ import AddRowInput from '../add-row-input/add-row-input.component';
 import AddStockUniverseButton from '../add-stock-universe-button/add-stock-universe-button.component';
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
+
+import {getStockNumber} from '../../redux/stockData/stockData.selectors';
 
 // import {UNIVERSES} from '../../assets/constants';
 
@@ -119,7 +123,7 @@ class RadarScreen extends React.PureComponent {
 			updateCustomIndicators,
 			handleSetAllIntervals,
 			handleColumnUpdate,
-			onChange,
+			// onChange,
 			handleDeleteRow,
 			onRowAdd,
 			handleUniverseAdd,
@@ -141,19 +145,27 @@ class RadarScreen extends React.PureComponent {
 
 		const {Symbol} = filteredData;
 
+		const {stockNumber} = this.props;
+
 		return (
 			<div className='radarscreen' style={{display: 'flex'}}>
 				<div
 					id='indexation-grid'
 					style={{
 						gridTemplateColumns: `1fr`,
-						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
+						// gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
+						gridTemplateRows: `repeat(${stockNumber + 1}, 1fr) 0`,
 					}}
 				>
 					<div className='indexation' style={{position: 'sticky', top: '-1px'}}>
 						#
 					</div>
-					{Symbol.map((s, index) => (
+					{/* {Symbol.map((s, index) => (
+						<div className='indexation' key={index}>
+							{index + 1}
+						</div>
+					))} */}
+					{[...Array(stockNumber)].map((s, index) => (
 						<div className='indexation' key={index}>
 							{index + 1}
 						</div>
@@ -171,13 +183,14 @@ class RadarScreen extends React.PureComponent {
 					id='grid-container'
 					style={{
 						gridTemplateColumns: `20px repeat(${headers.length}, 1fr)  0`,
-						gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0 `,
+						// gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0 `,
+						gridTemplateRows: `repeat(${stockNumber + 1}, 1fr) 0 `,
 					}}
 				>
 					<ScreenHeader
-						headers={headers}
-						handleTableSorting={handleTableSorting}
-						sortConfig={sortConfig}
+						// headers={headers}
+						// handleTableSorting={handleTableSorting}
+						// sortConfig={sortConfig}
 						updateCustomIndicators={updateCustomIndicators}
 						setAllIntervals={handleSetAllIntervals}
 					/>
@@ -191,17 +204,18 @@ class RadarScreen extends React.PureComponent {
 					<GenerateGrid
 						{...filteredData}
 						header={headers}
-						onChange={onChange}
+						// onChange={onChange}
 						handleRowDelete={handleDeleteRow}
 					/>
 					<AddRowInput
-						rowNumber={Symbol.length}
+						// rowNumber={Symbol.length}
 						onRowAdd={onRowAdd}
 						numberSymbols={dataObject.Symbol.length}
 					/>
 					<DeleteAllRows
 						handleDeleteAllRows={handleDeleteAllRows}
-						gridRow={Symbol.length + 2}
+						// gridRow={Symbol.length + 2}
+						gridRow={stockNumber + 2}
 					/>
 				</div>
 				<div
@@ -238,4 +252,8 @@ class RadarScreen extends React.PureComponent {
 	}
 }
 
-export default RadarScreen;
+const mapStateToProps = state => ({
+	stockNumber: getStockNumber(state),
+});
+
+export default connect(mapStateToProps)(RadarScreen);
