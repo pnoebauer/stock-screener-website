@@ -12,7 +12,12 @@ import IndicatorSelector from '../indicator-selector/indicator-selector.componen
 
 import Tooltip from '../tooltip/tooltip.component';
 
-import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
+// import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
+
+import {
+	getUsedIndicators,
+	getUnusedIndicators,
+} from '../../redux/stockData/stockData.selectors';
 
 import './add-column-button.styles.css';
 
@@ -46,11 +51,11 @@ class AddColumnButton extends React.Component {
 			const columnNames = updatedState.usedIndicators.map(item => {
 				let config;
 
-				// !!!REQUIRES UPDATING - FOR NOW JUST SET TO THE DEFAULT CONFIGURATION
-				// !!!LATER ADD OPTION TO CHANGE THE SETTINGS WHEN ADDING THE COLUMN
-				if (Object.keys(CUSTOM_INDICATORS).includes(item.name)) {
-					config = CUSTOM_INDICATORS[item.name]; //!!!THIS LINE NEEDS TO BE REPLACED ONCE SETTINGS ARE ADDED
-				}
+				// // !!!REQUIRES UPDATING - FOR NOW JUST SET TO THE DEFAULT CONFIGURATION
+				// // !!!LATER ADD OPTION TO CHANGE THE SETTINGS WHEN ADDING THE COLUMN
+				// if (Object.keys(CUSTOM_INDICATORS).includes(item.name)) {
+				// 	config = CUSTOM_INDICATORS[item.name]; //!!!THIS LINE NEEDS TO BE REPLACED ONCE SETTINGS ARE ADDED
+				// }
 
 				return {
 					name: item.name,
@@ -60,25 +65,32 @@ class AddColumnButton extends React.Component {
 			this.props.handleColumnUpdate(columnNames);
 
 			const columns = updatedState.usedIndicators.map(item => item.name);
-
 			this.props.updateColumns(columns);
 		}
 	};
 
 	render() {
-		const {usedIndicatorsDefault} = this.props;
-		// console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
+		const {usedIndicatorsDefault, usedIndicators, unUsedIndicators} = this.props;
+		// // console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
 
-		// console.log(this.props.columns, 'redux cols');
+		// console.log(usedIndicatorsDefault, usedIndicators, 'redux usedIndicators');
 
-		const apiAndCustomIndicators = [
-			...Object.keys(INDICATORS_TO_API),
-			...Object.keys(CUSTOM_INDICATORS),
-		];
+		// const apiAndCustomIndicators = [
+		// 	...Object.keys(INDICATORS_TO_API),
+		// 	...Object.keys(CUSTOM_INDICATORS),
+		// ];
 
-		const availableIndicatorsDefault = apiAndCustomIndicators.filter(
-			value => !usedIndicatorsDefault.includes(value)
-		);
+		// const availableIndicatorsDefault = apiAndCustomIndicators.filter(
+		// 	value => !usedIndicatorsDefault.includes(value)
+		// );
+
+		// console.log(availableIndicatorsDefault, unUsedIndicators, 'redux unUsedIndicators');
+
+		// const {columns} = this.props;
+
+		// const availableIndicatorsDefault = apiAndCustomIndicators.filter(
+		// 	value => !columns.includes(value)
+		// );
 
 		return (
 			<>
@@ -104,10 +116,13 @@ class AddColumnButton extends React.Component {
 				>
 					<IndicatorSelector
 						handleOkCancel={this.handleOkCancel}
-						availableIndicatorsDefault={this.deriveIndicatorsArr(
-							availableIndicatorsDefault
-						)}
-						usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicatorsDefault)}
+						// availableIndicatorsDefault={this.deriveIndicatorsArr(
+						// 	availableIndicatorsDefault
+						// )}
+						// usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicatorsDefault)}
+
+						availableIndicatorsDefault={this.deriveIndicatorsArr(unUsedIndicators)}
+						usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicators)}
 					/>
 				</Modal>
 			</>
@@ -120,7 +135,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-	columns: Object.keys(state.stockData),
+	usedIndicators: getUsedIndicators(state),
+	unUsedIndicators: getUnusedIndicators(state),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddColumnButton);

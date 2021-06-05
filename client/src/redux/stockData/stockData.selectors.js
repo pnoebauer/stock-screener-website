@@ -1,24 +1,39 @@
-import {createSelector} from 'reselect';
+import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
 
-// const selectStockData = state => state.stockData;
-// export const selectField = location =>
-// 	createSelector(
-// 		[selectStockData],
-// 		stockData =>
-// 			(stockData[location.headerName] &&
-// 				stockData[location.headerName][location.index]) ??
-// 			0
-// 	);
+import {createSelector} from 'reselect';
 
 import {createCachedSelector} from 're-reselect';
 
 import {createSelectorCreator, defaultMemoize} from 'reselect';
 import isEqual from 'lodash.isequal';
 
+const availableIndicators = [
+	...Object.keys(INDICATORS_TO_API),
+	...Object.keys(CUSTOM_INDICATORS),
+];
+
 // create a "selector creator" that uses lodash.isequal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 const getStockData = state => state.stockData;
+
+export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
+	Object.keys(stockData)
+);
+
+export const getUsedIndicators = createDeepEqualSelector(
+	getColumnNames,
+	columnNames =>
+		columnNames.filter(columnName => availableIndicators.includes(columnName)) //only return those that exist in the indicator list (Symbol, interval, etc. to be excluded)
+	// columnNames => availableIndicators.filter(indicator => columnNames.includes(indicator)) //alternatively
+);
+
+export const getUnusedIndicators = createDeepEqualSelector(
+	getColumnNames,
+	columnNames => availableIndicators.filter(indicator => !columnNames.includes(indicator)) //only return what is not under the table headers (columns) already
+);
+
+// export const getColumnNames = createDeepEqualSelector(getStockData, stockData => Object.keys(stockData))
 
 export const getColumn = createCachedSelector(
 	getStockData,
