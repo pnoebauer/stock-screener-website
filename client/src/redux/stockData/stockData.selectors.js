@@ -19,6 +19,7 @@ const availableIndicators = [
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 const getStockData = state => state.stockData;
+export const getStockNumber = state => state.stockData.Symbol.length;
 
 export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
 	Object.keys(stockData)
@@ -65,11 +66,10 @@ export const getRowValues = createCachedSelector(
 // 	rowValues.slice(0, 2)
 // )((state, rowIdx) => rowIdx);
 
-export const getCustomIndicatorReqObj = createCachedSelector(
-	getStockData,
-	(state, rowIdx) => rowIdx,
-	(state, rowIdx) => {
-		const customIndicators = getCustomIndicators(state);
+export const getAllCustomIndicatorsConfig = createDeepEqualSelector(
+	state => state,
+	getCustomIndicators,
+	(state, customIndicators) => {
 		let indicators = {};
 		customIndicators.forEach(indicator => {
 			const config = getIndicatorConfiguration(state, indicator);
@@ -77,7 +77,23 @@ export const getCustomIndicatorReqObj = createCachedSelector(
 		});
 
 		return indicators;
-	},
+	}
+);
+
+export const getCustomIndicatorReqObj = createCachedSelector(
+	getStockData,
+	(state, rowIdx) => rowIdx,
+	// (state, rowIdx) => {
+	// 	const customIndicators = getCustomIndicators(state);
+	// 	let indicators = {};
+	// 	customIndicators.forEach(indicator => {
+	// 		const config = getIndicatorConfiguration(state, indicator);
+	// 		indicators[indicator.toLowerCase()] = config;
+	// 	});
+
+	// 	return indicators;
+	// },
+	getAllCustomIndicatorsConfig,
 	(stockData, rowIdx, indicators) => {
 		const symbol = stockData.Symbol[rowIdx];
 		const interval = stockData.Interval[rowIdx];

@@ -1,7 +1,7 @@
 import {takeLatest, call, put, select, all} from 'redux-saga/effects'; //listens to every actions of a specific type that is passed to it
 
 import {StockDataTypes} from './stockData.types';
-import {getCustomIndicatorReqObj} from './stockData.selectors';
+import {getCustomIndicatorReqObj, getStockNumber} from './stockData.selectors';
 
 // import {fetchSuccess, fetchFailure} from './stockData.actions';
 
@@ -39,24 +39,41 @@ export function* fetchCustomIndicators(requestObj, rowIndex) {
 }
 
 export function* updateRow({payload}) {
-	console.log(payload, 'saga pl');
+	const {valueRow} = payload;
 
-	const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, payload.valueRow);
+	const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
 	console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
 
-	yield fetchCustomIndicators(customIndicatorReqObj, payload.valueRow);
+	yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
 
 	// yield put(doSetInputField({payload})); //not required --> async and triggered in reducer already
 	// yield fetchAsync();
 }
 
-export function* onFieldChange() {
-	console.log('called');
-	yield takeLatest(StockDataTypes.SET_INPUT_FIELD, updateRow);
+export function* updateAllIndicatorRows({payload}) {
+	// const {columnNames}=payload
+
+	const numberStocks = yield select(getStockNumber);
+
+	for (let valueRow = 0; valueRow < numberStocks; valueRow++) {
+		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
+		console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
+
+		yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
+	}
+	// const customIndicatorsConfig = yield select(getAllCustomIndicatorsConfig);
+	// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
+	// yield fetchCustomIndicators(customIndicatorReqObj, payload.valueRow);
+	// yield put(doSetInputField({payload})); //not required --> async and triggered in reducer already
+	// yield fetchAsync();
 }
 
 export function* onColumnChange() {
-	// yield takeLatest(StockDataTypes.SET_INPUT_FIELD, updateRow);
+	yield takeLatest(StockDataTypes.SET_COLUMNS, updateAllIndicatorRows);
+}
+
+export function* onFieldChange() {
+	yield takeLatest(StockDataTypes.SET_INPUT_FIELD, updateRow);
 }
 
 // always start fetching if any of below action happens
