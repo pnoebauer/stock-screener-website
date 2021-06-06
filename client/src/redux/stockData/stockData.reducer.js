@@ -20,28 +20,37 @@ const stockDataReducer = (state = initialState, action) => {
 			return applyDeleteAllRows(state, action);
 		case StockDataTypes.SET_ROW:
 			return applySetRow(state, action);
-		// case StockDataTypes.ADD_ROW:
-		// 	return applyAddRow(state, action);
+		case StockDataTypes.ADD_ROW:
+			return applyAddRow(state, action);
+		case StockDataTypes.SET_ALL_INTERVALS:
+			return applySetAllIntervals(state, action);
 
 		default:
 			return state;
 	}
 };
 
+const applySetAllIntervals = (state, action) => {
+	const newInterval = action.payload;
+
+	return {
+		...state,
+		Interval: state.Interval.map(interval => newInterval),
+	};
+};
+
+// triggered by the saga once fetching has finished (occurs after SET_INPUT_FIELD, SET_COLUMNS, ADD_ROW)
 const applySetRow = (state, action) => {
 	const nextState = {...state};
 
 	const {data, rowIndex} = action.payload;
 
-	// console.log(data, rowIndex, 'data,rowIndex', state);
-
+	// loops through the returned indicator object from the backend and updates the current row to the values
 	for (const column in data) {
 		nextState[column.toUpperCase()] = nextState[column.toUpperCase()].map(
 			(value, index) => (index === rowIndex ? data[column] : value)
 		);
 	}
-
-	// console.log(nextState, 'nextState');
 
 	return nextState;
 };
@@ -66,6 +75,25 @@ const applyDeleteRow = (state, action) => {
 	}
 
 	return nextState;
+};
+
+const applySetInputField = (state, action) => {
+	const {value, headerName, valueRow} = action.payload;
+
+	// if (valueRow >= state.Symbol.length) {
+	// 	return applyAddRow(state, action);
+	// }
+
+	// updates the array index (=valueRow) to the new value in the state column (=headerName)
+	return {
+		...state,
+		[headerName]: state[headerName].map((cellValue, index) => {
+			if (index === valueRow) {
+				return value;
+			}
+			return cellValue;
+		}),
+	};
 };
 
 const applyAddRow = (state, action) => {
@@ -94,25 +122,6 @@ const applyAddRow = (state, action) => {
 	}
 
 	return nextState;
-};
-
-const applySetInputField = (state, action) => {
-	const {value, headerName, valueRow} = action.payload;
-
-	if (valueRow >= state.Symbol.length) {
-		return applyAddRow(state, action);
-	}
-
-	// updates the array index (=valueRow) to the new value in the state column (=headerName)
-	return {
-		...state,
-		[headerName]: state[headerName].map((cellValue, index) => {
-			if (index === valueRow) {
-				return value;
-			}
-			return cellValue;
-		}),
-	};
 };
 
 const applySetColumns = (state, action) => {

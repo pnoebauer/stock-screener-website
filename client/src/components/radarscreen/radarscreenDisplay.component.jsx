@@ -121,7 +121,7 @@ class RadarScreen extends React.PureComponent {
 		const {
 			// handleTableSorting,
 			// updateCustomIndicators,
-			handleSetAllIntervals,
+			// handleSetAllIntervals,
 			// handleColumnUpdate,
 			// onChange,
 			// handleDeleteRow,
@@ -192,11 +192,11 @@ class RadarScreen extends React.PureComponent {
 					}}
 				>
 					<ScreenHeader
-						// headers={headers}
-						// handleTableSorting={handleTableSorting}
-						// sortConfig={sortConfig}
-						// updateCustomIndicators={updateCustomIndicators}
-						setAllIntervals={handleSetAllIntervals}
+					// headers={headers}
+					// handleTableSorting={handleTableSorting}
+					// sortConfig={sortConfig}
+					// updateCustomIndicators={updateCustomIndicators}
+					// setAllIntervals={handleSetAllIntervals}
 					/>
 					<AddStockUniverseButton
 						style={{

@@ -81,16 +81,17 @@ export function* onColumnChange() {
 }
 
 export function* onFieldChange() {
-	yield takeLatest(StockDataTypes.SET_INPUT_FIELD, updateRow);
+	// yield takeLatest(StockDataTypes.SET_INPUT_FIELD, updateRow);
+	yield takeLatest([StockDataTypes.SET_INPUT_FIELD, StockDataTypes.ADD_ROW], updateRow);
 }
 
-// always start fetching if any of below action happens
-export function* asyncStart() {
-	yield takeLatest(
-		[StockDataTypes.SET_INPUT_FIELD, StockDataTypes.SET_COLUMNS],
-		fetchAsync
-	);
-}
+// // always start fetching if any of below action happens
+// export function* asyncStart() {
+// 	yield takeLatest(
+// 		[StockDataTypes.SET_INPUT_FIELD, StockDataTypes.SET_COLUMNS],
+// 		fetchAsync
+// 	);
+// }
 
 export function* stockDataSagas() {
 	yield all([call(onFieldChange), call(onColumnChange)]);

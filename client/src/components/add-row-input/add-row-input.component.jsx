@@ -29,7 +29,8 @@ const AddRowInput = ({stockNumber, numberSymbols}) => {
 			className={'add-row'}
 			headerName={'Symbol'}
 		>
-			{SYMBOLS[numberSymbols]}
+			{/* {SYMBOLS[numberSymbols]} once filter is in place*/}
+			{SYMBOLS[stockNumber]}
 		</Dropdown>
 	);
 };

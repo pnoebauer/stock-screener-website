@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 
 // import {selectField} from '../../redux/stockData/stockData.selectors';
-import {doSetInputField} from '../../redux/stockData/stockData.actions';
+import {doSetInputField, doAddRow} from '../../redux/stockData/stockData.actions';
 
 import {getField} from '../../redux/stockData/stockData.selectors';
 // import {getColumn} from '../../redux/stockData/stockData.selectors';
@@ -397,9 +397,11 @@ const mapStateToProps = (state, {headerName, gridRow}) => {
 	};
 };
 
-const mapDispatchToProps = dispatch => ({
-	updateInputField: fieldInfo => dispatch(doSetInputField(fieldInfo)),
-});
+const mapDispatchToProps = (dispatch, {className}) => {
+	const action = className === 'add-row' ? doAddRow : doSetInputField;
+	return {
+		updateInputField: fieldInfo => dispatch(action(fieldInfo)),
+	};
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dropdown);
-// export default Dropdown;

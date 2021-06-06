@@ -1,6 +1,10 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
 import {INTERVALS} from '../../assets/constants';
+
+import {doSetAllIntervals} from '../../redux/stockData/stockData.actions';
 
 import './configure-all-intervals-form.styles.css';
 
@@ -26,8 +30,6 @@ class IntervalConfigurationForm extends React.Component {
 	};
 
 	render() {
-		// console.log(this.state, 's');
-
 		return (
 			<form onSubmit={this.handleSubmit} className='configure-all-intervals-form'>
 				<label>
@@ -61,4 +63,8 @@ class IntervalConfigurationForm extends React.Component {
 	}
 }
 
-export default IntervalConfigurationForm;
+const mapDispatchToProps = dispatch => ({
+	setAllIntervals: interval => dispatch(doSetAllIntervals(interval)),
+});
+
+export default connect(null, mapDispatchToProps)(IntervalConfigurationForm);

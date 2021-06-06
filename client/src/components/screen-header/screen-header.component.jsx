@@ -11,10 +11,10 @@ import './screen-header.styles.css';
 
 const ScreenHeader = ({
 	headers,
-	handleTableSorting,
+	// handleTableSorting,
 	sortConfig,
-	updateCustomIndicators,
-	setAllIntervals,
+	// updateCustomIndicators,
+	// setAllIntervals,
 }) => {
 	const getClassNameForHeader = name => {
 		if (!sortConfig) {
@@ -42,7 +42,7 @@ const ScreenHeader = ({
 					id={header}
 					className={`screen-header ${getClassNameForHeader(header)}`}
 					// updateCustomIndicators={updateCustomIndicators}
-					setAllIntervals={setAllIntervals}
+					// setAllIntervals={setAllIntervals}
 					headerName={header}
 				/>
 			))}

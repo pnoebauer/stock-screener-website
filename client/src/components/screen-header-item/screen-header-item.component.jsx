@@ -29,6 +29,17 @@ class ScreenHeaderItem extends React.Component {
 	hide = () => this.setState({visible: false});
 
 	sorting = e => {
+		// e.preventDefault();
+		// e.stopPropagation();
+		if (e.currentTarget.getAttribute('name') !== e.target.getAttribute('name')) {
+			return;
+		}
+		// console.log(
+		// 	e.currentTarget.getAttribute('name'),
+		// 	e.target.getAttribute('name'),
+		// 	e.currentTarget.getAttribute('name') === e.target.getAttribute('name'),
+		// 	'sort'
+		// );
 		this.props.setSorting(this.props.headerName);
 		// return this.props.onSort(e);
 	};
@@ -40,7 +51,7 @@ class ScreenHeaderItem extends React.Component {
 			id,
 			className,
 			// updateCustomIndicators,
-			setAllIntervals,
+			// setAllIntervals,
 			headerName,
 		} = this.props;
 
@@ -101,7 +112,7 @@ class ScreenHeaderItem extends React.Component {
 						>
 							<IntervalConfigurationForm
 								closeForm={this.hide}
-								setAllIntervals={setAllIntervals}
+								// setAllIntervals={setAllIntervals}
 							/>
 						</Modal>
 					</>
