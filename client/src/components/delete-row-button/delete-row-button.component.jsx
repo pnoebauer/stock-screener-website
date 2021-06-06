@@ -8,17 +8,18 @@ import {doDeleteRow} from '../../redux/stockData/stockData.actions';
 
 import './delete-row-button.styles.css';
 
-const DeleteRowButton = ({rowIdx, handleRowDelete, removeRow}) => {
+const DeleteRowButton = ({rowIdx, removeRow, stockDataIdx}) => {
 	const deleteRow = event => {
-		removeRow(rowIdx);
-		return handleRowDelete(event);
+		// removeRow(rowIdx);
+		removeRow(stockDataIdx);
 	};
 
 	return (
 		<div
 			className='delete-row-button'
 			style={{gridRow: rowIdx + 2, position: 'relative'}}
-			id={rowIdx}
+			// id={rowIdx}
+			id={stockDataIdx}
 			onClick={deleteRow}
 			// onClick={removeRow}
 			// onClick={()=>removeRow(rowIdx)}

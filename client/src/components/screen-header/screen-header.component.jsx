@@ -41,7 +41,7 @@ const ScreenHeader = ({
 					// onSort={handleTableSorting}
 					id={header}
 					className={`screen-header ${getClassNameForHeader(header)}`}
-					updateCustomIndicators={updateCustomIndicators}
+					// updateCustomIndicators={updateCustomIndicators}
 					setAllIntervals={setAllIntervals}
 					headerName={header}
 				/>

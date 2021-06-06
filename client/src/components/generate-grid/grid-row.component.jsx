@@ -35,34 +35,27 @@ import GenerateGridCell from '../generate-grid-cell/generate-grid-cell.component
 import DeleteRowButton from '../delete-row-button/delete-row-button.component';
 
 import {getRowValues} from '../../redux/stockData/stockData.selectors';
+import {getColumnNames} from '../../redux/stockData/stockData.selectors';
 
-const GridRow = ({
-	rowIdx,
-	header,
-	onChange,
-	handleRowDelete,
-	rowValueArray,
-	stockDataIdx,
-}) => {
+const GridRow = ({rowIdx, columnNames, rowValueArray, stockDataIdx}) => {
 	// console.log(rowValues, rowIdx, this.props.rowValueArray, 'red');
-	// console.log(rowValueArray, 'grid row values redux', stockDataIdx);
+	// console.log(rowValueArray, 'grid row values redux', stockDataIdx, rowIdx);
 	return (
 		<>
 			{rowValueArray.map((value, colIdx) => {
-				// console.log('ggc', header[colIdx], value);
+				// console.log('ggc', columnNames[colIdx], value);
 				return (
 					<GenerateGridCell
-						type={header[colIdx]}
+						type={columnNames[colIdx]}
 						gridLocation={{rowIdx, colIdx}}
-						// onChange={onChange}
-						key={header[colIdx]}
+						key={columnNames[colIdx]}
 					>
 						{value}
 					</GenerateGridCell>
 				);
 			})}
 
-			<DeleteRowButton rowIdx={rowIdx} handleRowDelete={handleRowDelete} />
+			<DeleteRowButton rowIdx={rowIdx} stockDataIdx={stockDataIdx} />
 		</>
 	);
 };
@@ -70,6 +63,7 @@ const GridRow = ({
 const mapStateToProps = (state, {stockDataIdx}) => {
 	return {
 		rowValueArray: getRowValues(state, stockDataIdx),
+		columnNames: getColumnNames(state),
 	};
 };
 

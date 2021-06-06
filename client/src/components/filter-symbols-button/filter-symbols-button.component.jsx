@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
 import {RiFilter2Line, RiFilter2Fill} from 'react-icons/ri';
 
 import Modal from '../modal/modal.component';
@@ -7,6 +9,8 @@ import Modal from '../modal/modal.component';
 import FilterSymbolsForm from '../filter-symbols-form/filter-symbols-form.component';
 
 import Tooltip from '../tooltip/tooltip.component';
+
+import {getUsedIndicators} from '../../redux/stockData/stockData.selectors';
 
 import './filter-symbols-button.styles.css';
 
@@ -67,4 +71,8 @@ class FilterSymbolsButton extends React.Component {
 	}
 }
 
-export default FilterSymbolsButton;
+const mapStateToProps = state => ({
+	usedIndicators: getUsedIndicators(state),
+});
+
+export default connect(mapStateToProps)(FilterSymbolsButton);

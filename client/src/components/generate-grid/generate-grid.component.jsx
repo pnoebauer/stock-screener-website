@@ -38,24 +38,18 @@ import {connect} from 'react-redux';
 
 import {getSortingMap} from '../../redux/sorting/sorting.selectors';
 
-const GenerateGrid = ({onChange, handleRowDelete, header, sortingMap, ...props}) => {
+const GenerateGrid = ({sortingMap}) => {
 	// console.log('sortingMap', sortingMap);
 	return (
 		<>
 			{
 				//loop through rows
-				sortingMap.map((stockDataIdx, rowIdx) => {
-					return (
-						<GridRow
-							stockDataIdx={stockDataIdx}
-							rowIdx={rowIdx}
-							header={header}
-							// onChange={onChange}
-							handleRowDelete={handleRowDelete}
-							key={stockDataIdx}
-						/>
-					);
-				})
+				sortingMap &&
+					sortingMap.map((stockDataIdx, rowIdx) => {
+						return (
+							<GridRow stockDataIdx={stockDataIdx} rowIdx={rowIdx} key={stockDataIdx} />
+						);
+					})
 			}
 		</>
 	);

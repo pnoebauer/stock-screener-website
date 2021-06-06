@@ -10,7 +10,7 @@ import AddStockUniverseButton from '../add-stock-universe-button/add-stock-unive
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
 
-import {getStockNumber} from '../../redux/stockData/stockData.selectors';
+import {getStockNumber, getColumnNames} from '../../redux/stockData/stockData.selectors';
 
 // import {UNIVERSES} from '../../assets/constants';
 
@@ -116,29 +116,32 @@ class RadarScreen extends React.PureComponent {
 
 	render() {
 		// passed from the withSort HOC
-		const {sortConfig} = this.props;
+		// const {sortConfig} = this.props;
 
 		const {
-			handleTableSorting,
-			updateCustomIndicators,
+			// handleTableSorting,
+			// updateCustomIndicators,
 			handleSetAllIntervals,
-			handleColumnUpdate,
+			// handleColumnUpdate,
 			// onChange,
-			handleDeleteRow,
-			onRowAdd,
+			// handleDeleteRow,
+			// onRowAdd,
 			handleUniverseAdd,
-			handleDeleteAllRows,
-			headers,
+			// handleDeleteAllRows,
+			// headers,
 			dataObject,
 		} = this.props;
 
 		// const emptyFilter = this.state.rules === undefined ? true : false;
 
-		const usedIndicators = headers.flatMap(item =>
-			permanentHeaders.includes(item) ? [] : [item]
-		);
+		const {columnNames} = this.props;
 
-		updateKey = headers;
+		// const usedIndicators = headers.flatMap(item =>
+		// 	permanentHeaders.includes(item) ? [] : [item]
+		// );
+
+		// updateKey = headers;
+		updateKey = columnNames;
 
 		const filteredData = this.filteredDataObject();
 		// console.log(filteredData, 'filteredData');
@@ -182,7 +185,8 @@ class RadarScreen extends React.PureComponent {
 				<div
 					id='grid-container'
 					style={{
-						gridTemplateColumns: `20px repeat(${headers.length}, 1fr)  0`,
+						// gridTemplateColumns: `20px repeat(${headers.length}, 1fr)  0`,
+						gridTemplateColumns: `20px repeat(${columnNames.length}, 1fr)  0`,
 						// gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0 `,
 						gridTemplateRows: `repeat(${stockNumber + 1}, 1fr) 0 `,
 					}}
@@ -191,7 +195,7 @@ class RadarScreen extends React.PureComponent {
 						// headers={headers}
 						// handleTableSorting={handleTableSorting}
 						// sortConfig={sortConfig}
-						updateCustomIndicators={updateCustomIndicators}
+						// updateCustomIndicators={updateCustomIndicators}
 						setAllIntervals={handleSetAllIntervals}
 					/>
 					<AddStockUniverseButton
@@ -201,19 +205,14 @@ class RadarScreen extends React.PureComponent {
 						}}
 						handleUniverseAdd={handleUniverseAdd}
 					/>
-					<GenerateGrid
-						{...filteredData}
-						header={headers}
-						// onChange={onChange}
-						handleRowDelete={handleDeleteRow}
-					/>
+					<GenerateGrid {...filteredData} />
 					<AddRowInput
 						// rowNumber={Symbol.length}
-						onRowAdd={onRowAdd}
+						// onRowAdd={onRowAdd}
 						numberSymbols={dataObject.Symbol.length}
 					/>
 					<DeleteAllRows
-						handleDeleteAllRows={handleDeleteAllRows}
+						// handleDeleteAllRows={handleDeleteAllRows}
 						// gridRow={Symbol.length + 2}
 						gridRow={stockNumber + 2}
 					/>
@@ -230,8 +229,6 @@ class RadarScreen extends React.PureComponent {
 							gridColumn: `1`,
 							gridRow: '1',
 						}}
-						handleColumnUpdate={handleColumnUpdate}
-						usedIndicatorsDefault={usedIndicators}
 						key={updateKey}
 					/>
 					<FilterSymbolsButton
@@ -240,7 +237,6 @@ class RadarScreen extends React.PureComponent {
 							gridRow: '1',
 						}}
 						updateFilterRules={this.updateFilterRules}
-						usedIndicators={usedIndicators}
 						key={`${updateKey} filter`}
 						// emptyFilter={emptyFilter}
 
@@ -254,6 +250,7 @@ class RadarScreen extends React.PureComponent {
 
 const mapStateToProps = state => ({
 	stockNumber: getStockNumber(state),
+	columnNames: getColumnNames(state),
 });
 
 export default connect(mapStateToProps)(RadarScreen);

@@ -55,7 +55,8 @@ class IndicatorConfigurationForm extends React.Component {
 	handleSubmit = event => {
 		// console.log('submit', this.state);
 
-		const {indicator, updateCustomIndicators} = this.props;
+		// const {indicator, updateCustomIndicators} = this.props;
+		const {indicator} = this.props;
 		const {errormessage, ...config} = this.state;
 
 		// console.log(indicator, config);
@@ -67,18 +68,18 @@ class IndicatorConfigurationForm extends React.Component {
 		// 	'sss'
 		// );
 
-		if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
-			//if the config has changed
-			localStorage.setItem(indicator, JSON.stringify(config));
+		// if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
+		// 	//if the config has changed
+		// 	localStorage.setItem(indicator, JSON.stringify(config));
 
-			const indicatorConfig = {[indicator.toLowerCase()]: config};
+		// 	const indicatorConfig = {[indicator.toLowerCase()]: config};
 
-			CUSTOM_INDICATORS[indicator] = config;
-			// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
+		// 	CUSTOM_INDICATORS[indicator] = config;
+		// 	// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
 
-			// trigger a fetch call in the parent
-			updateCustomIndicators(undefined, indicatorConfig);
-		}
+		// 	// trigger a fetch call in the parent
+		// 	updateCustomIndicators(undefined, indicatorConfig);
+		// }
 
 		const indicatorConfiguration = {[indicator]: config};
 

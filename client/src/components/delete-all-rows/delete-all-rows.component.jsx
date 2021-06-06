@@ -10,10 +10,11 @@ import {doDeleteAllRows} from '../../redux/stockData/stockData.actions';
 
 import './delete-all-rows.styles.css';
 
-const DeleteAllRows = ({handleDeleteAllRows, gridRow, removeAllRows}) => {
+// const DeleteAllRows = ({handleDeleteAllRows, gridRow, removeAllRows}) => {
+const DeleteAllRows = ({gridRow, removeAllRows}) => {
 	const deleteAllRows = () => {
 		removeAllRows();
-		return handleDeleteAllRows();
+		// return handleDeleteAllRows();
 	};
 
 	return (

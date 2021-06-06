@@ -62,7 +62,6 @@ class AddColumnButton extends React.Component {
 					config,
 				};
 			});
-			this.props.handleColumnUpdate(columnNames);
 
 			const columns = updatedState.usedIndicators.map(item => item.name);
 			this.props.updateColumns(columns);
@@ -70,27 +69,7 @@ class AddColumnButton extends React.Component {
 	};
 
 	render() {
-		const {usedIndicatorsDefault, usedIndicators, unUsedIndicators} = this.props;
-		// // console.log(this.deriveIndicatorsArr(usedIndicatorsDefault))
-
-		// console.log(usedIndicatorsDefault, usedIndicators, 'redux usedIndicators');
-
-		// const apiAndCustomIndicators = [
-		// 	...Object.keys(INDICATORS_TO_API),
-		// 	...Object.keys(CUSTOM_INDICATORS),
-		// ];
-
-		// const availableIndicatorsDefault = apiAndCustomIndicators.filter(
-		// 	value => !usedIndicatorsDefault.includes(value)
-		// );
-
-		// console.log(availableIndicatorsDefault, unUsedIndicators, 'redux unUsedIndicators');
-
-		// const {columns} = this.props;
-
-		// const availableIndicatorsDefault = apiAndCustomIndicators.filter(
-		// 	value => !columns.includes(value)
-		// );
+		const {usedIndicators, unUsedIndicators} = this.props;
 
 		return (
 			<>
@@ -116,11 +95,6 @@ class AddColumnButton extends React.Component {
 				>
 					<IndicatorSelector
 						handleOkCancel={this.handleOkCancel}
-						// availableIndicatorsDefault={this.deriveIndicatorsArr(
-						// 	availableIndicatorsDefault
-						// )}
-						// usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicatorsDefault)}
-
 						availableIndicatorsDefault={this.deriveIndicatorsArr(unUsedIndicators)}
 						usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicators)}
 					/>

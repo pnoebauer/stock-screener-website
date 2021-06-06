@@ -39,7 +39,7 @@ class ScreenHeaderItem extends React.Component {
 			// onSort,
 			id,
 			className,
-			updateCustomIndicators,
+			// updateCustomIndicators,
 			setAllIntervals,
 			headerName,
 		} = this.props;
@@ -76,7 +76,7 @@ class ScreenHeaderItem extends React.Component {
 							<IndicatorConfigurationForm
 								indicator={id}
 								closeForm={this.hide}
-								updateCustomIndicators={updateCustomIndicators}
+								// updateCustomIndicators={updateCustomIndicators}
 							/>
 						</Modal>
 
