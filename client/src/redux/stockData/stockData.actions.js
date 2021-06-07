@@ -41,3 +41,8 @@ export const doAddUniverse = payload => ({
 	type: StockDataTypes.ADD_UNIVERSE,
 	payload,
 });
+
+export const doUpdateNonCustomIndicators = payload => ({
+	type: StockDataTypes.UPDATE_NON_CUSTOM_INDICATORS,
+	payload,
+});

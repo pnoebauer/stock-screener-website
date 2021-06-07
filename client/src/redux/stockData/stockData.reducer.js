@@ -1,4 +1,9 @@
-import {SYMBOLS, INTERVALS} from '../../assets/constants';
+import {
+	SYMBOLS,
+	INTERVALS,
+	INDICATORS_TO_API,
+	API_TO_INDICATORS,
+} from '../../assets/constants';
 
 import {StockDataTypes} from './stockData.types';
 
@@ -26,10 +31,46 @@ const stockDataReducer = (state = initialState, action) => {
 			return applySetAllIntervals(state, action);
 		case StockDataTypes.ADD_UNIVERSE:
 			return applyAddUniverse(state, action);
+		case StockDataTypes.UPDATE_NON_CUSTOM_INDICATORS:
+			return applyUpdateNonCustomIndicators(state, action);
 
 		default:
 			return state;
 	}
+};
+
+const applyUpdateNonCustomIndicators = (state, action) => {
+	const symbols = state.Symbol;
+	const apiObject = action.payload;
+
+	let nextState = {...state};
+
+	const apiIndicators = Object.keys(state).flatMap(indicatorName =>
+		INDICATORS_TO_API[indicatorName] ? [INDICATORS_TO_API[indicatorName]] : []
+	);
+
+	//filter out the indicators that are needed in the columns
+	apiIndicators.forEach(apiIndicatorName => {
+		// look up the name used for the column header (and state key)
+		const stateIndicatorName = API_TO_INDICATORS[apiIndicatorName];
+
+		// console.log(apiIndicatorName, 'apiIndicatorName', stateIndicatorName);
+
+		// converts api object to state array format
+		nextState = {
+			...nextState,
+			[stateIndicatorName]: symbols.map(
+				symbolName =>
+					// apiObject[symbolName][apiIndicatorName]
+					(apiObject &&
+						apiObject[symbolName] &&
+						apiObject[symbolName][apiIndicatorName]) ??
+					0
+			),
+		};
+	});
+
+	return nextState;
 };
 
 const applyAddUniverse = (state, action) => {

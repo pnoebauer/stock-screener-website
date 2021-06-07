@@ -18,7 +18,7 @@ const availableIndicators = [
 // create a "selector creator" that uses lodash.isequal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
-const getStockData = state => state.stockData;
+export const getStockData = state => state.stockData;
 
 // export const getStockNumber = state => state.stockData.Symbol.length;
 export const getStockNumber = createSelector(
@@ -36,6 +36,12 @@ export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
 	Object.keys(stockData).filter(keyName => keyName !== 'ID')
 );
 
+export const getNonCustomIndicators = createDeepEqualSelector(
+	getColumnNames,
+	columnNames =>
+		columnNames.filter(columnName => Object.keys(INDICATORS_TO_API).includes(columnName))
+);
+
 export const getCustomIndicators = createDeepEqualSelector(getColumnNames, columnNames =>
 	columnNames.filter(columnName => Object.keys(CUSTOM_INDICATORS).includes(columnName))
 );
@@ -51,8 +57,6 @@ export const getUnusedIndicators = createDeepEqualSelector(
 	getColumnNames,
 	columnNames => availableIndicators.filter(indicator => !columnNames.includes(indicator)) //only return what is not under the table headers (columns) already
 );
-
-// export const getColumnNames = createDeepEqualSelector(getStockData, stockData => Object.keys(stockData))
 
 export const getColumn = createCachedSelector(
 	getStockData,

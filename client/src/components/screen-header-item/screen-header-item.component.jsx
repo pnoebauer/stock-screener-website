@@ -48,7 +48,7 @@ class ScreenHeaderItem extends React.Component {
 		const {
 			gridColumn,
 			// onSort,
-			id,
+			// id,
 			className,
 			// updateCustomIndicators,
 			// setAllIntervals,
@@ -62,14 +62,14 @@ class ScreenHeaderItem extends React.Component {
 				style={{gridColumn}}
 				// onClick={onSort}
 				onClick={this.sorting}
-				id={id}
+				id={headerName}
 				className={className}
 				name='screen-header'
 			>
-				<span id={id} name='screen-header'>
+				<span id={headerName} name='screen-header'>
 					{headerName}
 				</span>
-				{CUSTOM_INDICATORS[id] ? (
+				{CUSTOM_INDICATORS[headerName] ? (
 					<>
 						<ConfigurationButton openConfigModal={this.show} tooltip={'indicator'} />
 
@@ -85,19 +85,19 @@ class ScreenHeaderItem extends React.Component {
 							// showMask={false}
 						>
 							<IndicatorConfigurationForm
-								indicator={id}
+								indicator={headerName}
 								closeForm={this.hide}
 								// updateCustomIndicators={updateCustomIndicators}
 							/>
 						</Modal>
 
 						<IndicatorConfigurationDisplay
-							id={id}
-							configuration={CUSTOM_INDICATORS[id]}
+							indicator={headerName}
+							// configuration={CUSTOM_INDICATORS[id]}
 						/>
 					</>
 				) : null}
-				{id === 'Interval' ? (
+				{headerName === 'Interval' ? (
 					<>
 						<ConfigurationButton openConfigModal={this.show} tooltip={'interval'} />
 						<Modal

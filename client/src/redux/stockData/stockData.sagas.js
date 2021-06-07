@@ -1,6 +1,9 @@
 import {takeLatest, call, put, select, all} from 'redux-saga/effects'; //listens to every actions of a specific type that is passed to it
 
 import {StockDataTypes} from './stockData.types';
+
+import {ConfigurationTypes} from '../configuration/configuration.types';
+
 import {
 	getCustomIndicatorReqObj,
 	getStockNumber,
@@ -105,7 +108,10 @@ export function* updateAddedIndicatorRows({payload}) {
 }
 
 export function* onColumnChange() {
-	yield takeLatest(StockDataTypes.SET_COLUMNS, updateAllIndicatorRows);
+	yield takeLatest(
+		[StockDataTypes.SET_COLUMNS, ConfigurationTypes.SET_INDICATOR_CONFIGURATION],
+		updateAllIndicatorRows
+	);
 }
 
 export function* onFieldChange() {

@@ -2,11 +2,9 @@ import React from 'react';
 
 import {connect} from 'react-redux';
 
-import {
-	API_TO_INDICATORS,
-	INDICATORS_TO_API,
-	CUSTOM_INDICATORS,
-} from '../../assets/constants';
+import isEqual from 'lodash.isequal';
+
+import {INDICATORS_TO_API, CUSTOM_INDICATORS} from '../../assets/constants';
 
 import {doSetIndicatorConfiguration} from '../../redux/configuration/configuration.actions';
 
@@ -19,12 +17,9 @@ class IndicatorConfigurationForm extends React.Component {
 		super(props);
 		const {indicator} = this.props;
 
-		// const config =
-		// 	JSON.parse(localStorage.getItem(indicator)) || CUSTOM_INDICATORS[indicator];
+		const formConfiguration = CUSTOM_INDICATORS[indicator];
 
-		const config = CUSTOM_INDICATORS[indicator];
-
-		const {parameter, lookBack} = config;
+		const {parameter, lookBack} = formConfiguration;
 
 		this.state = {parameter, lookBack, errormessage: ''};
 	}
@@ -56,34 +51,34 @@ class IndicatorConfigurationForm extends React.Component {
 		// console.log('submit', this.state);
 
 		// const {indicator, updateCustomIndicators} = this.props;
-		const {indicator} = this.props;
-		const {errormessage, ...config} = this.state;
-
-		// console.log(indicator, config);
+		const {indicator, configuration} = this.props;
+		const {errormessage, ...formConfiguration} = this.state;
 
 		// console.log(
 		// 	localStorage.getItem(indicator),
-		// 	JSON.stringify(config),
-		// 	localStorage.getItem(indicator) !== JSON.stringify(config),
+		// 	JSON.stringify(formConfiguration),
+		// 	localStorage.getItem(indicator) !== JSON.stringify(formConfiguration),
 		// 	'sss'
 		// );
 
-		// if (localStorage.getItem(indicator) !== JSON.stringify(config)) {
-		// 	//if the config has changed
-		// 	localStorage.setItem(indicator, JSON.stringify(config));
+		// if (localStorage.getItem(indicator) !== JSON.stringify(formConfiguration)) {
+		// 	//if the formConfiguration has changed
+		// 	localStorage.setItem(indicator, JSON.stringify(formConfiguration));
 
-		// 	const indicatorConfig = {[indicator.toLowerCase()]: config};
+		// 	const indicatorConfig = {[indicator.toLowerCase()]: formConfiguration};
 
-		// 	CUSTOM_INDICATORS[indicator] = config;
+		// 	CUSTOM_INDICATORS[indicator] = formConfiguration;
 		// 	// console.log(indicatorConfig, 'indicatorConfig', CUSTOM_INDICATORS);
 
 		// 	// trigger a fetch call in the parent
 		// 	updateCustomIndicators(undefined, indicatorConfig);
 		// }
 
-		const indicatorConfiguration = {[indicator]: config};
-
-		this.props.updateIndicatorConfiguration(indicatorConfiguration);
+		// only trigger if the form inputs have changed (compare the global state with the component state)
+		if (!isEqual(formConfiguration, configuration)) {
+			const indicatorConfiguration = {[indicator]: formConfiguration};
+			this.props.updateIndicatorConfiguration(indicatorConfiguration);
+		}
 
 		this.props.closeForm();
 
@@ -92,7 +87,7 @@ class IndicatorConfigurationForm extends React.Component {
 
 	render() {
 		// console.log(this.state, 's');
-		// console.log(this.props.configuration, 'redux config', this.props.indicator);
+		// console.log(this.props.configuration, 'redux formConfiguration', this.props.indicator);
 
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>

@@ -10,9 +10,15 @@ import AddStockUniverseButton from '../add-stock-universe-button/add-stock-unive
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
 
-import {getStockNumber, getColumnNames} from '../../redux/stockData/stockData.selectors';
+import {
+	getStockNumber,
+	getColumnNames,
+	getStockData,
+	getColumn,
+	getNonCustomIndicators,
+} from '../../redux/stockData/stockData.selectors';
 
-// import {UNIVERSES} from '../../assets/constants';
+import {doUpdateNonCustomIndicators} from '../../redux/stockData/stockData.actions';
 
 import './radarscreen.styles.css';
 
@@ -23,9 +29,14 @@ let updateKey = null;
 class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
+		this.events = undefined;
 		this.state = {
 			rules: [],
 		};
+	}
+
+	componentDidMount() {
+		this.startEventSource();
 	}
 
 	updateFilterRules = rules => {
@@ -42,6 +53,28 @@ class RadarScreen extends React.PureComponent {
 			// this.setState({rules: undefined});
 
 			this.setState({rules: []});
+		}
+
+		const symbolsUpdate = !sameElements(prevProps.symbols, this.props.symbols);
+		const intervalsUpdate = !sameElements(prevProps.intervals, this.props.intervals);
+
+		// API sends all indicators so the shown indicators on the screen do not affect the event source
+		const apiIndicatorUpdate = !sameElements(
+			prevProps.apiIndicators,
+			this.props.apiIndicators
+		);
+
+		// console.log(symbolsUpdate, intervalsUpdate, apiIndicatorUpdate, 'same');
+
+		if (symbolsUpdate || intervalsUpdate || apiIndicatorUpdate) {
+			// if (symbolsUpdate || intervalsUpdate) {
+			// close old event source and start a new one with updated Symbol
+			if (this.events) {
+				// console.log('updating, closing eventSource', prevState.Symbol, this.state.Symbol);
+				this.events.close();
+				// console.log('update', this.events);
+				this.startEventSource();
+			}
 		}
 
 		// if (!sameElements(prevProps.dataObject.Symbol, this.props.dataObject.Symbol)) {
@@ -61,6 +94,41 @@ class RadarScreen extends React.PureComponent {
 
 		// 	console.log(symbolCount, 'symbolCount');
 		// }
+	}
+
+	startEventSource() {
+		const {updateNonCustomIndicators} = this.props;
+
+		const uniqueSymbols = [...new Set(this.props.symbols)];
+		// console.log('start new event source', uniqueSymbols);
+
+		const url = `http://localhost:4000/events/symbols?id=${uniqueSymbols.join(',')}`;
+
+		this.events = new EventSource(url);
+
+		// Subscribe to all events without an explicit type
+		this.events.onmessage = event => {
+			const symbolsDataObject = JSON.parse(event.data);
+
+			console.log(symbolsDataObject, 'symb');
+
+			updateNonCustomIndicators(symbolsDataObject);
+
+			// if (Object.keys(symbolsDataObject).length) {
+			// 	const stateIndicatorObject = this.apiObjectToStateObject(symbolsDataObject);
+
+			// 	let updatedState = {...this.state, ...stateIndicatorObject};
+
+			// 	this.setState(updatedState);
+			// }
+		};
+	}
+
+	componentWillUnmount() {
+		if (this.events) {
+			// console.log('unmounting, closing eventSource');
+			this.events.close();
+		}
 	}
 
 	filteredDataObject = () => {
@@ -115,40 +183,16 @@ class RadarScreen extends React.PureComponent {
 	};
 
 	render() {
-		// passed from the withSort HOC
-		// const {sortConfig} = this.props;
+		const {columnNames, stockNumber} = this.props;
 
-		const {
-			// handleTableSorting,
-			// updateCustomIndicators,
-			// handleSetAllIntervals,
-			// handleColumnUpdate,
-			// onChange,
-			// handleDeleteRow,
-			// onRowAdd,
-			// handleUniverseAdd,
-			// handleDeleteAllRows,
-			// headers,
-			dataObject,
-		} = this.props;
+		const {dataObject} = this.props;
 
 		// const emptyFilter = this.state.rules === undefined ? true : false;
 
-		const {columnNames} = this.props;
-
-		// const usedIndicators = headers.flatMap(item =>
-		// 	permanentHeaders.includes(item) ? [] : [item]
-		// );
-
-		// updateKey = headers;
 		updateKey = columnNames;
 
 		const filteredData = this.filteredDataObject();
 		// console.log(filteredData, 'filteredData');
-
-		const {Symbol} = filteredData;
-
-		const {stockNumber} = this.props;
 
 		return (
 			<div className='radarscreen' style={{display: 'flex'}}>
@@ -156,18 +200,12 @@ class RadarScreen extends React.PureComponent {
 					id='indexation-grid'
 					style={{
 						gridTemplateColumns: `1fr`,
-						// gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0`,
 						gridTemplateRows: `repeat(${stockNumber + 1}, 1fr) 0`,
 					}}
 				>
 					<div className='indexation' style={{position: 'sticky', top: '-1px'}}>
 						#
 					</div>
-					{/* {Symbol.map((s, index) => (
-						<div className='indexation' key={index}>
-							{index + 1}
-						</div>
-					))} */}
 					{[...Array(stockNumber)].map((s, index) => (
 						<div className='indexation' key={index}>
 							{index + 1}
@@ -185,37 +223,20 @@ class RadarScreen extends React.PureComponent {
 				<div
 					id='grid-container'
 					style={{
-						// gridTemplateColumns: `20px repeat(${headers.length}, 1fr)  0`,
 						gridTemplateColumns: `20px repeat(${columnNames.length}, 1fr)  0`,
-						// gridTemplateRows: `repeat(${Symbol.length + 1}, 1fr) 0 `,
 						gridTemplateRows: `repeat(${stockNumber + 1}, 1fr) 0 `,
 					}}
 				>
-					<ScreenHeader
-					// headers={headers}
-					// handleTableSorting={handleTableSorting}
-					// sortConfig={sortConfig}
-					// updateCustomIndicators={updateCustomIndicators}
-					// setAllIntervals={handleSetAllIntervals}
-					/>
+					<ScreenHeader />
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
 							gridRow: '1',
 						}}
-						// handleUniverseAdd={handleUniverseAdd}
 					/>
 					<GenerateGrid {...filteredData} />
-					<AddRowInput
-						// rowNumber={Symbol.length}
-						// onRowAdd={onRowAdd}
-						numberSymbols={dataObject.Symbol.length}
-					/>
-					<DeleteAllRows
-						// handleDeleteAllRows={handleDeleteAllRows}
-						// gridRow={Symbol.length + 2}
-						gridRow={stockNumber + 2}
-					/>
+					<AddRowInput numberSymbols={dataObject.Symbol.length} />
+					<DeleteAllRows gridRow={stockNumber + 2} />
 				</div>
 				<div
 					id='table-settings-grid'
@@ -238,8 +259,6 @@ class RadarScreen extends React.PureComponent {
 						}}
 						updateFilterRules={this.updateFilterRules}
 						key={`${updateKey} filter`}
-						// emptyFilter={emptyFilter}
-
 						emptyFilter={!this.state.rules.length}
 					/>
 				</div>
@@ -251,6 +270,15 @@ class RadarScreen extends React.PureComponent {
 const mapStateToProps = state => ({
 	stockNumber: getStockNumber(state),
 	columnNames: getColumnNames(state),
+	symbols: getColumn(state, 'Symbol'),
+	intervals: getColumn(state, 'Interval'),
+	apiIndicators: getNonCustomIndicators(state),
+	dataObject: getStockData(state), //temporary
 });
 
-export default connect(mapStateToProps)(RadarScreen);
+const mapDispatchToProps = dispatch => ({
+	updateNonCustomIndicators: apiDataObject =>
+		dispatch(doUpdateNonCustomIndicators(apiDataObject)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RadarScreen);
