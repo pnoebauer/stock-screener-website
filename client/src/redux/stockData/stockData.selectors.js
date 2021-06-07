@@ -19,7 +19,14 @@ const availableIndicators = [
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 const getStockData = state => state.stockData;
-export const getStockNumber = state => state.stockData.Symbol.length;
+
+// export const getStockNumber = state => state.stockData.Symbol.length;
+export const getStockNumber = createSelector(
+	getStockData,
+	stockData => stockData.Symbol.length
+);
+// export const stockNumber = stockData => stockData.Symbol.length;
+// export const getStockNumber = createSelector(getStockData, stockNumber);
 
 // export const getColumnNames = createDeepEqualSelector(getStockData, stockData =>
 // 	Object.keys(stockData)

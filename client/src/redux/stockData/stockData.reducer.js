@@ -24,10 +24,50 @@ const stockDataReducer = (state = initialState, action) => {
 			return applyAddRow(state, action);
 		case StockDataTypes.SET_ALL_INTERVALS:
 			return applySetAllIntervals(state, action);
+		case StockDataTypes.ADD_UNIVERSE:
+			return applyAddUniverse(state, action);
 
 		default:
 			return state;
 	}
+};
+
+const applyAddUniverse = (state, action) => {
+	const {addedStocks} = action.payload;
+	const nextState = {...state};
+
+	let maxId = Math.max(...state.ID, 0);
+	// const currentStockNumber = state.Symbol.length;
+	const addedStockNumber = addedStocks.length;
+
+	Object.keys(state).forEach(columnName => {
+		switch (columnName) {
+			case 'Symbol':
+				nextState.Symbol = [...nextState.Symbol, ...addedStocks];
+				break;
+			case 'Interval':
+				nextState.Interval = [
+					...nextState.Interval,
+					...Array(addedStockNumber).fill(INTERVALS[0]),
+				];
+				break;
+			case 'ID':
+				nextState.ID = [
+					...nextState.ID,
+					...Array(addedStockNumber)
+						.fill()
+						.map((_, i) => i + maxId),
+				];
+				break;
+			default:
+				nextState[columnName] = [
+					...nextState[columnName],
+					...Array(addedStockNumber).fill(0),
+				];
+		}
+	});
+
+	return nextState;
 };
 
 const applySetAllIntervals = (state, action) => {

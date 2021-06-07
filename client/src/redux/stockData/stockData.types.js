@@ -6,4 +6,5 @@ export const StockDataTypes = {
 	ADD_ROW: 'ADD_ROW',
 	SET_ROW: 'SET_ROW',
 	SET_ALL_INTERVALS: 'SET_ALL_INTERVALS',
+	ADD_UNIVERSE: 'ADD_UNIVERSE',
 };

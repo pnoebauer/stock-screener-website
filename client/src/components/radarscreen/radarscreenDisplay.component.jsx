@@ -126,7 +126,7 @@ class RadarScreen extends React.PureComponent {
 			// onChange,
 			// handleDeleteRow,
 			// onRowAdd,
-			handleUniverseAdd,
+			// handleUniverseAdd,
 			// handleDeleteAllRows,
 			// headers,
 			dataObject,
@@ -203,7 +203,7 @@ class RadarScreen extends React.PureComponent {
 							gridColumn: '1',
 							gridRow: '1',
 						}}
-						handleUniverseAdd={handleUniverseAdd}
+						// handleUniverseAdd={handleUniverseAdd}
 					/>
 					<GenerateGrid {...filteredData} />
 					<AddRowInput

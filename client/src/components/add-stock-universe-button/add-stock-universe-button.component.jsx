@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+
 import {IoIosAddCircle} from 'react-icons/io';
 
 import Modal from '../modal/modal.component';
@@ -11,6 +13,8 @@ import Tooltip from '../tooltip/tooltip.component';
 import {UNIVERSES} from '../../assets/constants';
 
 import './add-stock-universe-button.styles.css';
+import {doAddUniverse} from '../../redux/stockData/stockData.actions';
+import {getStockNumber} from '../../redux/stockData/stockData.selectors';
 
 class AddStockUniverseButton extends React.Component {
 	constructor(props) {
@@ -67,10 +71,14 @@ class AddStockUniverseButton extends React.Component {
 		);
 		// console.log(selectedUniverses,'selectedUniverses');
 
-		const extractedSymbols = selectedUniverses.flatMap(universe => UNIVERSES[universe]);
-		// console.log(extractedSymbols, 'extractedSymbols')
+		const addedStocks = selectedUniverses.flatMap(universe => UNIVERSES[universe]);
+		// console.log(addedStocks, 'addedStocks')
 
-		this.props.handleUniverseAdd(extractedSymbols);
+		// this.props.handleUniverseAdd(addedStocks);
+		// console.log(this.props.stockNumber, 'props');
+		const {stockNumber} = this.props;
+
+		this.props.addUniverse({addedStocks, stockNumber});
 	};
 
 	render() {
@@ -109,4 +117,12 @@ class AddStockUniverseButton extends React.Component {
 	}
 }
 
-export default AddStockUniverseButton;
+const mapStateToProps = state => ({
+	stockNumber: getStockNumber(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+	addUniverse: stocks => dispatch(doAddUniverse(stocks)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddStockUniverseButton);

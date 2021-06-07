@@ -36,3 +36,8 @@ export const doSetAllIntervals = payload => ({
 	type: StockDataTypes.SET_ALL_INTERVALS,
 	payload,
 });
+
+export const doAddUniverse = payload => ({
+	type: StockDataTypes.ADD_UNIVERSE,
+	payload,
+});

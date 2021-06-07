@@ -1,7 +1,11 @@
 import {takeLatest, call, put, select, all} from 'redux-saga/effects'; //listens to every actions of a specific type that is passed to it
 
 import {StockDataTypes} from './stockData.types';
-import {getCustomIndicatorReqObj, getStockNumber} from './stockData.selectors';
+import {
+	getCustomIndicatorReqObj,
+	getStockNumber,
+	getAllCustomIndicatorsConfig,
+} from './stockData.selectors';
 
 // import {fetchSuccess, fetchFailure} from './stockData.actions';
 
@@ -62,18 +66,42 @@ export function* updateAllIndicatorRows({payload}) {
 	// const {columnNames}=payload
 
 	const numberStocks = yield select(getStockNumber);
+	const customIndicatorConfigs = yield select(getAllCustomIndicatorsConfig);
+
+	if (!Object.keys(customIndicatorConfigs).length) return;
 
 	for (let valueRow = 0; valueRow < numberStocks; valueRow++) {
 		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
 		// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
 
+		// if (!Object.keys(customIndicatorReqObj.indicators).length) {
+		// 	// console.log('empty');
+		// 	continue;
+		// }
+
 		yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
 	}
-	// const customIndicatorsConfig = yield select(getAllCustomIndicatorsConfig);
-	// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
-	// yield fetchCustomIndicators(customIndicatorReqObj, payload.valueRow);
-	// yield put(doSetInputField({payload})); //not required --> async and triggered in reducer already
-	// yield fetchAsync();
+}
+
+export function* updateAddedIndicatorRows({payload}) {
+	const {stockNumber} = payload;
+
+	const numberStocks = yield select(getStockNumber);
+	const customIndicatorConfigs = yield select(getAllCustomIndicatorsConfig);
+
+	if (!Object.keys(customIndicatorConfigs).length) return;
+
+	for (let valueRow = stockNumber; valueRow < numberStocks; valueRow++) {
+		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
+		// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
+
+		// if (!Object.keys(customIndicatorReqObj.indicators).length) {
+		// 	// console.log('empty');
+		// 	continue;
+		// }
+
+		yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
+	}
 }
 
 export function* onColumnChange() {
@@ -85,6 +113,24 @@ export function* onFieldChange() {
 	yield takeLatest([StockDataTypes.SET_INPUT_FIELD, StockDataTypes.ADD_ROW], updateRow);
 }
 
+export function* onIntervalsChange() {
+	yield takeLatest(StockDataTypes.SET_ALL_INTERVALS, updateAllIndicatorRows);
+}
+
+export function* onUniverseAdd() {
+	yield takeLatest(StockDataTypes.ADD_UNIVERSE, updateAddedIndicatorRows);
+}
+
+export function* stockDataSagas() {
+	yield all([
+		call(onFieldChange),
+		call(onColumnChange),
+		call(onIntervalsChange),
+		call(onUniverseAdd),
+	]);
+	// yield all([call(asyncStart)]);
+}
+
 // // always start fetching if any of below action happens
 // export function* asyncStart() {
 // 	yield takeLatest(
@@ -92,8 +138,3 @@ export function* onFieldChange() {
 // 		fetchAsync
 // 	);
 // }
-
-export function* stockDataSagas() {
-	yield all([call(onFieldChange), call(onColumnChange)]);
-	// yield all([call(asyncStart)]);
-}
