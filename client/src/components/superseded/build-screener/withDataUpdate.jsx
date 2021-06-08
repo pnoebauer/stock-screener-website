@@ -6,7 +6,7 @@ import {
 	API_TO_INDICATORS,
 	INDICATORS_TO_API,
 	CUSTOM_INDICATORS,
-} from '../../assets/constants';
+} from '../../../assets/constants';
 
 const permanentHeaders = ['ID', 'Symbol', 'Interval'];
 

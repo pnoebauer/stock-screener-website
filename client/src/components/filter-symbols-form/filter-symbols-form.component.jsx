@@ -1,5 +1,8 @@
 import React from 'react';
 
+import {connect} from 'react-redux';
+import {doSetFilterRules} from '../../redux/filtering/filtering.actions';
+
 import RulesSelector from '../rules-selector/rules-selector.component';
 
 import './filter-symbols-form.styles.css';
@@ -62,10 +65,9 @@ class FilterSymbolsForm extends React.Component {
 	handleSubmit = event => {
 		event.preventDefault();
 
-		const {updateFilterRules} = this.props;
+		const {setFilterRules} = this.props;
 
-		// trigger a fetch call in the parent
-		updateFilterRules(this.state);
+		setFilterRules(this.state.rules);
 
 		this.props.closeForm();
 	};
@@ -107,4 +109,8 @@ class FilterSymbolsForm extends React.Component {
 	}
 }
 
-export default FilterSymbolsForm;
+const mapDispatchToProps = dispatch => ({
+	setFilterRules: rules => dispatch(doSetFilterRules(rules)),
+});
+
+export default connect(null, mapDispatchToProps)(FilterSymbolsForm);

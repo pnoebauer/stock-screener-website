@@ -18,18 +18,16 @@ const customStyles = {
 };
 
 // const AddRowInput = ({stockNumber, onRowAdd, numberSymbols}) => {
-const AddRowInput = ({stockNumber, numberSymbols}) => {
+const AddRowInput = ({stockNumber, gridRow}) => {
 	return (
 		<Dropdown
 			options={SYMBOLS}
-			gridRow={stockNumber + 2}
+			gridRow={gridRow}
 			gridColumn={1}
-			// onChange={onRowAdd}
 			customStyles={customStyles}
 			className={'add-row'}
 			headerName={'Symbol'}
 		>
-			{/* {SYMBOLS[numberSymbols]} once filter is in place*/}
 			{SYMBOLS[stockNumber]}
 		</Dropdown>
 	);

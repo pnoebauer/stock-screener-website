@@ -11,6 +11,7 @@ import FilterSymbolsForm from '../filter-symbols-form/filter-symbols-form.compon
 import Tooltip from '../tooltip/tooltip.component';
 
 import {getUsedIndicators} from '../../redux/stockData/stockData.selectors';
+import {getFilterRulesNumber} from '../../redux/filtering/filtering.selectors';
 
 import './filter-symbols-button.styles.css';
 
@@ -31,7 +32,7 @@ class FilterSymbolsButton extends React.Component {
 	};
 
 	render() {
-		const {usedIndicators, updateFilterRules} = this.props;
+		const {usedIndicators, numberFilterRules} = this.props;
 
 		return (
 			<>
@@ -40,10 +41,10 @@ class FilterSymbolsButton extends React.Component {
 					className='filter-symbols-button tooltip'
 					style={this.props.style}
 				>
-					{this.props.emptyFilter ? (
-						<RiFilter2Line className='filter-symbols-icon' />
-					) : (
+					{numberFilterRules ? (
 						<RiFilter2Fill className='filter-symbols-icon' />
+					) : (
+						<RiFilter2Line className='filter-symbols-icon' />
 					)}
 
 					<Tooltip tooltipText={'Click to filter symbols'} position={'center'} />
@@ -60,11 +61,7 @@ class FilterSymbolsButton extends React.Component {
 					closeMaskOnClick={false}
 					duration={500}
 				>
-					<FilterSymbolsForm
-						updateFilterRules={updateFilterRules}
-						usedIndicators={usedIndicators}
-						closeForm={this.hide}
-					/>
+					<FilterSymbolsForm usedIndicators={usedIndicators} closeForm={this.hide} />
 				</Modal>
 			</>
 		);
@@ -73,6 +70,7 @@ class FilterSymbolsButton extends React.Component {
 
 const mapStateToProps = state => ({
 	usedIndicators: getUsedIndicators(state),
+	numberFilterRules: getFilterRulesNumber(state),
 });
 
 export default connect(mapStateToProps)(FilterSymbolsButton);

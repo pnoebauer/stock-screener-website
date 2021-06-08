@@ -9,6 +9,7 @@ import {createSelectorCreator, defaultMemoize} from 'reselect';
 import isEqual from 'lodash.isequal';
 
 import {getIndicatorConfiguration} from '../configuration/configuration.selectors';
+import {getFilteredData} from '../filtering/filtering.selectors';
 
 const availableIndicators = [
 	...Object.keys(INDICATORS_TO_API),
@@ -66,6 +67,7 @@ export const getColumn = createCachedSelector(
 
 export const getRowValues = createCachedSelector(
 	getStockData,
+	// getFilteredData,
 	(state, rowIdx) => rowIdx,
 	(stockData, rowIdx) => {
 		const rowVal = Object.keys(stockData).flatMap(columnName =>

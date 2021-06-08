@@ -3,6 +3,8 @@ import {createCachedSelector} from 're-reselect';
 import {createSelectorCreator, defaultMemoize} from 'reselect';
 import isEqual from 'lodash.isequal';
 
+import {getFilteredData} from '../filtering/filtering.selectors';
+
 // create a "selector creator" that uses lodash.isequal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
@@ -12,9 +14,10 @@ const getStockData = state => state.stockData;
 export const getSortingMap = createCachedSelector(
 	getSortingConfiguration,
 	getStockData,
+	// getFilteredData,
 	(sortingConfiguration, stockData) => {
+		// console.log('stockdata', stockData);
 		const sortingMap = sortData(sortingConfiguration, stockData);
-		// console.log(sortingConfiguration, stockData, 'sm', sortingMap);
 
 		return sortingMap;
 	}

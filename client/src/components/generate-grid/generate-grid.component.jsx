@@ -37,15 +37,18 @@ import GridRow from './grid-row.component';
 import {connect} from 'react-redux';
 
 import {getSortingMap} from '../../redux/sorting/sorting.selectors';
+import {getFilteredData} from '../../redux/filtering/filtering.selectors';
+import {getFilteredSortingMap} from '../../redux/filtering/filtering.selectors';
 
-const GenerateGrid = ({sortingMap}) => {
-	// console.log('sortingMap', sortingMap);
+// const GenerateGrid = ({sortingMap, filteredDataMap}) => {
+// 	const filteredSortingMap = sortingMap.filter(value => filteredDataMap.includes(value));
+const GenerateGrid = ({filteredSortingMap}) => {
 	return (
 		<>
 			{
 				//loop through rows
-				sortingMap &&
-					sortingMap.map((stockDataIdx, rowIdx) => {
+				filteredSortingMap &&
+					filteredSortingMap.map((stockDataIdx, rowIdx) => {
 						return (
 							<GridRow stockDataIdx={stockDataIdx} rowIdx={rowIdx} key={stockDataIdx} />
 						);
@@ -57,7 +60,9 @@ const GenerateGrid = ({sortingMap}) => {
 
 const mapStateToProps = state => {
 	return {
-		sortingMap: getSortingMap(state),
+		// sortingMap: getSortingMap(state),
+		// filteredDataMap: getFilteredData(state),
+		filteredSortingMap: getFilteredSortingMap(state),
 	};
 };
 

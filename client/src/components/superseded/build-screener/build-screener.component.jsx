@@ -5,11 +5,10 @@
 
 // import withFetch from './withFetch';
 
-import withDataUpdate from './withDataUpdate';
+// import withDataUpdate from './withDataUpdate';
 // import withSorting from './withSorting';
-// import RadarScreen from '../radarscreen/radarscreen.component';
 
-import RadarScreen from '../radarscreen/radarscreenDisplay.component';
+import RadarScreen from '../../radarscreen/radarscreen.component';
 
 // const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
 // const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
