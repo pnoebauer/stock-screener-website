@@ -12,7 +12,7 @@ import {
 
 // import {fetchSuccess, fetchFailure} from './stockData.actions';
 
-import {doSetRow} from './stockData.actions';
+import {doSetRow, doSetRows} from './stockData.actions';
 
 export function* fetchAsync({payload}) {
 	try {
@@ -37,9 +37,9 @@ export function* fetchCustomIndicators(requestObj, rowIndex) {
 
 		const payload = {data, rowIndex};
 		// console.log('saga row set');
-		yield put(doSetRow(payload));
+		// yield put(doSetRow(payload));
 
-		// check that sorting selector works correctly once the data has been updated
+		return payload;
 
 		// yield put(fetchSuccess()); //put saga's equivalent to dispatch
 	} catch (error) {
@@ -59,52 +59,42 @@ export function* updateRow({payload}) {
 		return;
 	}
 
-	yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
+	const fetchedData = yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
+
+	yield put(doSetRow(fetchedData));
 
 	// yield put(doSetInputField({payload})); //not required --> async and triggered in reducer already
 	// yield fetchAsync();
 }
 
-export function* updateAllIndicatorRows({payload}) {
-	// const {columnNames}=payload
-
-	const numberStocks = yield select(getStockNumber);
+export function* updateIndicatorRows(startRow, endRow) {
 	const customIndicatorConfigs = yield select(getAllCustomIndicatorsConfig);
 
 	if (!Object.keys(customIndicatorConfigs).length) return;
 
-	for (let valueRow = 0; valueRow < numberStocks; valueRow++) {
+	let fetchedData = [];
+
+	for (let valueRow = startRow; valueRow < endRow; valueRow++) {
 		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
-		// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
 
-		// if (!Object.keys(customIndicatorReqObj.indicators).length) {
-		// 	// console.log('empty');
-		// 	continue;
-		// }
-
-		yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
+		const fetchedDataRow = yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
+		fetchedData.push(fetchedDataRow);
 	}
+
+	yield put(doSetRows(fetchedData));
+}
+export function* updateAllIndicatorRows() {
+	const numberStocks = yield select(getStockNumber);
+
+	yield updateIndicatorRows(0, numberStocks);
 }
 
 export function* updateAddedIndicatorRows({payload}) {
 	const {stockNumber} = payload;
-
 	const numberStocks = yield select(getStockNumber);
-	const customIndicatorConfigs = yield select(getAllCustomIndicatorsConfig);
 
-	if (!Object.keys(customIndicatorConfigs).length) return;
-
-	for (let valueRow = stockNumber; valueRow < numberStocks; valueRow++) {
-		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
-		// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
-
-		// if (!Object.keys(customIndicatorReqObj.indicators).length) {
-		// 	// console.log('empty');
-		// 	continue;
-		// }
-
-		yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
-	}
+	// update from the priorly highest stock number to the current number of stocks (including the ones that were added with this action)
+	yield updateIndicatorRows(stockNumber, numberStocks);
 }
 
 export function* onColumnChange() {

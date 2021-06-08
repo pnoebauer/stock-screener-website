@@ -127,7 +127,10 @@ export const getFilteredSortingMap = createDeepEqualSelector(
 	getFilteredData,
 	getSortingMap,
 	(filteredDataIndices, sortingMap) => {
-		console.log(filteredDataIndices, sortingMap, 'all rows deleted');
+		if (!(filteredDataIndices && sortingMap)) {
+			return [];
+		}
+
 		const filteredSortingMap = sortingMap.filter(value =>
 			filteredDataIndices.includes(value)
 		);

@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash.clonedeep';
+
 import {
 	SYMBOLS,
 	INTERVALS,
@@ -25,6 +27,8 @@ const stockDataReducer = (state = initialState, action) => {
 			return applyDeleteAllRows(state, action);
 		case StockDataTypes.SET_ROW:
 			return applySetRow(state, action);
+		case StockDataTypes.SET_ROWS:
+			return applySetRows(state, action);
 		case StockDataTypes.ADD_ROW:
 			return applyAddRow(state, action);
 		case StockDataTypes.SET_ALL_INTERVALS:
@@ -37,6 +41,23 @@ const stockDataReducer = (state = initialState, action) => {
 		default:
 			return state;
 	}
+};
+
+// triggered by the saga once fetching has finished (occurs after SET_INPUT_FIELD, SET_COLUMNS, ADD_ROW)
+const applySetRows = (state, action) => {
+	const nextState = cloneDeep(state);
+
+	const fetchedDataArray = action.payload;
+
+	fetchedDataArray.forEach((item, index) => {
+		const {data, rowIndex} = item;
+		// loops through the returned indicator object from the backend and updates the current row to the values
+		for (const column in data) {
+			nextState[column.toUpperCase()][rowIndex] = data[column];
+		}
+	});
+
+	return nextState;
 };
 
 const applyUpdateNonCustomIndicators = (state, action) => {

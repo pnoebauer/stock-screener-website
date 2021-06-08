@@ -32,6 +32,11 @@ export const doSetRow = payload => ({
 	payload,
 });
 
+export const doSetRows = payload => ({
+	type: StockDataTypes.SET_ROWS,
+	payload,
+});
+
 export const doSetAllIntervals = payload => ({
 	type: StockDataTypes.SET_ALL_INTERVALS,
 	payload,
