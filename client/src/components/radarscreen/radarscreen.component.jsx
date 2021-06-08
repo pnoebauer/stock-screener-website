@@ -18,6 +18,8 @@ import {
 	getNonCustomIndicators,
 } from '../../redux/stockData/stockData.selectors';
 
+import {getStocksPerUniverseCount} from '../../redux/stockData/statistics.selectors';
+
 import {getFilteredStockNumber} from '../../redux/filtering/filtering.selectors';
 
 import {doUpdateNonCustomIndicators} from '../../redux/stockData/stockData.actions';
@@ -51,8 +53,6 @@ class RadarScreen extends React.PureComponent {
 			this.props.apiIndicators
 		);
 
-		// console.log(symbolsUpdate, intervalsUpdate, apiIndicatorUpdate, 'same');
-
 		if (symbolsUpdate || intervalsUpdate || apiIndicatorUpdate) {
 			// if (symbolsUpdate || intervalsUpdate) {
 			// close old event source and start a new one with updated Symbol
@@ -63,24 +63,6 @@ class RadarScreen extends React.PureComponent {
 				this.startEventSource();
 			}
 		}
-
-		// if (!sameElements(prevProps.dataObject.Symbol, this.props.dataObject.Symbol)) {
-		// 	console.log('symbols changed');
-
-		// 	let symbolCount = {};
-
-		// 	Object.keys(UNIVERSES).forEach(universe => {
-		// 		let count = 0;
-		// 		for (const symbol of this.props.dataObject.Symbol) {
-		// 			if (UNIVERSES[universe].includes(symbol)) {
-		// 				count++;
-		// 			}
-		// 		}
-		// 		symbolCount[universe] = count;
-		// 	});
-
-		// 	console.log(symbolCount, 'symbolCount');
-		// }
 	}
 
 	startEventSource() {
@@ -111,7 +93,7 @@ class RadarScreen extends React.PureComponent {
 	render() {
 		const {columnNames, stockNumber, filteredStockNumber} = this.props;
 
-		const {dataObject} = this.props;
+		console.log(this.props.stocksPerUniverseCount, 'stocksPerUniverseCount');
 
 		updateKey = columnNames;
 
@@ -189,6 +171,7 @@ const mapStateToProps = state => ({
 	symbols: getColumn(state, 'Symbol'),
 	intervals: getColumn(state, 'Interval'),
 	apiIndicators: getNonCustomIndicators(state),
+	stocksPerUniverseCount: getStocksPerUniverseCount(state),
 });
 
 const mapDispatchToProps = dispatch => ({

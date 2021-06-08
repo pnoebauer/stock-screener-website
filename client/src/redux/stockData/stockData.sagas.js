@@ -1,4 +1,4 @@
-import {takeLatest, call, put, select, all} from 'redux-saga/effects'; //listens to every actions of a specific type that is passed to it
+import {takeLatest, call, put, select, all} from 'redux-saga/effects';
 
 import {StockDataTypes} from './stockData.types';
 
@@ -10,17 +10,13 @@ import {
 	getAllCustomIndicatorsConfig,
 } from './stockData.selectors';
 
-// import {fetchSuccess, fetchFailure} from './stockData.actions';
-
 import {doSetRow, doSetRows} from './stockData.actions';
 
-export function* fetchAsync({payload}) {
-	try {
-		// yield put(fetchSuccess()); //put saga's equivalent to dispatch
-	} catch (error) {
-		// yield put(fetchFailure(error.message));
-	}
-}
+import {
+	doSetFetchStart,
+	doSetFetchSuccess,
+	doSetFetchFailure,
+} from '../fetching/fetching.actions';
 
 export function* fetchCustomIndicators(requestObj, rowIndex) {
 	try {
@@ -36,14 +32,10 @@ export function* fetchCustomIndicators(requestObj, rowIndex) {
 		// console.log(data, 'data');
 
 		const payload = {data, rowIndex};
-		// console.log('saga row set');
 		// yield put(doSetRow(payload));
-
 		return payload;
-
-		// yield put(fetchSuccess()); //put saga's equivalent to dispatch
 	} catch (error) {
-		// yield put(fetchFailure(error.message));
+		yield put(doSetFetchFailure(error.message));
 	}
 }
 
@@ -52,19 +44,16 @@ export function* updateRow({payload}) {
 
 	const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
 
-	// console.log(customIndicatorReqObj, 'getCustomIndicatorReqObj');
-
 	if (!Object.keys(customIndicatorReqObj.indicators).length) {
-		// console.log('empty');
 		return;
 	}
 
+	yield put(doSetFetchStart());
 	const fetchedData = yield fetchCustomIndicators(customIndicatorReqObj, valueRow);
 
-	yield put(doSetRow(fetchedData));
+	// yield put(doSetRow(fetchedData));
 
-	// yield put(doSetInputField({payload})); //not required --> async and triggered in reducer already
-	// yield fetchAsync();
+	yield all([put(doSetFetchSuccess()), put(doSetRow(fetchedData))]);
 }
 
 export function* updateIndicatorRows(startRow, endRow) {
@@ -72,8 +61,9 @@ export function* updateIndicatorRows(startRow, endRow) {
 
 	if (!Object.keys(customIndicatorConfigs).length) return;
 
-	let fetchedData = [];
+	yield put(doSetFetchStart());
 
+	let fetchedData = [];
 	for (let valueRow = startRow; valueRow < endRow; valueRow++) {
 		const customIndicatorReqObj = yield select(getCustomIndicatorReqObj, valueRow);
 
@@ -81,7 +71,9 @@ export function* updateIndicatorRows(startRow, endRow) {
 		fetchedData.push(fetchedDataRow);
 	}
 
-	yield put(doSetRows(fetchedData));
+	// yield put(doSetRows(fetchedData));
+
+	yield all([put(doSetFetchSuccess()), put(doSetRows(fetchedData))]);
 }
 export function* updateAllIndicatorRows() {
 	const numberStocks = yield select(getStockNumber);
@@ -105,7 +97,6 @@ export function* onColumnChange() {
 }
 
 export function* onFieldChange() {
-	// yield takeLatest(StockDataTypes.SET_INPUT_FIELD, updateRow);
 	yield takeLatest([StockDataTypes.SET_INPUT_FIELD, StockDataTypes.ADD_ROW], updateRow);
 }
 
@@ -124,13 +115,4 @@ export function* stockDataSagas() {
 		call(onIntervalsChange),
 		call(onUniverseAdd),
 	]);
-	// yield all([call(asyncStart)]);
 }
-
-// // always start fetching if any of below action happens
-// export function* asyncStart() {
-// 	yield takeLatest(
-// 		[StockDataTypes.SET_INPUT_FIELD, StockDataTypes.SET_COLUMNS],
-// 		fetchAsync
-// 	);
-// }
