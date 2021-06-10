@@ -1,7 +1,10 @@
 import React from 'react';
 
 import {connect} from 'react-redux';
+
 import {doSetFilterRules} from '../../redux/filtering/filtering.actions';
+
+import {getFilterRules} from '../../redux/filtering/filtering.selectors';
 
 import RulesSelector from '../rules-selector/rules-selector.component';
 
@@ -11,16 +14,22 @@ class FilterSymbolsForm extends React.Component {
 	constructor(props) {
 		super(props);
 
+		const {filterRules} = this.props;
+
+		this.state = {
+			rules: filterRules,
+		};
+
 		this.defaultRule = {
 			operator: '=',
 			indicatorLH: this.props.usedIndicators[0],
 			indicatorRH: this.props.usedIndicators[0],
 		};
 
-		// this.state = {parameter, lookBack, errormessage: ''};
-		this.state = {
-			rules: [this.defaultRule],
-		};
+		// // this.state = {parameter, lookBack, errormessage: ''};
+		// this.state = {
+		// 	rules: [this.defaultRule],
+		// };
 	}
 
 	selectionChange = event => {
@@ -44,7 +53,6 @@ class FilterSymbolsForm extends React.Component {
 
 	onDelete = event => {
 		event.preventDefault();
-		// console.log(event.target.id, 'e');
 
 		this.setState(state => {
 			return {
@@ -109,8 +117,12 @@ class FilterSymbolsForm extends React.Component {
 	}
 }
 
+const mapStateToProps = state => ({
+	filterRules: getFilterRules(state),
+});
+
 const mapDispatchToProps = dispatch => ({
 	setFilterRules: rules => dispatch(doSetFilterRules(rules)),
 });
 
-export default connect(null, mapDispatchToProps)(FilterSymbolsForm);
+export default connect(mapStateToProps, mapDispatchToProps)(FilterSymbolsForm);

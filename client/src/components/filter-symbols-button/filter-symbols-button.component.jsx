@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 
 import {RiFilter2Line, RiFilter2Fill} from 'react-icons/ri';
 
-import Modal from '../modal/modal.component';
+import Modal from '../portal-modal/modal.component';
 
 import FilterSymbolsForm from '../filter-symbols-form/filter-symbols-form.component';
 
@@ -20,15 +20,20 @@ class FilterSymbolsButton extends React.Component {
 		super(props);
 		this.state = {
 			visible: false,
+			inactive: false,
 		};
 	}
 
 	show = () => {
-		this.setState({visible: true});
+		this.setState({visible: true, inactive: false});
 	};
 
 	hide = () => {
-		this.setState({visible: false});
+		this.setState({visible: false, inactive: false});
+	};
+
+	closeForm = () => {
+		this.setState({inactive: true});
 	};
 
 	render() {
@@ -50,7 +55,20 @@ class FilterSymbolsButton extends React.Component {
 					<Tooltip tooltipText={'Click to filter symbols'} position={'center'} />
 				</button>
 
-				<Modal
+				{this.state.visible ? (
+					<Modal
+						inactive={this.state.inactive}
+						style={{height: '50%', width: '50%'}}
+						onClose={this.hide}
+					>
+						<FilterSymbolsForm
+							usedIndicators={usedIndicators}
+							closeForm={this.closeForm}
+						/>
+					</Modal>
+				) : null}
+
+				{/* <Modal
 					visible={this.state.visible}
 					onClose={this.hide}
 					width={50}
@@ -62,7 +80,7 @@ class FilterSymbolsButton extends React.Component {
 					duration={500}
 				>
 					<FilterSymbolsForm usedIndicators={usedIndicators} closeForm={this.hide} />
-				</Modal>
+				</Modal> */}
 			</>
 		);
 	}

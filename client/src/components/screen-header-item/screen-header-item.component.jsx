@@ -22,12 +22,15 @@ import './screen-header-item.styles.css';
 class ScreenHeaderItem extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {visible: false};
+		this.state = {visible: false, inactive: false};
 	}
 
-	show = () => this.setState({visible: true});
+	show = () => this.setState({visible: true, inactive: false});
 
-	hide = () => this.setState({visible: false});
+	hide = () => this.setState({visible: false, inactive: false});
+
+	//  required to achieve the fade out effect
+	closeForm = () => this.setState({inactive: true});
 
 	sorting = e => {
 		// e.preventDefault();
@@ -95,7 +98,8 @@ class ScreenHeaderItem extends React.Component {
 							>
 								<IndicatorConfigurationForm
 									indicator={headerName}
-									closeForm={this.hide}
+									// closeForm={this.hide}
+									closeForm={this.closeForm}
 								/>
 							</Modal>
 						) : null}
@@ -113,7 +117,7 @@ class ScreenHeaderItem extends React.Component {
 								style={{height: '30%', width: '15%'}}
 								onClose={this.hide}
 							>
-								<IntervalConfigurationForm closeForm={this.hide} />
+								<IntervalConfigurationForm closeForm={this.closeForm} />
 							</Modal>
 						) : null}
 

@@ -35,6 +35,7 @@ class AddStockUniverseButton extends React.Component {
 	show = () => {
 		this.setState(prevState => ({
 			visible: true,
+			inactive: false,
 			universes: prevState.universes.map(item => ({
 				...item,
 				selected: false,
@@ -43,7 +44,7 @@ class AddStockUniverseButton extends React.Component {
 	};
 
 	hide = () => {
-		this.setState({visible: false});
+		this.setState({visible: false, inactive: false});
 	};
 
 	onToggle = event => {
@@ -68,11 +69,6 @@ class AddStockUniverseButton extends React.Component {
 	handleAddClick = e => {
 		//  required to achieve the fade out effect
 		this.setState({inactive: true});
-		window.setTimeout(() => {
-			this.hide();
-		}, 1000);
-
-		// this.hide();
 
 		// const selectedUniverses = this.state.universes.filter(universe => universe.selected).map(universe => universe.name);
 		const selectedUniverses = this.state.universes.flatMap(universe =>
@@ -83,8 +79,6 @@ class AddStockUniverseButton extends React.Component {
 		const addedStocks = selectedUniverses.flatMap(universe => UNIVERSES[universe]);
 		// console.log(addedStocks, 'addedStocks')
 
-		// this.props.handleUniverseAdd(addedStocks);
-		// console.log(this.props.stockNumber, 'props');
 		const {stockNumber} = this.props;
 
 		this.props.addUniverse({addedStocks, stockNumber});
@@ -103,7 +97,11 @@ class AddStockUniverseButton extends React.Component {
 				</button>
 
 				{this.state.visible ? (
-					<Modal inactive={this.state.inactive} style={{height: '40%', width: '40%'}}>
+					<Modal
+						inactive={this.state.inactive}
+						style={{height: '40%', width: '40%'}}
+						onClose={this.hide}
+					>
 						<UniverseSelector
 							displayedItems={this.state.universes}
 							onToggle={this.onToggle}

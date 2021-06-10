@@ -139,7 +139,6 @@ import './add-column-button.styles.css';
 
 class AddColumnButton extends React.Component {
 	constructor(props) {
-		// console.log('constructor add')
 		super(props);
 		this.state = {
 			visible: false,
@@ -162,40 +161,15 @@ class AddColumnButton extends React.Component {
 			selected: false,
 		}));
 
-	// handleOkCancel = (type, updatedState) => {
 	handleOkCancel = (type, columns) => {
 		//  required to achieve the fade out effect
-		// this.setState({inactive: true});
-
-		// window.setTimeout(() => {
-		// 	this.hide();
-		// }, 50000);
+		this.setState({inactive: true});
 
 		const {updateColumns} = this.props;
-
-		// this.setState({inactive: true}, () => {
-		// 	setTimeout(() => {
-		// 		this.hide();
-		// 		if (type === 'ok') {
-		// 			// const columns = updatedState.usedIndicators.map(item => item.name);
-
-		// 			updateColumns(columns);
-		// 		}
-		// 	}, 500);
-		// });
-
-		this.setState({inactive: true});
 
 		if (type === 'ok') {
 			updateColumns(columns);
 		}
-
-		// this.hide();
-		// if (type === 'ok') {
-		// 	// const columns = updatedState.usedIndicators.map(item => item.name);
-
-		// 	this.props.updateColumns(columns);
-		// }
 	};
 
 	render() {
