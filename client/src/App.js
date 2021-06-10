@@ -11,8 +11,8 @@ import './App.css';
 function App() {
 	return (
 		<div className='App'>
-			{/* <Header />
-			<Radarscreen /> */}
+			<Header />
+			<Radarscreen />
 			<Home />
 		</div>
 	);

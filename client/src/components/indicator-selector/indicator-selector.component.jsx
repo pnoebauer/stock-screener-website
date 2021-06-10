@@ -62,44 +62,50 @@ class IndicatorSelector extends React.Component {
 		);
 	};
 
-	unSelect() {
-		this.setState({
-			availableIndicators: this.state.availableIndicators.map(item => ({
-				...item,
-				selected: false,
-			})),
-			usedIndicators: this.state.usedIndicators.map(item => ({...item, selected: false})),
-		});
-	}
+	// NOT NEEDED ANYMORE BECAUSE PORTAL_MODAL IS NOW UNMOUNTED ONCE CLOSED AND STATE IS RESET
+	// unSelect() {
+	// 	this.setState({
+	// 		availableIndicators: this.state.availableIndicators.map(item => ({
+	// 			...item,
+	// 			selected: false,
+	// 		})),
+	// 		usedIndicators: this.state.usedIndicators.map(item => ({...item, selected: false})),
+	// 	});
+	// }
 
 	handleOk = () => {
 		// console.log(this.state)
-		this.unSelect();
-		this.props.handleOkCancel('ok', this.state);
+		// this.unSelect();
+
+		const selectedIndicators = this.state.usedIndicators.map(item => item.name);
+		// console.log(selectedIndicators, 'sel');
+		// this.props.handleOkCancel('ok', this.state);
+
+		this.props.handleOkCancel('ok', selectedIndicators);
 	};
 
 	handleCancel = () => {
-		const {handleOkCancel, ...priorState} = this.props;
+		// const {handleOkCancel, ...priorState} = this.props;
 
-		// console.log(priorState, this.state)
-		const {availableIndicatorsDefault, usedIndicatorsDefault} = priorState;
+		// // console.log(priorState, this.state)
+		// const {availableIndicatorsDefault, usedIndicatorsDefault} = priorState;
 
-		this.setState(
-			{
-				availableIndicators: [
-					...this.state.availableIndicators.flatMap(item => []),
-					...availableIndicatorsDefault,
-				],
-				usedIndicators: [
-					...this.state.usedIndicators.flatMap(item => []),
-					...usedIndicatorsDefault,
-				],
-			}
-			// ,
-			// ()=>console.log(this.state,'s')
-		);
+		// this.setState(
+		// 	{
+		// 		availableIndicators: [
+		// 			...this.state.availableIndicators.flatMap(item => []),
+		// 			...availableIndicatorsDefault,
+		// 		],
+		// 		usedIndicators: [
+		// 			...this.state.usedIndicators.flatMap(item => []),
+		// 			...usedIndicatorsDefault,
+		// 		],
+		// 	}
+		// 	// ,
+		// 	// ()=>console.log(this.state,'s')
+		// );
 
-		this.unSelect();
+		// this.unSelect();
 		this.props.handleOkCancel('cancel');
 	};
 

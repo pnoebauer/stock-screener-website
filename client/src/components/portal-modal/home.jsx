@@ -25,7 +25,7 @@ export default class Home extends React.Component {
 					{!showModal ? 'Open Modal' : 'Close Modal'}
 				</button>
 				{showModal ? (
-					<Modal>
+					<Modal showModal={showModal}>
 						<h1>Heading</h1>
 						<p>Lorem ipsum </p>
 						<button className='modal-close' onClick={this.toggleModal}>

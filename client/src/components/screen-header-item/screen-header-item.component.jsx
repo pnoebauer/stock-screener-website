@@ -4,7 +4,8 @@ import {connect} from 'react-redux';
 
 import {doSetSortingConfiguration} from '../../redux/sorting/sorting.actions';
 
-import Modal from '../modal/modal.component';
+import Modal from '../portal-modal/modal.component';
+// import Modal from '../modal/modal.component';
 
 import IndicatorConfigurationForm from '../indicator-configuration-form/indicator-configuration-form.component';
 
@@ -73,7 +74,7 @@ class ScreenHeaderItem extends React.Component {
 					<>
 						<ConfigurationButton openConfigModal={this.show} tooltip={'indicator'} />
 
-						<Modal
+						{/* <Modal
 							visible={this.state.visible}
 							onClose={this.hide}
 							width={30}
@@ -84,23 +85,39 @@ class ScreenHeaderItem extends React.Component {
 							closeMaskOnClick={false}
 							// showMask={false}
 						>
-							<IndicatorConfigurationForm
-								indicator={headerName}
-								closeForm={this.hide}
-								// updateCustomIndicators={updateCustomIndicators}
-							/>
-						</Modal>
+							<IndicatorConfigurationForm indicator={headerName} closeForm={this.hide} />
+						</Modal> */}
+						{this.state.visible ? (
+							<Modal
+								inactive={this.state.inactive}
+								style={{height: '30%', width: '30%'}}
+								onClose={this.hide}
+							>
+								<IndicatorConfigurationForm
+									indicator={headerName}
+									closeForm={this.hide}
+								/>
+							</Modal>
+						) : null}
 
-						<IndicatorConfigurationDisplay
-							indicator={headerName}
-							// configuration={CUSTOM_INDICATORS[id]}
-						/>
+						<IndicatorConfigurationDisplay indicator={headerName} />
 					</>
 				) : null}
 				{headerName === 'Interval' ? (
 					<>
 						<ConfigurationButton openConfigModal={this.show} tooltip={'interval'} />
-						<Modal
+
+						{this.state.visible ? (
+							<Modal
+								inactive={this.state.inactive}
+								style={{height: '30%', width: '15%'}}
+								onClose={this.hide}
+							>
+								<IntervalConfigurationForm closeForm={this.hide} />
+							</Modal>
+						) : null}
+
+						{/* <Modal
 							visible={this.state.visible}
 							onClose={this.hide}
 							width={30}
@@ -110,11 +127,8 @@ class ScreenHeaderItem extends React.Component {
 							closeOnEsc={false}
 							closeMaskOnClick={false}
 						>
-							<IntervalConfigurationForm
-								closeForm={this.hide}
-								// setAllIntervals={setAllIntervals}
-							/>
-						</Modal>
+							<IntervalConfigurationForm closeForm={this.hide} />
+						</Modal> */}
 					</>
 				) : null}
 			</div>

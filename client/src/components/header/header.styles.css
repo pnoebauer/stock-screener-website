@@ -4,7 +4,7 @@
 	background-color: #f1f1f1;
 	padding: 10px 10px;
 	position: relative;
-	z-index: 0;
+	/* z-index: 0; */
 }
 
 /* Style the header links */

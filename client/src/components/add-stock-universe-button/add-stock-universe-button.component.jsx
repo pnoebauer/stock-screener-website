@@ -4,7 +4,8 @@ import {connect} from 'react-redux';
 
 import {IoIosAddCircle} from 'react-icons/io';
 
-import Modal from '../modal/modal.component';
+// import Modal from '../modal/modal.component';
+import Modal from '../portal-modal/modal.component';
 
 import UniverseSelector from '../stock-universe-selector/stock-universe-selector.coponent';
 
@@ -22,6 +23,7 @@ class AddStockUniverseButton extends React.Component {
 		super(props);
 		this.state = {
 			visible: false,
+			inactive: false,
 			universes: Object.keys(UNIVERSES).map(universe => ({
 				id: universe,
 				name: universe,
@@ -64,7 +66,14 @@ class AddStockUniverseButton extends React.Component {
 	};
 
 	handleAddClick = e => {
-		this.hide();
+		//  required to achieve the fade out effect
+		this.setState({inactive: true});
+		window.setTimeout(() => {
+			this.hide();
+		}, 1000);
+
+		// this.hide();
+
 		// const selectedUniverses = this.state.universes.filter(universe => universe.selected).map(universe => universe.name);
 		const selectedUniverses = this.state.universes.flatMap(universe =>
 			universe.selected ? [universe.name] : []
@@ -93,7 +102,17 @@ class AddStockUniverseButton extends React.Component {
 					<Tooltip tooltipText={'Click to add stock universe'} position={'right'} />
 				</button>
 
-				<Modal
+				{this.state.visible ? (
+					<Modal inactive={this.state.inactive} style={{height: '40%', width: '40%'}}>
+						<UniverseSelector
+							displayedItems={this.state.universes}
+							onToggle={this.onToggle}
+							onAdd={this.handleAddClick}
+						/>
+					</Modal>
+				) : null}
+
+				{/* <Modal
 					visible={this.state.visible}
 					onClose={this.hide}
 					width={40}
@@ -111,7 +130,7 @@ class AddStockUniverseButton extends React.Component {
 						onToggle={this.onToggle}
 						onAdd={this.handleAddClick}
 					/>
-				</Modal>
+				</Modal> */}
 			</>
 		);
 	}

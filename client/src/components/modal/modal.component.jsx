@@ -45,6 +45,7 @@ class Modal extends React.Component {
 	}
 
 	onKeyUp = event => {
+		console.log(event.keyCode, 'esc');
 		if (!this.props.closeOnEsc || event.keyCode !== 27) {
 			//closeOnEsc is off or clicked key is not ESC
 			return;
