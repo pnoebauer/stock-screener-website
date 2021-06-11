@@ -1,0 +1,35 @@
+#statistics-grid-container {
+	/* for sizing and scrolling: need to do the same for the other grids, change height setting */
+	/* height: 100%; */
+
+	width: 30%;
+	display: grid;
+	margin: 10px;
+	/* grid-gap: 1px; */
+
+	/* margin-left: -1px; */
+	border-bottom: 1px solid rgb(182, 182, 182);
+	border-left: 1px solid rgb(182, 182, 182);
+
+	position: relative;
+}
+
+#statistics-grid-container > .info-cell,
+#statistics-grid-container > .description-cell {
+	border-top: 1px solid rgb(182, 182, 182);
+	border-right: 1px solid rgb(182, 182, 182);
+}
+
+.description-cell {
+	background-color: whitesmoke;
+	padding: 10px;
+	/* padding-right: 2px;
+	text-align: end; */
+}
+
+.info-cell {
+	background-color: whitesmoke;
+	padding: 10px;
+	/* padding-left: 2px;
+	text-align: start; */
+}
