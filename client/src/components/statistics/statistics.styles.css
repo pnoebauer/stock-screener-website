@@ -2,7 +2,8 @@
 	/* for sizing and scrolling: need to do the same for the other grids, change height setting */
 	/* height: 100%; */
 
-	width: 30%;
+	/* width: 50%; */
+	width: max-content;
 	display: grid;
 	margin: 10px;
 	/* grid-gap: 1px; */
@@ -21,7 +22,7 @@
 }
 
 .description-cell {
-	background-color: whitesmoke;
+	background-color: rgb(219, 219, 219);
 	padding: 10px;
 	/* padding-right: 2px;
 	text-align: end; */

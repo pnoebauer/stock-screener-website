@@ -30,6 +30,18 @@ export const getFilteredData = createDeepEqualSelector(
 	}
 );
 
+export const getFilteredSymbolList = createDeepEqualSelector(
+	getFilteredData,
+	getStockData,
+	(filteredDataIndices, stockData) => {
+		const filteredSymbolList = filteredDataIndices.map(
+			filteredIndex => stockData.Symbol[filteredIndex]
+		);
+		console.log(filteredSymbolList, 'fs');
+		return filteredSymbolList;
+	}
+);
+
 const filteredIndexMap = (rules, data) => {
 	let filterMap = [];
 
