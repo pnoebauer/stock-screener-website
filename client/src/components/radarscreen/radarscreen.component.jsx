@@ -9,16 +9,14 @@ import AddRowInput from '../add-row-input/add-row-input.component';
 import AddStockUniverseButton from '../add-stock-universe-button/add-stock-universe-button.component';
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
+import Spinner from '../spinner/spinner.component';
 
 import {
 	getStockNumber,
 	getColumnNames,
-	getStockData,
 	getColumn,
 	getNonCustomIndicators,
 } from '../../redux/stockData/stockData.selectors';
-
-import {getStocksPerUniverseCount} from '../../redux/stockData/statistics.selectors';
 
 import {getFilteredStockNumber} from '../../redux/filtering/filtering.selectors';
 
@@ -91,12 +89,13 @@ class RadarScreen extends React.PureComponent {
 	}
 
 	render() {
-		const {columnNames, stockNumber, filteredStockNumber} = this.props;
+		const {columnNames, stockNumber, filteredStockNumber, fetchStatus} = this.props;
 
 		updateKey = columnNames;
 
 		return (
-			<div className='radarscreen' style={{display: 'flex'}}>
+			<div className='radarscreen'>
+				<Spinner />
 				<div
 					id='indexation-grid'
 					style={{
@@ -169,7 +168,6 @@ const mapStateToProps = state => ({
 	symbols: getColumn(state, 'Symbol'),
 	intervals: getColumn(state, 'Interval'),
 	apiIndicators: getNonCustomIndicators(state),
-	stocksPerUniverseCount: getStocksPerUniverseCount(state),
 });
 
 const mapDispatchToProps = dispatch => ({

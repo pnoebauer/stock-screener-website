@@ -2,10 +2,12 @@
 	margin-top: 20px;
 	margin-left: 10px;
 	margin-right: 20px;
+	display: flex;
 
 	/* for sizing and scrolling */
 	/* height: 500px;
 	overflow: auto; */
+	position: relative;
 }
 
 #grid-container {
@@ -80,24 +82,4 @@ button {
 	/* margin-left: -1px; */
 	/* border-top: 1px solid black; */
 	/* border-right: 1px solid black; */
-}
-
-.table-buttons-container {
-	border: none;
-	display: flex;
-
-	/* flex-direction: column; */
-
-	width: 35px;
-	border-top: 1px solid black;
-	border-right: 1px solid black;
-
-	border-bottom: 1px solid black;
-	margin-bottom: -1px;
-
-	/* box-sizing: border-box;
-	height: 40px; */
-
-	position: sticky;
-	top: 0;
 }

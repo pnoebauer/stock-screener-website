@@ -10,9 +10,9 @@ import {
 import {StockDataTypes} from './stockData.types';
 
 const initialState = {
-	Symbol: SYMBOLS.slice(0, 5),
-	Interval: Array(5).fill(INTERVALS[0]),
-	ID: [...Array(5)].map((a, idx) => idx),
+	Symbol: SYMBOLS.slice(0, 50),
+	Interval: Array(50).fill(INTERVALS[0]),
+	ID: [...Array(50)].map((a, idx) => idx),
 };
 
 const stockDataReducer = (state = initialState, action) => {

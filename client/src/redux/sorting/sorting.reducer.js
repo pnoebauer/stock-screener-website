@@ -10,8 +10,6 @@ const sortingReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case SortingTypes.SET_SORTING_CONFIGURATION:
 			return applySetSortingConfiguration(state, action);
-		// case SortingTypes.CLEAR_SORTING_CONFIGURATION:
-		// 	return applyClearSortingConfiguration();
 		case StockDataTypes.SET_COLUMNS:
 			return applyClearSortingConfiguration(state, action);
 		default:
