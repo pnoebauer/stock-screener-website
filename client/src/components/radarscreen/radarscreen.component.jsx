@@ -93,8 +93,6 @@ class RadarScreen extends React.PureComponent {
 	render() {
 		const {columnNames, stockNumber, filteredStockNumber} = this.props;
 
-		console.log(this.props.stocksPerUniverseCount, 'stocksPerUniverseCount');
-
 		updateKey = columnNames;
 
 		return (
@@ -106,7 +104,7 @@ class RadarScreen extends React.PureComponent {
 						gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0`,
 					}}
 				>
-					<div className='indexation' style={{position: 'sticky', top: '-1px'}}>
+					<div className='indexation' style={{position: 'sticky', top: '0'}}>
 						#
 					</div>
 					{[...Array(filteredStockNumber)].map((s, index) => (
@@ -122,8 +120,8 @@ class RadarScreen extends React.PureComponent {
 				<div
 					id='grid-container'
 					style={{
-						gridTemplateColumns: `20px repeat(${columnNames.length}, 1fr)  0`,
-						gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0 `,
+						gridTemplateColumns: `20px repeat(${columnNames.length}, 1fr) 0`,
+						gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0`,
 					}}
 				>
 					<ScreenHeader />

@@ -37,7 +37,7 @@ export const getFilteredSymbolList = createDeepEqualSelector(
 		const filteredSymbolList = filteredDataIndices.map(
 			filteredIndex => stockData.Symbol[filteredIndex]
 		);
-		console.log(filteredSymbolList, 'fs');
+		// console.log(filteredSymbolList, 'fs');
 		return filteredSymbolList;
 	}
 );

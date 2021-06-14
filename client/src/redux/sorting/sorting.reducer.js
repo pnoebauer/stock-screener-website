@@ -1,4 +1,5 @@
 import {SortingTypes} from './sorting.types';
+import {StockDataTypes} from '../stockData/stockData.types';
 
 const initialState = {
 	sortedField: 'ID',
@@ -9,9 +10,24 @@ const sortingReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case SortingTypes.SET_SORTING_CONFIGURATION:
 			return applySetSortingConfiguration(state, action);
+		// case SortingTypes.CLEAR_SORTING_CONFIGURATION:
+		// 	return applyClearSortingConfiguration();
+		case StockDataTypes.SET_COLUMNS:
+			return applyClearSortingConfiguration(state, action);
 		default:
 			return state;
 	}
+};
+
+const applyClearSortingConfiguration = (state, action) => {
+	const updatedColumnNames = action.payload;
+	const {sortedField} = state;
+
+	if (updatedColumnNames.includes(sortedField)) {
+		return state;
+	}
+
+	return initialState;
 };
 
 const applySetSortingConfiguration = (state, action) => {

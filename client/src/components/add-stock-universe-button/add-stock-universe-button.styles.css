@@ -14,7 +14,7 @@ button.add-stock-universe-button {
 	position: sticky;
 	top: 0;
 
-	/* z-index: 5; */
+	z-index: 5;
 }
 
 .add-stock-universe-icon {
