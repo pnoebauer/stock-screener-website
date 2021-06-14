@@ -51,3 +51,8 @@ export const doUpdateNonCustomIndicators = payload => ({
 	type: StockDataTypes.UPDATE_NON_CUSTOM_INDICATORS,
 	payload,
 });
+
+export const doUpdateCustomIndicators = payload => ({
+	type: StockDataTypes.DAILY_UPDATE,
+	payload,
+});

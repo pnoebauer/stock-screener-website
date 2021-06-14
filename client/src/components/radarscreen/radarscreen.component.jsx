@@ -20,7 +20,10 @@ import {
 
 import {getFilteredStockNumber} from '../../redux/filtering/filtering.selectors';
 
-import {doUpdateNonCustomIndicators} from '../../redux/stockData/stockData.actions';
+import {
+	doUpdateNonCustomIndicators,
+	doUpdateCustomIndicators,
+} from '../../redux/stockData/stockData.actions';
 
 import './radarscreen.styles.css';
 
@@ -28,14 +31,45 @@ const permanentHeaders = ['ID', 'Symbol', 'Interval'];
 
 let updateKey = null;
 
+const msDifToTimeFromNow = (hr, min) => {
+	const nowDate = new Date();
+
+	const hrMin = hr + min / 60;
+
+	const day =
+		nowDate.getHours() + nowDate.getMinutes() / 60 >= hrMin
+			? nowDate.getDate() + 1
+			: nowDate.getDate();
+
+	const eodDate = new Date(nowDate.getFullYear(), nowDate.getMonth(), day, hr, min);
+
+	const msDif = eodDate.getTime() - nowDate.getTime();
+
+	return msDif;
+};
+
 class RadarScreen extends React.PureComponent {
 	constructor(props) {
 		super(props);
 		this.events = undefined;
 	}
 
+	tick(type) {
+		// console.log(new Date().getSeconds(), 'sec', type);
+		this.props.updateCustomIndicators();
+	}
+
 	componentDidMount() {
+		this.props.updateCustomIndicators();
 		this.startEventSource();
+
+		const timeToEOD = msDifToTimeFromNow(16, 0);
+		// console.log(timeToEOD, 'dif');
+
+		this.timeout = setTimeout(() => {
+			this.interval = setInterval(() => this.tick('interval'), 30000);
+			this.tick('timeout');
+		}, timeToEOD);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -51,6 +85,7 @@ class RadarScreen extends React.PureComponent {
 			this.props.apiIndicators
 		);
 
+		// if a symbol, interval or indicator has been changed, then create a new eventsource to update the data
 		if (symbolsUpdate || intervalsUpdate || apiIndicatorUpdate) {
 			// if (symbolsUpdate || intervalsUpdate) {
 			// close old event source and start a new one with updated Symbol
@@ -86,10 +121,12 @@ class RadarScreen extends React.PureComponent {
 			// console.log('unmounting, closing eventSource');
 			this.events.close();
 		}
+		clearInterval(this.interval);
+		clearTimeout(this.timeout);
 	}
 
 	render() {
-		const {columnNames, stockNumber, filteredStockNumber, fetchStatus} = this.props;
+		const {columnNames, stockNumber, filteredStockNumber} = this.props;
 
 		updateKey = columnNames;
 
@@ -173,6 +210,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 	updateNonCustomIndicators: apiDataObject =>
 		dispatch(doUpdateNonCustomIndicators(apiDataObject)),
+	updateCustomIndicators: () => dispatch(doUpdateCustomIndicators()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RadarScreen);

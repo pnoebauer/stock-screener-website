@@ -108,11 +108,16 @@ export function* onUniverseAdd() {
 	yield takeLatest(StockDataTypes.ADD_UNIVERSE, updateAddedIndicatorRows);
 }
 
+export function* onDailyUpdate() {
+	yield takeLatest(StockDataTypes.DAILY_UPDATE, updateAllIndicatorRows);
+}
+
 export function* stockDataSagas() {
 	yield all([
 		call(onFieldChange),
 		call(onColumnChange),
 		call(onIntervalsChange),
 		call(onUniverseAdd),
+		call(onDailyUpdate),
 	]);
 }
