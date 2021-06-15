@@ -133,11 +133,30 @@ class RadarScreen extends React.PureComponent {
 		return (
 			<div className='radarscreen'>
 				<Spinner />
+				{/* <div
+					id='indexation-grid'
+					style={{
+						gridTemplateColumns: `1fr`,
+						gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0`,
+					}}
+				>
+					<div className='indexation' style={{position: 'sticky', top: '0'}}>
+						#
+					</div>
+					{[...Array(filteredStockNumber)].map((s, index) => (
+						<div className='indexation' key={index}>
+							{index + 1}
+						</div>
+					))}
+					<div className='indexation' id='number-symbols' key={stockNumber + 1}>
+						{stockNumber + 1}
+					</div>
+				</div> */}
 
 				<div
 					id='grid-container'
 					style={{
-						gridTemplateColumns: `20px 20px repeat(${columnNames.length}, 1fr) `,
+						gridTemplateColumns: `20px 20px repeat(${columnNames.length}, 1fr) 0`,
 						gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0`,
 					}}
 				>
@@ -181,6 +200,21 @@ class RadarScreen extends React.PureComponent {
 					<GenerateGrid columnOffset={2} />
 					<AddRowInput gridRow={filteredStockNumber + 2} columnOffset={2} />
 					<DeleteAllRows gridRow={filteredStockNumber + 2} gridColumn={2} />
+
+					{/* <AddColumnButton
+						style={{
+							gridColumn: `${columnNames.length + 2}`,
+							gridRow: '1',
+						}}
+						key={updateKey}
+					/>
+					<FilterSymbolsButton
+						style={{
+							gridColumn: `${columnNames.length + 3}`,
+							gridRow: '1',
+						}}
+						key={`${updateKey} filter`}
+					/> */}
 				</div>
 				<div
 					id='table-settings-grid'

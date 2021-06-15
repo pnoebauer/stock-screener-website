@@ -381,14 +381,20 @@ app.post('/scanner', (req, res) => {
 	});
 });
 
-const historicalDataIntoDB = async (universes, symbols) => {
+const historicalDataIntoDB = async (universes, symbols, numberYears) => {
 	await dbConnect.createTables();
 	await dbConnect.insertIntoTableSymbols(universes);
 
 	for (let i = 0; i < symbols.length; i++) {
 		const symbol = symbols[i];
 		try {
-			const data = await fetchData.fetchHistoricalData(symbol, 20, 'year', 1, 'daily');
+			const data = await fetchData.fetchHistoricalData(
+				symbol,
+				numberYears,
+				'year',
+				1,
+				'daily'
+			);
 
 			// console.log(data, 'fetched');
 
@@ -441,36 +447,6 @@ const regularDataUpdate = async () => {
 	// console.timeEnd('time');
 };
 
-// let timerId = setInterval(async () => {
-// 	// console.log('new interval at', new Date().getSeconds());
-
-// 	await waitTillSecond(10);
-// 	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
-
-// 	const data = await batchFetch(SYMBOLS);
-// 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
-
-// 	if (data.error) {
-// 		console.log('error during fetching', data.error);
-// 		return;
-// 	}
-// 	// console.time('time');
-// 	// check if data has changed since the last fetch
-// 	const identical = compareCacheWithFetch(data);
-// 	console.log(identical, 'identical');
-
-// 	cachedData = data;
-// 	// if (!identical || true) {
-// 	// if the data has changed since the last fetch send it to all clients
-// 	if (!identical) {
-// 		// console.log(cachedData.AAPL, new Date().getSeconds());
-// 		await waitTillSecond(0);
-// 		console.log('sending', new Date().getSeconds());
-// 		sendEventsToAll(data);
-// 	}
-// 	// console.timeEnd('time');
-// }, interValTime);
-
 let lastHistoricalUpdate;
 let dailyUpdateHasRun;
 
@@ -482,23 +458,27 @@ let timerId = setInterval(async () => {
 	// run only once a day
 	if (new Date().getDate() !== lastHistoricalUpdate) {
 		dailyUpdateHasRun = false;
-		console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
+		// console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
 
 		lastHistoricalUpdate = new Date().getDate();
 
+		// on the weekend update the last 20 years, during the week only the last 1 year
+		const numberYears = new Date().getDay() < 6 ? 1 : 20;
+
 		dailyUpdateHasRun = await historicalDataIntoDB(
 			constants.UNIVERSES,
-			constants.SYMBOLS
+			constants.SYMBOLS,
+			numberYears
 		);
-		console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
+		// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
 	}
 	// make sure that the daily update has run before continuing with the regular updates so that the API limit is not exceeded
 	else if (dailyUpdateHasRun) {
-		console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
+		// console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
 		await regularDataUpdate();
 	}
 }, interValTime);
 
-historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL']);
-// historicalDataIntoDB(constants.UNIVERSES, ['MMM']);
-// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);
+// historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL'], 1);
+// historicalDataIntoDB(constants.UNIVERSES, ['MMM'],20);
+// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS,1);

@@ -18,8 +18,7 @@ const customStyles = {
 };
 
 const AddRowInput = ({stockNumber, gridRow, columnOffset}) => {
-	// const gridColumn = columnOffset + 1; //once dropdown comp is corrected
-	const gridColumn = columnOffset;
+	const gridColumn = columnOffset + 1; //once dropdown comp is corrected
 	return (
 		<Dropdown
 			options={SYMBOLS}

@@ -14,7 +14,7 @@
 	/* for sizing and scrolling: need to do the same for the other grids, change height setting */
 	/* height: 100%; */
 
-	/* height: 500px;
+	/* max-height: 400px;
 	overflow: auto; */
 
 	width: 100%;
@@ -25,19 +25,9 @@
 	border-bottom: 1px solid black;
 	border-left: 1px solid black;
 
-	position: relative;
-}
-
-#indexation-grid {
-	display: grid;
 	/* grid-gap: 1px; */
 
-	/* margin-left: -1px; */
-	border-bottom: 1px solid black;
-	border-left: 1px solid black;
-
-	/* height: 500px;
-	overflow: auto; */
+	position: relative;
 }
 
 button {
@@ -66,18 +56,13 @@ button {
 #grid-container > .value-cell,
 #grid-container > .screen-header,
 #grid-container > .add-column-button,
-#grid-container > .filter-symbols-button {
-	/* padding: 15px; */
+#grid-container > .filter-symbols-button,
+#grid-container > .indexation {
 	text-align: center;
 	border-top: 1px solid black;
 	border-right: 1px solid black;
-}
 
-#indexation-grid > .indexation {
-	/* padding: 15px; */
-	text-align: center;
-	border-top: 1px solid black;
-	/* border-right: 1px solid black; */
+	/* box-shadow: 0 0 0 1px; */
 }
 
 #table-settings-grid {
@@ -89,3 +74,15 @@ button {
 	/* border-top: 1px solid black; */
 	/* border-right: 1px solid black; */
 }
+
+/* #indexation-grid {
+	display: grid;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+} */
+
+/* #indexation-grid > .indexation {
+	text-align: center;
+	border-top: 1px solid black;
+	border-right: 1px solid black;
+} */

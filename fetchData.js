@@ -48,6 +48,14 @@ const fetchHistoricalData = async (
 	frequency,
 	frequencyType
 ) => {
+	/* 
+	----------------------
+		Prices can either be fetched based on period 
+		(do not enter a start date) 
+		or based on start and end date
+	----------------------
+	*/
+
 	// fetchData(urlRealTime, symbol);
 	// /v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true
 	// const startDate = new Date(1990, 0, 1, 0, 0);
@@ -66,7 +74,7 @@ const fetchHistoricalData = async (
 	// month: 1*, 2, 3, 6
 	// year: 1*, 2, 3, 5, 10, 15, 20
 	// ytd: 1*
-	const period = 5; //not required if start date are used
+	const period = 5; //not required if start date is used
 	// Valid values are day, month, year, or ytd (year to date). Default is day.
 	const periodType = 'year';
 
@@ -87,11 +95,11 @@ const fetchHistoricalData = async (
 	const urlHistorical = `${urlEndPoint}/${symbol}/pricehistory`;
 	const queryParams = {
 		periodType,
-		// period,
+		period,
 		frequencyType,
 		frequency,
-		endDate: endDateUnix,
-		startDate: startDateUnix,
+		// endDate: endDateUnix,
+		// startDate: startDateUnix,
 		// needExtendedHoursData,
 	};
 

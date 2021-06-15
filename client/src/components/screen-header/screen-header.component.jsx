@@ -14,7 +14,7 @@ const ScreenHeader = ({headers, columnOffset, sortConfig}) => {
 		if (!sortConfig) {
 			return;
 		}
-		// const direction = sortConfig.direction === 1 ? 'ascending' : 'descending';
+
 		let direction;
 
 		if (sortConfig.direction === 1) {

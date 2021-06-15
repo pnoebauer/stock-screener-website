@@ -12,16 +12,17 @@ const GridRow = ({rowIdx, stockDataIdx, rowValueArray, columnNames, columnOffset
 	return (
 		<>
 			{rowValueArray.map((value, colIdx) => {
+				// console.log(stockDataIdx, 'stockDataIdx');
 				const gridRow = rowIdx + 2;
-				// const gridColumn = colIdx + columnOffset + 1; use after correcting dropdown comp
-				const gridColumn = colIdx + columnOffset;
+				const gridColumn = colIdx + columnOffset + 1; //use after correcting dropdown comp
+				// const gridColumn = colIdx + columnOffset;
 				return (
 					<GenerateGridCell
 						type={columnNames[colIdx]}
-						// gridLocation={{rowIdx, colIdx}}
 						gridRow={gridRow}
 						gridColumn={gridColumn}
 						key={columnNames[colIdx]}
+						stockDataIdx={stockDataIdx}
 					>
 						{value}
 					</GenerateGridCell>

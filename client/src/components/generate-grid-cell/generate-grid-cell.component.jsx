@@ -11,11 +11,7 @@ const dropdownOptions = {
 };
 
 // const GenerateGridCell = ({type, gridLocation, children}) => {
-const GenerateGridCell = ({type, gridRow, gridColumn, children}) => {
-	// const {rowIdx, colIdx} = gridLocation;
-	// const gridRow = rowIdx + 2;
-	// const gridColumn = colIdx + 1;
-
+const GenerateGridCell = ({type, gridRow, gridColumn, stockDataIdx, children}) => {
 	if (dropdownOptions[type] !== undefined) {
 		return (
 			<Dropdown
@@ -23,6 +19,7 @@ const GenerateGridCell = ({type, gridRow, gridColumn, children}) => {
 				gridRow={gridRow}
 				gridColumn={gridColumn}
 				headerName={type}
+				stockDataIdx={stockDataIdx}
 			>
 				{children}
 			</Dropdown>
