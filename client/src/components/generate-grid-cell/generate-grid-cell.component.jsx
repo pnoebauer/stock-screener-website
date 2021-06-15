@@ -10,10 +10,11 @@ const dropdownOptions = {
 	Interval: INTERVALS,
 };
 
-const GenerateGridCell = ({type, gridLocation, onChange, children}) => {
-	const {rowIdx, colIdx} = gridLocation;
-	const gridRow = rowIdx + 2;
-	const gridColumn = colIdx + 1;
+// const GenerateGridCell = ({type, gridLocation, children}) => {
+const GenerateGridCell = ({type, gridRow, gridColumn, children}) => {
+	// const {rowIdx, colIdx} = gridLocation;
+	// const gridRow = rowIdx + 2;
+	// const gridColumn = colIdx + 1;
 
 	if (dropdownOptions[type] !== undefined) {
 		return (

@@ -7,18 +7,20 @@ import DeleteRowButton from '../delete-row-button/delete-row-button.component';
 
 import {getRowValues} from '../../redux/stockData/stockData.selectors';
 import {getColumnNames} from '../../redux/stockData/stockData.selectors';
-import {getFilteredData} from '../../redux/filtering/filtering.selectors';
 
-const GridRow = ({rowIdx, stockDataIdx, rowValueArray, columnNames, filteredDataMap}) => {
-	// console.log(rowIdx, stockDataIdx, filteredDataMap, 'grid row');
-	// if (filteredDataMap.includes(stockDataIdx)) {
+const GridRow = ({rowIdx, stockDataIdx, rowValueArray, columnNames, columnOffset}) => {
 	return (
 		<>
 			{rowValueArray.map((value, colIdx) => {
+				const gridRow = rowIdx + 2;
+				// const gridColumn = colIdx + columnOffset + 1; use after correcting dropdown comp
+				const gridColumn = colIdx + columnOffset;
 				return (
 					<GenerateGridCell
 						type={columnNames[colIdx]}
-						gridLocation={{rowIdx, colIdx}}
+						// gridLocation={{rowIdx, colIdx}}
+						gridRow={gridRow}
+						gridColumn={gridColumn}
 						key={columnNames[colIdx]}
 					>
 						{value}
@@ -29,16 +31,12 @@ const GridRow = ({rowIdx, stockDataIdx, rowValueArray, columnNames, filteredData
 			<DeleteRowButton rowIdx={rowIdx} stockDataIdx={stockDataIdx} />
 		</>
 	);
-	// } else {
-	// 	return null;
-	// }
 };
 
 const mapStateToProps = (state, {stockDataIdx}) => {
 	return {
 		rowValueArray: getRowValues(state, stockDataIdx),
 		columnNames: getColumnNames(state),
-		filteredDataMap: getFilteredData(state),
 	};
 };
 

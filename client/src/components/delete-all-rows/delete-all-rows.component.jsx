@@ -10,22 +10,15 @@ import {doDeleteAllRows} from '../../redux/stockData/stockData.actions';
 
 import './delete-all-rows.styles.css';
 
-// const DeleteAllRows = ({handleDeleteAllRows, gridRow, removeAllRows}) => {
-const DeleteAllRows = ({gridRow, removeAllRows}) => {
-	const deleteAllRows = () => {
-		removeAllRows();
-		// return handleDeleteAllRows();
-	};
-
+const DeleteAllRows = ({gridRow, gridColumn, removeAllRows}) => {
 	return (
 		<button
 			className='delete-all-rows tooltip'
 			style={{
-				gridColumn: '1',
+				gridColumn,
 				gridRow,
 			}}
-			// onClick={handleDeleteAllRows}
-			onClick={deleteAllRows}
+			onClick={removeAllRows}
 		>
 			<MdDeleteSweep className='delete-all-rows-icon' />
 			<Tooltip tooltipText={'Click to delete all symbols'} position={'right'} />

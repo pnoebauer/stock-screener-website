@@ -9,13 +9,7 @@ import {getSortingConfiguration} from '../../redux/sorting/sorting.selectors';
 
 import './screen-header.styles.css';
 
-const ScreenHeader = ({
-	headers,
-	// handleTableSorting,
-	sortConfig,
-	// updateCustomIndicators,
-	// setAllIntervals,
-}) => {
+const ScreenHeader = ({headers, columnOffset, sortConfig}) => {
 	const getClassNameForHeader = name => {
 		if (!sortConfig) {
 			return;
@@ -37,12 +31,8 @@ const ScreenHeader = ({
 			{headers.map((header, colIdx) => (
 				<ScreenHeaderItem
 					key={colIdx.toString()}
-					gridColumn={colIdx + 2}
-					// onSort={handleTableSorting}
-					// id={header}
+					gridColumn={colIdx + 1 + columnOffset}
 					className={`screen-header ${getClassNameForHeader(header)}`}
-					// updateCustomIndicators={updateCustomIndicators}
-					// setAllIntervals={setAllIntervals}
 					headerName={header}
 				/>
 			))}

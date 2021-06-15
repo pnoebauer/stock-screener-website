@@ -124,7 +124,6 @@ import {doSetColumns} from '../../redux/stockData/stockData.actions';
 import {GrSettingsOption} from 'react-icons/gr';
 
 import Modal from '../portal-modal/modal.component';
-// import Modal from '../modal/modal.component';
 
 import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
@@ -183,7 +182,7 @@ class AddColumnButton extends React.Component {
 					style={this.props.style}
 				>
 					<GrSettingsOption className='add-column-icon' />
-					<Tooltip tooltipText={'Click to set indicators'} position={'center'} />
+					<Tooltip tooltipText={'Click to set indicators'} position={'left'} />
 				</button>
 
 				{this.state.visible ? (
@@ -199,24 +198,6 @@ class AddColumnButton extends React.Component {
 						/>
 					</Modal>
 				) : null}
-
-				{/* <Modal
-					visible={this.state.visible}
-					onClose={this.hide}
-					width={60}
-					height={50}
-					measure={'%'}
-					showCloseButton={false}
-					closeOnEsc={false}
-					closeMaskOnClick={false}
-					duration={500}
-				>
-					<IndicatorSelector
-						handleOkCancel={this.handleOkCancel}
-						availableIndicatorsDefault={this.deriveIndicatorsArr(unUsedIndicators)}
-						usedIndicatorsDefault={this.deriveIndicatorsArr(usedIndicators)}
-					/>
-				</Modal> */}
 			</>
 		);
 	}

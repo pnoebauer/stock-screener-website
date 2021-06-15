@@ -52,7 +52,7 @@ class FilterSymbolsButton extends React.Component {
 						<RiFilter2Line className='filter-symbols-icon' />
 					)}
 
-					<Tooltip tooltipText={'Click to filter symbols'} position={'center'} />
+					<Tooltip tooltipText={'Click to filter symbols'} position={' left'} />
 				</button>
 
 				{this.state.visible ? (
@@ -67,20 +67,6 @@ class FilterSymbolsButton extends React.Component {
 						/>
 					</Modal>
 				) : null}
-
-				{/* <Modal
-					visible={this.state.visible}
-					onClose={this.hide}
-					width={50}
-					height={50}
-					measure={'%'}
-					showCloseButton={true}
-					closeOnEsc={false}
-					closeMaskOnClick={false}
-					duration={500}
-				>
-					<FilterSymbolsForm usedIndicators={usedIndicators} closeForm={this.hide} />
-				</Modal> */}
 			</>
 		);
 	}

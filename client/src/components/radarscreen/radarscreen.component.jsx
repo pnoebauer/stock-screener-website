@@ -160,16 +160,16 @@ class RadarScreen extends React.PureComponent {
 						gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0`,
 					}}
 				>
-					<ScreenHeader />
 					<AddStockUniverseButton
 						style={{
 							gridColumn: '1',
 							gridRow: '1',
 						}}
 					/>
-					<GenerateGrid />
-					<AddRowInput gridRow={filteredStockNumber + 2} />
-					<DeleteAllRows gridRow={filteredStockNumber + 2} />
+					<ScreenHeader columnOffset={1} />
+					<GenerateGrid columnOffset={1} />
+					<AddRowInput gridRow={filteredStockNumber + 2} columnOffset={1} />
+					<DeleteAllRows gridRow={filteredStockNumber + 2} gridColumn={1} />
 				</div>
 				<div
 					id='table-settings-grid'

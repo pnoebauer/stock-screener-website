@@ -46,6 +46,7 @@ const processData = (data, lookBack) => {
 		// add convertedCandle to the series
 		currentDataSeries.push(convertedCandle);
 
+		// ----- FOR CALCULATING AND INSERTING INDICATORS INTO DB AS WELL (NOT REQUIRED) -----
 		// if (currentRow > 1)
 		if (currentRow > lookBack - constants.UNSTABLEPERIOD) {
 			const parameter = 'closePrice';

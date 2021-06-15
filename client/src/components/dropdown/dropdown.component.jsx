@@ -42,7 +42,7 @@ class Dropdown extends React.Component {
 		this.state = {
 			showList: false,
 			displayedOptions,
-			// shownValue: cellValue,
+
 			shownValue: children,
 			activeItem,
 		};
@@ -54,7 +54,7 @@ class Dropdown extends React.Component {
 			updateInputField,
 			headerName,
 			options,
-			// onChange,
+
 			gridColumn,
 			gridRow,
 			cellValue,
@@ -94,8 +94,6 @@ class Dropdown extends React.Component {
 					// console.log(fieldInfo);
 
 					updateInputField(fieldInfo);
-
-					// return onChange(insertValue, headerCol, valueRow);
 				}
 			);
 		}
@@ -125,7 +123,6 @@ class Dropdown extends React.Component {
 	// set text based on click in displayed list
 	handleOptionClick = (event, headerCol, valueRow) => {
 		const {updateInputField, headerName} = this.props;
-		// const {onChange} = this.props;
 
 		this.setState({
 			showList: false,
@@ -136,8 +133,6 @@ class Dropdown extends React.Component {
 		// console.log(fieldInfo);
 
 		updateInputField(fieldInfo);
-
-		// onChange(event.target.innerText, headerCol, valueRow);
 
 		// dispatch action !!!!
 		// const fieldInfo = {value: event.target.innerText, headerCol, valueRow};
@@ -154,7 +149,6 @@ class Dropdown extends React.Component {
 		}
 
 		document.removeEventListener('mousedown', this.handleClickOutside);
-		// onChange(event.target.innerText, headerCol, valueRow);
 	};
 
 	onTextChange = event => {
@@ -176,7 +170,7 @@ class Dropdown extends React.Component {
 
 	onKeyDown = (event, headerCol, valueRow) => {
 		// console.log('kd');
-		// const {onChange} = this.props;
+
 		const {activeItem, displayedOptions} = this.state;
 
 		switch (event.keyCode) {
@@ -241,7 +235,6 @@ class Dropdown extends React.Component {
 						updateInputField(fieldInfo);
 
 						// console.log('dd enter', this.state.shownValue, headerCol, valueRow);
-						// return onChange(this.state.shownValue, headerCol, valueRow);
 					}
 				);
 
@@ -251,10 +244,6 @@ class Dropdown extends React.Component {
 			default:
 		}
 	};
-
-	// componentDidMount() {
-	// 	if (this.props.className === 'add-row') console.log(this.state, 'dd state');
-	// }
 
 	componentDidUpdate(prevProps) {
 		// if (this.props.className === 'add-row')

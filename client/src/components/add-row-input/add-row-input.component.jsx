@@ -17,13 +17,14 @@ const customStyles = {
 	marginLeft: '-1px',
 };
 
-// const AddRowInput = ({stockNumber, onRowAdd, numberSymbols}) => {
-const AddRowInput = ({stockNumber, gridRow}) => {
+const AddRowInput = ({stockNumber, gridRow, columnOffset}) => {
+	// const gridColumn = columnOffset + 1; //once dropdown comp is corrected
+	const gridColumn = columnOffset;
 	return (
 		<Dropdown
 			options={SYMBOLS}
 			gridRow={gridRow}
-			gridColumn={1}
+			gridColumn={gridColumn}
 			customStyles={customStyles}
 			className={'add-row'}
 			headerName={'Symbol'}

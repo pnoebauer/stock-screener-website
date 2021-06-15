@@ -6,6 +6,12 @@ const fetchData = require('./fetchData');
 
 const constants = require('./constants');
 
+const processData = require('./processData');
+
+const dbConnect = require('./dbConnect');
+
+const calculateIndicators = require('./calculateIndicators');
+
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
@@ -135,36 +141,6 @@ const waitTillSecond = async timeSecond => {
 	await sleep(delay);
 };
 
-let timerId = setInterval(async () => {
-	// console.log('new interval at', new Date().getSeconds());
-
-	await waitTillSecond(10);
-	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
-
-	const data = await batchFetch(SYMBOLS);
-	// console.log(data.AAPL.bidPrice, 'AAPL bid');
-
-	if (data.error) {
-		console.log('error during fetching', data.error);
-		return;
-	}
-	// console.time('time');
-	// check if data has changed since the last fetch
-	const identical = compareCacheWithFetch(data);
-	console.log(identical, 'identical');
-
-	cachedData = data;
-	// if (!identical || true) {
-	// if the data has changed since the last fetch send it to all clients
-	if (!identical) {
-		// console.log(cachedData.AAPL, new Date().getSeconds());
-		await waitTillSecond(0);
-		console.log('sending', new Date().getSeconds());
-		sendEventsToAll(data);
-	}
-	// console.timeEnd('time');
-}, interValTime);
-
 function eventsHandler(req, res, queriedSymbols) {
 	// console.log(queriedSymbols.split(','));
 
@@ -248,10 +224,6 @@ function sendEventsToAll(data) {
 }
 
 // ------------ return custom indicators ------------
-
-// const processData = require('./processData');
-const dbConnect = require('./dbConnect');
-const calculateIndicators = require('./calculateIndicators');
 
 const serialIndicators = ['reg', 'mom'];
 
@@ -359,7 +331,7 @@ const retrieveSymbolWithIndicators = async queryObject => {
 			queryObject.interval
 		);
 
-		// console.log(latestPriceData);
+		// console.log(latestPriceData, 'latestPriceData');
 
 		const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
 
@@ -395,8 +367,7 @@ const queryObject = {
 		},
 	},
 };
-
-// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
@@ -409,3 +380,125 @@ app.post('/scanner', (req, res) => {
 		return res.json(data);
 	});
 });
+
+const historicalDataIntoDB = async (universes, symbols) => {
+	await dbConnect.createTables();
+	await dbConnect.insertIntoTableSymbols(universes);
+
+	for (let i = 0; i < symbols.length; i++) {
+		const symbol = symbols[i];
+		try {
+			const data = await fetchData.fetchHistoricalData(symbol, 20, 'year', 1, 'daily');
+
+			// console.log(data, 'fetched');
+
+			// IF NO LOOKBACK IS PROVIDED NO INDICATORS WILL BE ADDED BUT ONLY CANDLES CONVERTED FOR DB
+			// const convertedCandles = processData.processData(data, 200);
+			const convertedCandles = processData.processData(data);
+
+			if (!convertedCandles) throw 'dataset is empty';
+
+			// console.log(convertedCandles[convertedCandles.length - 1]);
+
+			// console.log(convertedCandles.length);
+			await dbConnect.insertIntoTable(convertedCandles);
+			console.log(
+				`Inserted ${convertedCandles.length} candles for ${symbol}, index ${i}`
+			);
+		} catch (e) {
+			console.log('Error inserting data for', symbol, e);
+		}
+	}
+
+	return true;
+};
+
+const regularDataUpdate = async () => {
+	await waitTillSecond(10);
+	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
+
+	const data = await batchFetch(SYMBOLS);
+	// console.log(data.AAPL.bidPrice, 'AAPL bid');
+
+	if (data.error) {
+		console.log('error during fetching', data.error);
+		return;
+	}
+	// console.time('time');
+	// check if data has changed since the last fetch
+	const identical = compareCacheWithFetch(data);
+	console.log(identical, 'identical');
+
+	cachedData = data;
+	// if (!identical || true) {
+	// if the data has changed since the last fetch send it to all clients
+	if (!identical) {
+		// console.log(cachedData.AAPL, new Date().getSeconds());
+		await waitTillSecond(0);
+		console.log('sending', new Date().getSeconds());
+		sendEventsToAll(data);
+	}
+	// console.timeEnd('time');
+};
+
+// let timerId = setInterval(async () => {
+// 	// console.log('new interval at', new Date().getSeconds());
+
+// 	await waitTillSecond(10);
+// 	// console.log('waitToFullMinute + 10 sec', new Date().getSeconds());
+
+// 	const data = await batchFetch(SYMBOLS);
+// 	// console.log(data.AAPL.bidPrice, 'AAPL bid');
+
+// 	if (data.error) {
+// 		console.log('error during fetching', data.error);
+// 		return;
+// 	}
+// 	// console.time('time');
+// 	// check if data has changed since the last fetch
+// 	const identical = compareCacheWithFetch(data);
+// 	console.log(identical, 'identical');
+
+// 	cachedData = data;
+// 	// if (!identical || true) {
+// 	// if the data has changed since the last fetch send it to all clients
+// 	if (!identical) {
+// 		// console.log(cachedData.AAPL, new Date().getSeconds());
+// 		await waitTillSecond(0);
+// 		console.log('sending', new Date().getSeconds());
+// 		sendEventsToAll(data);
+// 	}
+// 	// console.timeEnd('time');
+// }, interValTime);
+
+let lastHistoricalUpdate;
+let dailyUpdateHasRun;
+
+let timerId = setInterval(async () => {
+	console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
+
+	// await regularDataUpdate();
+
+	// run only once a day
+	if (new Date().getDate() !== lastHistoricalUpdate) {
+		dailyUpdateHasRun = false;
+		console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
+
+		lastHistoricalUpdate = new Date().getDate();
+
+		dailyUpdateHasRun = await historicalDataIntoDB(
+			constants.UNIVERSES,
+			constants.SYMBOLS
+		);
+		console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
+	}
+	// make sure that the daily update has run before continuing with the regular updates so that the API limit is not exceeded
+	else if (dailyUpdateHasRun) {
+		console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
+		await regularDataUpdate();
+	}
+}, interValTime);
+
+historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL']);
+// historicalDataIntoDB(constants.UNIVERSES, ['MMM']);
+// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS);

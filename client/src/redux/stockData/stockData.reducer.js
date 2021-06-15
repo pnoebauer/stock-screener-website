@@ -182,10 +182,6 @@ const applyDeleteRow = (state, action) => {
 const applySetInputField = (state, action) => {
 	const {value, headerName, valueRow} = action.payload;
 
-	// if (valueRow >= state.Symbol.length) {
-	// 	return applyAddRow(state, action);
-	// }
-
 	// updates the array index (=valueRow) to the new value in the state column (=headerName)
 	return {
 		...state,

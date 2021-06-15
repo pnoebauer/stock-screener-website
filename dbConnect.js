@@ -21,7 +21,7 @@ const createTables = async () => {
 
 	// await knex.schema.dropTableIfExists('daily_data');
 	// console.log('daily_data table deleted');
-	// knex.schema.dropTableIfExists('symbol');
+	// await knex.schema.dropTableIfExists('symbol');
 	// console.log('symbol table deleted');
 
 	const symbolTblExists = await knex.schema.hasTable('symbol');
@@ -73,8 +73,8 @@ const createTables = async () => {
 				table.decimal('closePrice');
 				table.bigInteger('totalVolume');
 
-				table.decimal('sma');
-				table.decimal('ema');
+				// table.decimal('sma');
+				// table.decimal('ema');
 
 				table.timestamps(true, true); //created_at and updated_at columns with default of now added
 
@@ -99,7 +99,7 @@ const insertIntoTable = async data => {
 
 		// console.log('Successfully inserted daily data');
 	} catch (error) {
-		console.log(error, 'error');
+		console.log('error insertIntoTable', error);
 	}
 };
 
@@ -122,13 +122,6 @@ const insertIntoTable = async data => {
 
 const retrieveData = async (symbol, lookBack, parameters) => {
 	try {
-		// const selection = await knex('daily_data').where('id', '>', '20');
-		// const selection = await knex('daily_data')
-		// 	.where('id', '>', '20')
-		// 	.select('date_time', 'openPrice');
-		// console.log(selection);
-		// AOS, ABT
-
 		// const selection = await knex('daily_data')
 		// 	.where('stock_id', symbol)
 		// 	// .andWhere('date_time', '>', '2015-01-20')
@@ -146,8 +139,8 @@ const retrieveData = async (symbol, lookBack, parameters) => {
 			// .andWhere('date_time', '>', '2015-01-20')
 			.orderBy('date_time', 'desc')
 			.limit(lookBack)
-			.select(...parameters);
-
+			// .select(...parameters);
+			.select('*');
 		// .select('date_time', 'closePrice');
 
 		// const selection = await knex('daily_data')
@@ -155,25 +148,6 @@ const retrieveData = async (symbol, lookBack, parameters) => {
 		// 	.limit(5)
 		// 	// .select(parameter);
 		// 	.select('*');
-
-		// knex.select('*').from('users');
-		// (1)
-		// SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5;
-		// (2)
-		// SELECT *
-		// FROM (SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5)
-		// ORDER BY record_date ASC;
-		// OR
-		// WITH t AS (
-		// 	SELECT * FROM mytable ORDER BY record_date DESC LIMIT 5
-		// )
-		// SELECT * FROM t ORDER BY record_date ASC;
-
-		// 	knex.with('with_alias', knex.raw('select * from "books" where "author" = ?', 'Test')).select('*').from('with_alias')
-		// Outputs:
-		// with `with_alias` as (select * from "books" where "author" = 'Test') select * from `with_alias`
-
-		// console.log(selection.reverse());
 
 		return selection.reverse();
 	} catch (e) {
@@ -235,14 +209,6 @@ const insertIntoTableSymbols = async stockUniverses => {
 
 const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) => {
 	try {
-		// console.log(parameters, 'parameters');
-		// 	console.log(data, 'data');
-		// 	console.log(data.reverse(), 'data reversed');
-		// });
-
-		// return selection.reverse();
-		// return selection;
-
 		// METHOD 1 --> RETURNS ALL USED COLUMNS
 		// const selection = await knex
 		// 	.select(
@@ -261,21 +227,21 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 		// 	.groupBy('date_time_s')
 		// 	.orderBy('date_time_s', 'desc')
 		// 	.limit(lookBack);
-		// .then(data => console.log(data, 'data group'));
+		// // .then(data => console.log(data, 'data group'));
 		// console.log(selection.reverse());
 
 		// METHOD 2 --> RETURNS ONLY WHAT IS QUERIED
 		const selection = await knex
 			.with('with_alias', qb => {
 				qb.select(
-					knex.raw(`date_trunc('${samplePeriod}', date_time) date_time_s, 
-						(array_agg("openPrice" ORDER BY date_time ASC))[1] "openPrice",
-						MAX("highPrice") "highPrice", 
-						MIN("lowPrice") "lowPrice",
-						(array_agg("closePrice" ORDER BY date_time DESC))[1] "closePrice",
-						SUM("totalVolume") "totalVolume",
-						count(*) ticks
-					`)
+					knex.raw(`date_trunc('${samplePeriod}', date_time) date_time_s,
+							(array_agg("openPrice" ORDER BY date_time ASC))[1] "openPrice",
+							MAX("highPrice") "highPrice",
+							MIN("lowPrice") "lowPrice",
+							(array_agg("closePrice" ORDER BY date_time DESC))[1] "closePrice",
+							SUM("totalVolume") "totalVolume",
+							count(*) ticks
+						`)
 				)
 					.from('daily_data')
 					.where('stock_id', symbol)
@@ -284,9 +250,10 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 					.limit(lookBack);
 			})
 			.select(...parameters)
-			// .select(...[...parameters, 'date_time_s'])
-			// .select('date_time_s', 'closePrice')
+			// .select(...[...parameters, 'date_time_s']);
+			// .select('date_time_s', 'closePrice');
 			.from('with_alias');
+
 		// .then(data => {
 		// 	const convData = data.map(item => {
 		// 		const dateObject = new Date(item.m);
@@ -304,11 +271,11 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 	}
 };
 
-// retrieveData('AOS', 10, ['closePrice'])
+// retrieveData('AAPL', 10, ['closePrice'])
 // 	.then(data => console.log(data))
 // 	.catch(e => console.log(e));
 
-// retrieveSampledData('AOS', 10, ['closePrice'], 'month')
+// retrieveSampledData('AAPL', 20, ['closePrice'], 'day')
 // 	.then(data => console.log(data))
 // 	.catch(e => console.log(e));
 
