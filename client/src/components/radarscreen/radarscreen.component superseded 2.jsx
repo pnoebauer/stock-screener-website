@@ -10,7 +10,6 @@ import AddStockUniverseButton from '../add-stock-universe-button/add-stock-unive
 import DeleteAllRows from '../delete-all-rows/delete-all-rows.component';
 import FilterSymbolsButton from '../filter-symbols-button/filter-symbols-button.component';
 import Spinner from '../spinner/spinner.component';
-import Indexation from '../indexation/indexation.component';
 
 import {
 	getStockNumber,
@@ -61,6 +60,9 @@ class RadarScreen extends React.PureComponent {
 	}
 
 	componentDidMount() {
+		this.props.updateCustomIndicators();
+		this.startEventSource();
+
 		const timeToEOD = msDifToTimeFromNow(16, 0);
 		// console.log(timeToEOD, 'dif');
 
@@ -68,13 +70,6 @@ class RadarScreen extends React.PureComponent {
 			this.interval = setInterval(() => this.tick('interval'), 30000);
 			this.tick('timeout');
 		}, timeToEOD);
-
-		// this.props.updateCustomIndicators();
-		this.startEventSource();
-
-		// make updateCustomIndicators async so that persist-rehydrate completes before that
-		// and the sagas get the state after rehydration
-		setTimeout(() => this.props.updateCustomIndicators(), 0);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -147,7 +142,35 @@ class RadarScreen extends React.PureComponent {
 							gridTemplateRows: `repeat(${filteredStockNumber + 1}, 1fr) 0`,
 						}}
 					>
-						<Indexation gridColumn={1} />
+						<div
+							className='indexation'
+							style={{position: 'sticky', top: '0', gridColumn: '1', gridRow: '1'}}
+						>
+							#
+						</div>
+						{[...Array(filteredStockNumber)].map((s, index) => (
+							<div
+								className='indexation'
+								key={index}
+								style={{
+									gridColumn: '1',
+									gridRow: `${index + 2}`,
+								}}
+							>
+								{index + 1}
+							</div>
+						))}
+						{/* <div
+						className='indexation'
+						id='number-symbols'
+						key={stockNumber + 1}
+						style={{
+							gridColumn: '1',
+							gridRow: `${stockNumber + 2}`,
+						}}
+					>
+						{stockNumber + 1}
+					</div> */}
 
 						<AddStockUniverseButton
 							style={{
@@ -157,10 +180,28 @@ class RadarScreen extends React.PureComponent {
 						/>
 						<ScreenHeader columnOffset={2} />
 						<GenerateGrid columnOffset={2} />
+
+						{/* <AddColumnButton
+							style={{
+								gridColumn: `${columnNames.length + 3}`,
+								gridRow: '1',
+							}}
+							key={updateKey}
+						/>
+						<FilterSymbolsButton
+							style={{
+								gridColumn: `${columnNames.length + 4}`,
+								gridRow: '1',
+							}}
+							key={`${updateKey} filter`}
+						/> */}
+
+						{/* <AddRowInput gridRow={filteredStockNumber + 2} columnOffset={2} />
+					<DeleteAllRows gridRow={filteredStockNumber + 2} gridColumn={2} /> */}
 					</div>
 
 					<div
-						id='table-settings-grid'
+						id='table-settings-grid-2'
 						style={{
 							display: 'grid',
 							gridTemplateColumns: `20px 20px`,
@@ -183,9 +224,30 @@ class RadarScreen extends React.PureComponent {
 						/>
 					</div>
 				</div>
-
+				{/* <div
+					id='table-settings-grid'
+					style={{
+						gridTemplateColumns: `20px 20px`,
+						gridTemplateRows: `40px`,
+					}}
+				>
+					<AddColumnButton
+						style={{
+							gridColumn: `1`,
+							gridRow: '1',
+						}}
+						key={updateKey}
+					/>
+					<FilterSymbolsButton
+						style={{
+							gridColumn: `2`,
+							gridRow: '1',
+						}}
+						key={`${updateKey} filter`}
+					/>
+				</div> */}
 				<div
-					id='last-screen-row-grid'
+					id='table-settings-grid'
 					style={{
 						gridTemplateColumns: `20px 20px repeat(${columnNames.length}, 1fr) 20px 20px`,
 						gridTemplateRows: '1fr',
@@ -194,7 +256,9 @@ class RadarScreen extends React.PureComponent {
 					<AddRowInput gridRow={1} columnOffset={2} />
 					<DeleteAllRows gridRow={1} gridColumn={2} />
 					<div
+						className='indexation'
 						id='number-symbols'
+						key={stockNumber + 1}
 						style={{
 							gridColumn: '1',
 							gridRow: '1',

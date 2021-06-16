@@ -37,17 +37,22 @@ button {
 	cursor: pointer;
 }
 
+.indexation {
+	background-color: lightgrey;
+	height: 40px;
+	box-sizing: border-box;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 #number-symbols {
 	margin-left: -1px;
 	height: 31px;
 	border-left: 1px solid black;
 	border-bottom: 1px solid black;
 	background-color: darkgrey;
-
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
 }
 
 #grid-container > .value-cell,
@@ -62,7 +67,7 @@ button {
 	/* box-shadow: 0 0 0 1px; */
 }
 
-#last-screen-row-grid {
+#table-settings-grid {
 	display: grid;
 	/* margin-right: 15px; */
 	/* grid-gap: 1px; */

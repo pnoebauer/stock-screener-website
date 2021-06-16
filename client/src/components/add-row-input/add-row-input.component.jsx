@@ -15,10 +15,11 @@ const customStyles = {
 	borderBottom: '1px solid black',
 	borderLeft: '1px solid black',
 	marginLeft: '-1px',
+	// marginTop: '-1px',
 };
 
 const AddRowInput = ({stockNumber, gridRow, columnOffset}) => {
-	const gridColumn = columnOffset + 1; //once dropdown comp is corrected
+	const gridColumn = columnOffset + 1;
 	return (
 		<Dropdown
 			options={SYMBOLS}

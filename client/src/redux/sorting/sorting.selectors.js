@@ -18,6 +18,7 @@ export const getSortingMap = createCachedSelector(
 	(sortingConfiguration, stockData) => {
 		// console.log('stockdata', stockData);
 		const sortingMap = sortData(sortingConfiguration, stockData);
+		// console.log('sortingMap', sortingMap);
 
 		return sortingMap;
 	}
@@ -40,10 +41,21 @@ const sortData = (sortingConfiguration, stockData) => {
 		if (typeof value === 'string') {
 			value = value.toLowerCase();
 		}
+
 		// the id field needs to be of type Number
 		if (sortedField === 'ID') {
 			value = Number(value);
 		}
+
+		// // if the string is not convertible to a number use lowerCase, else convert it to a number
+		// if (Number.isNaN(Number(value))) {
+		// 	// if (isNaN(value)) {
+		// 	value = value.toLowerCase();
+		// } else {
+		// 	value = Number(value);
+		// }
+
+		// console.log(typeof value, 'tv');
 
 		return {
 			index,
@@ -61,6 +73,8 @@ const sortData = (sortingConfiguration, stockData) => {
 		}
 		return 0;
 	});
+
+	// console.log(mapped, 'mapped');
 
 	return mapped.map(item => item.index);
 };

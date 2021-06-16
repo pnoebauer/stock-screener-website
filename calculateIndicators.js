@@ -58,7 +58,7 @@ const sma = (dataRaw, timePeriod, parameter) => {
 	// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
 	const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
 
-	// console.log(parameterValue, nBarsAgoPV, k, priorSma);
+	// console.log(parameterValue, nBarsAgoPV, k, priorSma, sma);
 
 	return sma; //.toFixed(2);
 };

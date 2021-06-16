@@ -274,7 +274,9 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 				);
 				// round the final result
 				if (index === data.length - 1) {
-					candle[indicator] = candle[indicator].toFixed(2);
+					// candle[indicator] = candle[indicator]
+					// round to two decimals
+					candle[indicator] = Math.round(candle[indicator] * 100) / 100;
 					// console.log(candle, 'last candle');
 					latestIndicators[indicator] = candle[indicator];
 				}
@@ -288,12 +290,14 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 		let {parameter, lookBack} = queryObject.indicators[indicator];
 		lookBack = Number(lookBack);
 
-		latestIndicators[indicator] = calculateIndicators[indicator](
-			data,
-			lookBack,
-			parameter
-		).toFixed(2);
-		// calculateIndicators[indicator](data, lookBack, parameter);
+		// latestIndicators[indicator] = calculateIndicators[indicator](
+		// 	data,
+		// 	lookBack,
+		// 	parameter
+		// )
+		// round to two decimals
+		latestIndicators[indicator] =
+			Math.round(calculateIndicators[indicator](data, lookBack, parameter) * 100) / 100;
 	}
 
 	return latestIndicators;
@@ -367,7 +371,7 @@ const queryObject = {
 		},
 	},
 };
-retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;

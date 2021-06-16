@@ -64,6 +64,8 @@ const applyUpdateNonCustomIndicators = (state, action) => {
 	const symbols = state.Symbol;
 	const apiObject = action.payload;
 
+	// console.log(apiObject, 'ao');
+
 	let nextState = {...state};
 
 	const apiIndicators = Object.keys(state).flatMap(indicatorName =>
@@ -195,7 +197,7 @@ const applySetInputField = (state, action) => {
 };
 
 const applyAddRow = (state, action) => {
-	const {value, headerName, valueRow} = action.payload;
+	const {value, headerName} = action.payload;
 
 	const nextState = {};
 
