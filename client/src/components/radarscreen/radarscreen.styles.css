@@ -16,8 +16,8 @@
 	/* for sizing and scrolling: need to do the same for the other grids, change height setting */
 	/* height: 100%; */
 
-	max-height: 400px;
-	overflow: scroll;
+	/* max-height: 400px; */
+	/* overflow: scroll; */
 
 	width: 100%;
 	display: grid;
@@ -49,7 +49,7 @@ button {
 	justify-content: center;
 	box-sizing: border-box;
 }
-
+/* #grid-container > .dropdown-container, */
 #grid-container > .value-cell,
 #grid-container > .screen-header,
 #grid-container > .add-column-button,

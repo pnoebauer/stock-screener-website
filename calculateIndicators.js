@@ -30,7 +30,7 @@ const ema = (dataRaw, time_period, parameter) => {
 
 	const ema = parameterValue * k + priorEma * (1 - k);
 
-	return ema; //.toFixed(2);
+	return ema;
 };
 
 // SMA=Price(t)×k-Price(t-N)×k+SMA(y)
@@ -40,27 +40,32 @@ const ema = (dataRaw, time_period, parameter) => {
 //      N=number of days in SMA
 //      k=1÷N
 const sma = (dataRaw, timePeriod, parameter) => {
-	// console.log(timePeriod, dataRaw.length);
-	const k = 1 / timePeriod;
+	try {
+		// console.log(timePeriod, dataRaw.length);
+		const k = 1 / timePeriod;
 
-	const currentCandle = dataRaw[dataRaw.length - 1];
-	const priorCandle = dataRaw[dataRaw.length - 2] || 0;
-	const parameterValue = Number(currentCandle[parameter]);
+		const currentCandle = dataRaw[dataRaw.length - 1];
+		const priorCandle = dataRaw[dataRaw.length - 2] || 0;
+		const parameterValue = Number(currentCandle[parameter]);
 
-	const priorSma = Number(priorCandle.sma) || 0;
+		const priorSma = Number(priorCandle.sma) || 0;
 
-	const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
+		const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
 
-	//check if the sma was calculated before lookBack (only true if the current index exceeds the lookback)
-	// if so, return the price from that bar, otherwise zero
-	const nBarsAgoPV = nBarsAgoCandle.sma ? Number(nBarsAgoCandle[parameter]) || 0 : 0;
+		//check if the sma was calculated before lookBack (only true if the current index exceeds the lookback)
+		// if so, return the price from that bar, otherwise zero
+		const nBarsAgoPV = nBarsAgoCandle.sma ? Number(nBarsAgoCandle[parameter]) || 0 : 0;
 
-	// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
-	const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
+		// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
+		const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
 
-	// console.log(parameterValue, nBarsAgoPV, k, priorSma, sma);
+		// console.log(parameterValue, nBarsAgoPV, k, priorSma, sma);
 
-	return sma; //.toFixed(2);
+		return sma;
+	} catch (e) {
+		console.log(e, 'error during sma');
+		return 0;
+	}
 };
 
 // Current ATR = [(Prior ATR x 13) + Current TR] / 14
@@ -118,67 +123,56 @@ const reg = (dataRaw, timePeriod, parameter) => {
 	// const currentCandle = dataRaw[dataRaw.length - 1];
 	// const startCandle = dataRaw[dataRaw.length - timePeriod];
 
-	let data = [];
-	// console.log(currentCandle, startCandle);
+	try {
+		let data = [];
+		// console.log(currentCandle, startCandle);
 
-	for (let i = dataRaw.length - timePeriod; i <= dataRaw.length - 1; i++) {
-		// data.push([i - (dataRaw.length - timePeriod), Number(dataRaw[i][parameter])]);
+		for (let i = dataRaw.length - timePeriod; i <= dataRaw.length - 1; i++) {
+			// data.push([i - (dataRaw.length - timePeriod), Number(dataRaw[i][parameter])]);
 
-		// natural log of price
-		const lnPrice = Math.log(Number(dataRaw[i][parameter]));
-		data.push([i - (dataRaw.length - timePeriod), lnPrice]);
+			// natural log of price
+			const lnPrice = Math.log(Number(dataRaw[i][parameter]));
+			data.push([i - (dataRaw.length - timePeriod), lnPrice]);
+		}
+
+		// console.log(data[0], data[timePeriod - 1], 'data', symbol);
+
+		// console.log(data, 'data');
+
+		// const result = regression.exponential(data, {order: 3, precision: 3});
+		// console.log(result);
+
+		// regression of the log series
+		const result = regression.linear(data, {order: 3, precision: 20});
+		const slope = result.equation[0];
+		// console.log(result);
+
+		const percChangePerDay = Math.E ** slope;
+		const annualizedChange = (percChangePerDay ** 250 - 1) * 100;
+
+		return annualizedChange;
+	} catch (e) {
+		console.log(e, 'error during reg');
+		return 0;
 	}
-
-	// console.log(data[0], data[timePeriod - 1], 'data', symbol);
-
-	// console.log(data, 'data');
-
-	// const result = regression.exponential(data, {order: 3, precision: 3});
-	// console.log(result);
-
-	// regression of the log series
-	const result = regression.linear(data, {order: 3, precision: 20});
-	const slope = result.equation[0];
-	// console.log(result);
-
-	const percChangePerDay = Math.E ** slope;
-	const annualizedChange = (percChangePerDay ** 250 - 1) * 100;
-
-	// console.log(
-	// 	result,
-	// 	'result',
-	// 	slope,
-	// 	'slope',
-	// 	percChangePerDay,
-	// 	'percChangePerDay',
-	// 	annualizedChange,
-	// 	'annualizedChange'
-	// );
-
-	// console.log(
-	// 	slope,
-	// 	'slope',
-	// 	percChangePerDay,
-	// 	'percChangePerDay',
-	// 	annualizedChange,
-	// 	'annualizedChange',
-	// 	symbol
-	// );
-
-	return annualizedChange;
 };
 
 const mom = (dataRaw, timePeriod, parameter) => {
-	const currentCandle = dataRaw[dataRaw.length - 1];
-	const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
+	try {
+		const currentCandle = dataRaw[dataRaw.length - 1];
+		const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
 
-	const mom =
-		(100 * (currentCandle[parameter] - nBarsAgoCandle[parameter])) /
-		currentCandle[parameter];
+		const mom =
+			(100 * (currentCandle[parameter] - nBarsAgoCandle[parameter])) /
+			currentCandle[parameter];
 
-	// console.log(currentCandle[parameter], nBarsAgoCandle[parameter]);
+		// console.log(currentCandle[parameter], nBarsAgoCandle[parameter]);
 
-	return mom;
+		return mom;
+	} catch (e) {
+		console.log(e, 'error during mom');
+		return 0;
+	}
 };
 
 module.exports = {sma, ema, atr, reg, mom};

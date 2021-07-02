@@ -32,6 +32,8 @@ const permanentHeaders = ['ID', 'Symbol', 'Interval'];
 
 let updateKey = null;
 
+// utility function to calc ms from now
+// required for the setTimeout after mounting and to determine first data update
 const msDifToTimeFromNow = (hr, min) => {
 	const nowDate = new Date();
 
@@ -92,12 +94,9 @@ class RadarScreen extends React.PureComponent {
 
 		// if a symbol, interval or indicator has been changed, then create a new eventsource to update the data
 		if (symbolsUpdate || intervalsUpdate || apiIndicatorUpdate) {
-			// if (symbolsUpdate || intervalsUpdate) {
 			// close old event source and start a new one with updated Symbol
 			if (this.events) {
-				// console.log('updating, closing eventSource', prevState.Symbol, this.state.Symbol);
 				this.events.close();
-				// console.log('update', this.events);
 				this.startEventSource();
 			}
 		}
@@ -116,7 +115,6 @@ class RadarScreen extends React.PureComponent {
 		// Subscribe to all events without an explicit type
 		this.events.onmessage = event => {
 			const symbolsDataObject = JSON.parse(event.data);
-
 			updateNonCustomIndicators(symbolsDataObject);
 		};
 	}

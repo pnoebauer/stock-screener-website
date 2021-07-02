@@ -3,7 +3,8 @@
 	border-right: none;
 	border-bottom: 1px solid black;
 	border-left: 1px solid black;
-	border-top: 1px solid black;
+	/* border-top: 1px solid black; */
+	border-top-width: 0;
 
 	position: relative;
 	right: 1px;

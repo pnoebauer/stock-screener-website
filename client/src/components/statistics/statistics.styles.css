@@ -22,14 +22,17 @@
 }
 
 .description-cell {
-	background-color: rgb(219, 219, 219);
+	/* background-color: rgb(219, 219, 219); */
+	background-color: rgba(48, 201, 232, 1);
+	color: rgba(58, 74, 77, 1);
+
 	padding: 10px;
 	/* padding-right: 2px;
 	text-align: end; */
 }
 
 .info-cell {
-	background-color: whitesmoke;
+	/* background-color: whitesmoke; */
 	padding: 10px;
 	/* padding-left: 2px;
 	text-align: start; */

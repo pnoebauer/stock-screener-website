@@ -1,5 +1,7 @@
 const fetch = require('node-fetch');
 
+if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
+
 const urlEndPoint = 'https://api.tdameritrade.com/v1/marketdata';
 
 const addDays = (date, days) => {
@@ -24,7 +26,7 @@ const fetchData = async (url, queryParams) => {
 
 	const queryExt = new URLSearchParams(params).toString();
 	const queryString = `${url}?${queryExt}`;
-	// console.log(queryString);
+	// console.log({apikey}, {queryString});
 	try {
 		const response = await fetch(queryString);
 		const data = await response.json();
@@ -40,6 +42,8 @@ const fetchLiveData = async symbol => {
 	const queryParams = {symbol};
 	return fetchData(urlRealTime, queryParams);
 };
+
+// fetchLiveData(['SPY', 'GOOGL']);
 
 const fetchHistoricalData = async (
 	symbol,
