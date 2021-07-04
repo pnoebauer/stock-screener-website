@@ -1,0 +1,29 @@
+.indicator-configuration-form {
+	margin: 15px 0 15px 0;
+	height: 90%;
+	position: relative;
+	text-align: center;
+}
+
+.price-parameter-selector {
+	width: 150px;
+	text-align-last: center;
+}
+
+.lookback-input {
+	width: 150px;
+	text-align: center;
+}
+
+.indicator-configuration-submit-container {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+}
+
+.indicator-configuration-submit-button {
+	cursor: pointer;
+	outline: none;
+	/* margin-top: 15px;
+	float: right; */
+}
