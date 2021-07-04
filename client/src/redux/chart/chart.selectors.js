@@ -23,12 +23,12 @@ export const getChartIndicatorConfiguration = createCachedSelector(
 	(state, indicatorId) => indicatorId,
 	(configuration, indicatorId) => {
 		const {indicators} = configuration;
-		console.log(indicators, 'indicators');
+		// console.log(indicators, 'indicators');
 		for (let i = 0; i < indicators.length; i++) {
 			const {id} = indicators[i];
-			console.log(indicators[i], 'indicators[i]');
+			// console.log(indicators[i], 'indicators[i]');
 			if (id === indicatorId) {
-				console.log(id, indicatorId, 'id === indicatorId');
+				// console.log(id, indicatorId, 'id === indicatorId');
 				return indicators[i];
 			}
 		}

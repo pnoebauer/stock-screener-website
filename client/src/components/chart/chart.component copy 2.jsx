@@ -41,12 +41,6 @@ import ChartIndicatorConfigurationForm from '../chart-indicator-config/chart-ind
 function getMaxUndefined(calculators) {
 	return calculators.map(each => each.undefinedLength()).reduce((a, b) => Math.max(a, b));
 }
-
-const pipe =
-	(...fns) =>
-	x =>
-		fns.reduce((v, f) => f(v), x);
-
 const LENGTH_TO_SHOW = 180;
 
 const macdAppearance = {
@@ -64,80 +58,52 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		super(props);
 		const {data: inputData} = props;
 
-		// const ema26 = ema()
-		// 	.id(0)
-		// 	.options({windowSize: 26})
-		// 	.merge((d, c) => {
-		// 		// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-		// 		d.ema26 = c;
-		// 	})
-		// 	.accessor(d => d.ema26);
+		const ema26 = ema()
+			.id(0)
+			.options({windowSize: 26})
+			.merge((d, c) => {
+				// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
+				d.ema26 = c;
+			})
+			.accessor(d => d.ema26);
 
-		// const ema12 = ema()
-		// 	.id(1)
-		// 	.options({windowSize: 12})
-		// 	.merge((d, c) => {
-		// 		d.ema12 = c;
-		// 	})
-		// 	.accessor(d => d.ema12);
+		const ema12 = ema()
+			.id(1)
+			.options({windowSize: 12})
+			.merge((d, c) => {
+				d.ema12 = c;
+			})
+			.accessor(d => d.ema12);
 
-		// const macdCalculator = macd()
-		// 	.options({
-		// 		fast: 12,
-		// 		slow: 26,
-		// 		signal: 9,
-		// 	})
-		// 	.merge((d, c) => {
-		// 		d.macd = c;
-		// 	})
-		// 	.accessor(d => d.macd);
+		const macdCalculator = macd()
+			.options({
+				fast: 12,
+				slow: 26,
+				signal: 9,
+			})
+			.merge((d, c) => {
+				d.macd = c;
+			})
+			.accessor(d => d.macd);
 
-		// const smaVolume50 = sma()
-		// 	.id(3)
-		// 	.options({
-		// 		windowSize: 50,
-		// 		sourcePath: 'volume',
-		// 	})
-		// 	.merge((d, c) => {
-		// 		d.smaVolume50 = c;
-		// 	})
-		// 	.accessor(d => d.smaVolume50);
+		const smaVolume50 = sma()
+			.id(3)
+			.options({
+				windowSize: 50,
+				sourcePath: 'volume',
+			})
+			.merge((d, c) => {
+				d.smaVolume50 = c;
+			})
+			.accessor(d => d.smaVolume50);
 
-		// const indicators = {ema26, ema12, macdCalculator, smaVolume50};
+		const indicators = {ema26, ema12, macdCalculator, smaVolume50};
 
-		// const maxWindowSize = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
-
-		const indicators = [
-			ema()
-				.id(0)
-				.options({windowSize: 1})
-				.merge((d, c) => {
-					// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-					d.ema26 = c;
-				})
-				.accessor(d => d.ema26),
-			ema()
-				.id(1)
-				.options({windowSize: 20})
-				.merge((d, c) => {
-					d.ema12 = c;
-				})
-				.accessor(d => d.ema12),
-		];
-
-		// const maxWindowSize = 500;
-
-		const maxWindowSize = getMaxUndefined(indicators);
-		// console.log({maxWindowSize});
-
+		const maxWindowSize = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
 		/* SERVER - START */
 		const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxWindowSize);
 
-		// const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
-		// const calculatedData = indicators[0](indicators[1](dataToCalculate));
-
-		const calculatedData = pipe(...indicators)(dataToCalculate);
-
+		const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
 		const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
 
 		// console.log(inputData.length, dataToCalculate.length, maxWindowSize)
@@ -156,8 +122,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// console.log(linearData.length)
 
 		this.state = {
-			indicators,
-			// ...indicators,
+			...indicators,
 			// linearData, //-->appears not to be needed
 			data: linearData,
 			xScale,
@@ -183,57 +148,57 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// this.handleDownloadMore = this.handleDownloadMore.bind(this);
 	}
 
-	// // handleDownloadMore(start, end) {
-	// handleDownloadMore = (start, end) => {
-	// 	console.log(start, end, 'start, end');
-	// 	if (Math.ceil(start) === end) return;
-	// 	// console.log("rows to download", rowsToDownload, start, end)
-	// 	const {data: prevData, ema26, ema12, macdCalculator, smaVolume50} = this.state;
-	// 	const {data: inputData} = this.props;
+	// handleDownloadMore(start, end) {
+	handleDownloadMore = (start, end) => {
+		console.log(start, end, 'start, end');
+		if (Math.ceil(start) === end) return;
+		// console.log("rows to download", rowsToDownload, start, end)
+		const {data: prevData, ema26, ema12, macdCalculator, smaVolume50} = this.state;
+		const {data: inputData} = this.props;
 
-	// 	if (inputData.length === prevData.length) return;
+		if (inputData.length === prevData.length) return;
 
-	// 	const rowsToDownload = end - Math.ceil(start);
+		const rowsToDownload = end - Math.ceil(start);
 
-	// 	const maxWindowSize = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
+		const maxWindowSize = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
 
-	// 	/* SERVER - START */
-	// 	const dataToCalculate = inputData.slice(
-	// 		-rowsToDownload - maxWindowSize - prevData.length,
-	// 		-prevData.length
-	// 	);
+		/* SERVER - START */
+		const dataToCalculate = inputData.slice(
+			-rowsToDownload - maxWindowSize - prevData.length,
+			-prevData.length
+		);
 
-	// 	const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
-	// 	const indexCalculator = discontinuousTimeScaleProviderBuilder()
-	// 		.initialIndex(Math.ceil(start))
-	// 		.indexCalculator();
-	// 	const {index} = indexCalculator(
-	// 		calculatedData.slice(-rowsToDownload).concat(prevData)
-	// 	);
-	// 	/* SERVER - END */
+		const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
+		const indexCalculator = discontinuousTimeScaleProviderBuilder()
+			.initialIndex(Math.ceil(start))
+			.indexCalculator();
+		const {index} = indexCalculator(
+			calculatedData.slice(-rowsToDownload).concat(prevData)
+		);
+		/* SERVER - END */
 
-	// 	const xScaleProvider = discontinuousTimeScaleProviderBuilder()
-	// 		.initialIndex(Math.ceil(start))
-	// 		.withIndex(index);
+		const xScaleProvider = discontinuousTimeScaleProviderBuilder()
+			.initialIndex(Math.ceil(start))
+			.withIndex(index);
 
-	// 	const {
-	// 		data: linearData,
-	// 		xScale,
-	// 		xAccessor,
-	// 		displayXAccessor,
-	// 	} = xScaleProvider(calculatedData.slice(-rowsToDownload).concat(prevData));
+		const {
+			data: linearData,
+			xScale,
+			xAccessor,
+			displayXAccessor,
+		} = xScaleProvider(calculatedData.slice(-rowsToDownload).concat(prevData));
 
-	// 	// console.log(linearData.length)
-	// 	setTimeout(() => {
-	// 		// simulate a lag for ajax
-	// 		this.setState({
-	// 			data: linearData,
-	// 			xScale,
-	// 			xAccessor,
-	// 			displayXAccessor,
-	// 		});
-	// 	}, 300);
-	// };
+		// console.log(linearData.length)
+		setTimeout(() => {
+			// simulate a lag for ajax
+			this.setState({
+				data: linearData,
+				xScale,
+				xAccessor,
+				displayXAccessor,
+			});
+		}, 300);
+	};
 
 	show = id => {
 		// console.log('show', id);
@@ -253,9 +218,10 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		const {
 			data,
-			indicators,
-			// macdCalculator,
-			// smaVolume50,
+			ema26,
+			ema12,
+			macdCalculator,
+			smaVolume50,
 			xScale,
 			xAccessor,
 			displayXAccessor,
@@ -276,16 +242,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 					xScale={xScale}
 					xAccessor={xAccessor}
 					displayXAccessor={displayXAccessor}
-					// onLoadMore={this.handleDownloadMore}
+					onLoadMore={this.handleDownloadMore}
 				>
 					<Chart
 						id={1}
 						height={400}
-						// yExtents={[d => [d.high, d.low], ema26.accessor(), ema12.accessor()]}
-						yExtents={[
-							d => [d.high, d.low],
-							[...indicators.map(indicator => indicator.accessor())],
-						]}
+						yExtents={[d => [d.high, d.low], ema26.accessor(), ema12.accessor()]}
 						padding={{top: 10, bottom: 20}}
 					>
 						{/* <XAxis axisAt='bottom' orient='bottom' showTicks={false} outerTickSize={0} />
@@ -301,25 +263,11 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						/>
 
 						<CandlestickSeries />
-						{indicators.map(indicator => {
-							return (
-								<LineSeries
-									yAccessor={indicator.accessor()}
-									stroke={indicator.stroke()}
-									key={indicator.id()}
-								/>
-							);
-						})}
+						<LineSeries yAccessor={ema26.accessor()} stroke={ema26.stroke()} />
+						<LineSeries yAccessor={ema12.accessor()} stroke={ema12.stroke()} />
 
-						{indicators.map(indicator => {
-							return (
-								<CurrentCoordinate
-									yAccessor={indicator.accessor()}
-									fill={indicator.stroke()}
-									key={indicator.id()}
-								/>
-							);
-						})}
+						<CurrentCoordinate yAccessor={ema26.accessor()} fill={ema26.stroke()} />
+						<CurrentCoordinate yAccessor={ema12.accessor()} fill={ema12.stroke()} />
 
 						<EdgeIndicator
 							itemType='last'
@@ -417,16 +365,24 @@ class CandleStickChartPanToLoadMore extends React.Component {
 								// });
 							}}
 							origin={[-38, 15]}
-							options={indicators.map(indicator => {
-								return {
-									yAccessor: indicator.accessor(),
-									type: indicator.type(),
-									stroke: indicator.stroke(),
-									...indicator.options(),
-									id: indicator.id(),
-									indicatorName: indicator.id(),
-								};
-							})}
+							options={[
+								{
+									yAccessor: ema26.accessor(),
+									type: ema26.type(),
+									stroke: ema26.stroke(),
+									...ema26.options(),
+									id: 0,
+									indicatorName: 'ema26',
+								},
+								{
+									yAccessor: ema12.accessor(),
+									type: ema12.type(),
+									stroke: ema12.stroke(),
+									...ema12.options(),
+									id: 1,
+									// indicatorName: 'ema12',
+								},
+							]}
 						/>
 					</Chart>
 					{/* 

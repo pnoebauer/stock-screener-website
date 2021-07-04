@@ -21,21 +21,28 @@ const initialState = {
 
 const chartReducer = (state = initialState, action) => {
 	switch (action.type) {
-		// case ConfigurationTypes.SET_CHART_INDICATOR_CONFIGURATION:
-		// 	return applySetIndicatorConfiguration(state, action);
+		case ConfigurationTypes.SET_CHART_INDICATOR_CONFIGURATION:
+			return applySetChartIndicatorConfiguration(state, action);
 		default:
 			return state;
 	}
 };
 
-const applySetIndicatorConfiguration = (state, action) => {
+const applySetChartIndicatorConfiguration = (state, action) => {
 	const indicatorConfigurationObject = action.payload;
-	const indicator = Object.keys(indicatorConfigurationObject)[0];
-	const indicatorConfiguration = indicatorConfigurationObject[indicator];
+	const {id} = indicatorConfigurationObject;
 
 	return {
 		...state,
-		[indicator]: indicatorConfiguration,
+		indicators: state.indicators.map(indicator => {
+			if (indicator.id === id) {
+				return {
+					...indicator,
+					...indicatorConfigurationObject,
+				};
+			}
+			return indicator;
+		}),
 	};
 };
 
