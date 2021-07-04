@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {connect} from 'react-redux';
-
 import {format} from 'd3-format';
 import {timeFormat} from 'd3-time-format';
 
@@ -200,10 +198,8 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		}, 300);
 	};
 
-	show = id => {
-		// console.log('show', id);
-		// this.setState({visible: true, inactive: false});
-		this.setState({visible: id, inactive: false});
+	show = () => {
+		this.setState({visible: true, inactive: false});
 	};
 
 	hide = () => {
@@ -298,70 +294,68 @@ class CandleStickChartPanToLoadMore extends React.Component {
 								// 	}
 								// });
 
-								const {indicatorName, id} = e;
+								const {indicatorName} = e;
+								console.log(indicatorName, 'indicatorName');
 
-								this.show(id);
-								console.log(indicatorName, 'indicatorName', id, 'id');
+								// ema26.options({windowSize: 50});
+								// const ema26 = ema()
+								// 	.id(0)
+								// 	.options({windowSize: 1, sourcePath: 'high'})
+								// 	.merge((d, c) => {
+								// 		d.ema26 = c;
+								// 	})
+								// 	.accessor(d => d.ema26);
+								// const ema26 = this.state.ema26.options({windowSize: 1, sourcePath: 'high'});
+								// console.log(ema26.merge(), 'ac');
 
-								// // ema26.options({windowSize: 50});
-								// // const ema26 = ema()
-								// // 	.id(0)
-								// // 	.options({windowSize: 1, sourcePath: 'high'})
-								// // 	.merge((d, c) => {
-								// // 		d.ema26 = c;
-								// // 	})
-								// // 	.accessor(d => d.ema26);
-								// // const ema26 = this.state.ema26.options({windowSize: 1, sourcePath: 'high'});
-								// // console.log(ema26.merge(), 'ac');
+								const updatedIndicator = this.state[indicatorName].options({
+									windowSize: 1,
+									sourcePath: 'high',
+								});
 
-								// const updatedIndicator = this.state[indicatorName].options({
-								// 	windowSize: 1,
-								// 	sourcePath: 'high',
-								// });
+								// const maxWindowSize = getMaxUndefined([ema26]);
 
-								// // const maxWindowSize = getMaxUndefined([ema26]);
+								const maxWindowSize = getMaxUndefined([updatedIndicator]);
+								// console.log('MAX-----', maxWindowSize);
+								/* SERVER - START */
+								const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxWindowSize);
 
-								// const maxWindowSize = getMaxUndefined([updatedIndicator]);
-								// // console.log('MAX-----', maxWindowSize);
-								// /* SERVER - START */
-								// const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxWindowSize);
+								// const calculatedData = ema26(dataToCalculate);
+								const calculatedData = updatedIndicator(dataToCalculate);
+								// console.log('calculatedData-----', calculatedData);
+								const indexCalculator =
+									discontinuousTimeScaleProviderBuilder().indexCalculator();
 
-								// // const calculatedData = ema26(dataToCalculate);
-								// const calculatedData = updatedIndicator(dataToCalculate);
-								// // console.log('calculatedData-----', calculatedData);
-								// const indexCalculator =
-								// 	discontinuousTimeScaleProviderBuilder().indexCalculator();
+								// console.log(inputData.length, dataToCalculate.length, maxWindowSize)
+								const {index} = indexCalculator(calculatedData);
+								/* SERVER - END */
 
-								// // console.log(inputData.length, dataToCalculate.length, maxWindowSize)
-								// const {index} = indexCalculator(calculatedData);
-								// /* SERVER - END */
+								const xScaleProvider =
+									discontinuousTimeScaleProviderBuilder().withIndex(index);
+								const {
+									data: linearData,
+									xScale,
+									xAccessor,
+									displayXAccessor,
+								} = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
 
-								// const xScaleProvider =
-								// 	discontinuousTimeScaleProviderBuilder().withIndex(index);
-								// const {
-								// 	data: linearData,
-								// 	xScale,
-								// 	xAccessor,
-								// 	displayXAccessor,
-								// } = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
+								// console.log(head(linearData), last(linearData))
+								// console.log(linearData.length)
 
-								// // console.log(head(linearData), last(linearData))
-								// // console.log(linearData.length)
-
-								// // this.setState({
-								// // 	ema26,
-								// // 	data: linearData,
-								// // 	xScale,
-								// // 	xAccessor,
-								// // 	displayXAccessor,
-								// // });
 								// this.setState({
-								// 	updatedIndicator,
+								// 	ema26,
 								// 	data: linearData,
 								// 	xScale,
 								// 	xAccessor,
 								// 	displayXAccessor,
 								// });
+								this.setState({
+									updatedIndicator,
+									data: linearData,
+									xScale,
+									xAccessor,
+									displayXAccessor,
+								});
 							}}
 							origin={[-38, 15]}
 							options={[
@@ -370,7 +364,6 @@ class CandleStickChartPanToLoadMore extends React.Component {
 									type: ema26.type(),
 									stroke: ema26.stroke(),
 									...ema26.options(),
-									id: 0,
 									indicatorName: 'ema26',
 								},
 								{
@@ -378,8 +371,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 									type: ema12.type(),
 									stroke: ema12.stroke(),
 									...ema12.options(),
-									id: 1,
-									// indicatorName: 'ema12',
+									indicatorName: 'ema12',
 								},
 							]}
 						/>
@@ -435,13 +427,13 @@ class CandleStickChartPanToLoadMore extends React.Component {
 					<CrossHairCursor />
 				</ChartCanvas>
 
-				{this.state.visible || this.state.visible === 0 ? (
+				{this.state.visible ? (
 					<Modal
 						inactive={this.state.inactive}
 						style={{height: '60%', width: '50%'}}
 						onClose={this.hide}
 					>
-						<ChartIndicatorConfigurationForm indicatorId={this.state.visible} />
+						<ChartIndicatorConfigurationForm />
 					</Modal>
 				) : null}
 			</>

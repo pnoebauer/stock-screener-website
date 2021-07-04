@@ -7,6 +7,7 @@ import configurationReducer from './configuration/configuration.reducer';
 import sortingReducer from './sorting/sorting.reducer';
 import filteringReducer from './filtering/filtering.reducer';
 import fetchingReducer from './fetching/fetching.reducer';
+import chartReducer from './chart/chart.reducer';
 
 const persistConfig = {
 	key: 'root',
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
 	sortingConfiguration: sortingReducer,
 	filterRules: filteringReducer,
 	fetchingStatus: fetchingReducer,
+	chartConfiguration: chartReducer,
 });
 
 // export default rootReducer;
