@@ -62,9 +62,9 @@ const macdAppearance = {
 };
 
 const indicatorFunctions = {
-	ema,
-	sma,
-	macd,
+	ema: ema,
+	sma: sma,
+	macd: macd,
 };
 
 class CandleStickChartPanToLoadMore extends React.Component {

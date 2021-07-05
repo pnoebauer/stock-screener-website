@@ -136,7 +136,7 @@ const mapStateToProps = (state, {indicator}) => ({
 
 const mapDispatchToProps = dispatch => ({
 	updateIndicatorConfiguration: indicatorConfig => {
-		console.log({indicatorConfig});
+		// console.log({indicatorConfig});
 		return dispatch(doSetChartIndicatorConfiguration(indicatorConfig));
 	},
 });

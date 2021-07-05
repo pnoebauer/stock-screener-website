@@ -18,11 +18,20 @@ const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 const getChartConfiguration = state => state.chartConfiguration;
 
-export const getChartIndicatorConfiguration = createCachedSelector(
+// export const getChartIndicatorConfigs = state => state.chartConfiguration.indicators;
+
+export const getChartIndicatorConfigs = createDeepEqualSelector(
 	getChartConfiguration,
+	chartConfiguration => chartConfiguration.indicators
+);
+
+export const getChartIndicatorConfiguration = createCachedSelector(
+	// getChartConfiguration,
+	getChartIndicatorConfigs,
 	(state, indicatorId) => indicatorId,
-	(configuration, indicatorId) => {
-		const {indicators} = configuration;
+	// (configuration, indicatorId) => {
+	(indicators, indicatorId) => {
+		// const {indicators} = configuration;
 		// console.log(indicators, 'indicators');
 		for (let i = 0; i < indicators.length; i++) {
 			const {id} = indicators[i];
