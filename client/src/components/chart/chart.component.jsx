@@ -75,158 +75,52 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		const {indicatorConfigurations} = props;
 		console.log({indicatorConfigurations});
 
-		// const ema26 = ema()
-		// 	.id(0)
-		// 	.options({windowSize: 26})
-		// 	.merge((d, c) => {
-		// 		// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-		// 		d.ema26 = c;
-		// 	})
-		// 	.accessor(d => d.ema26);
-
-		// const ema12 = ema()
-		// 	.id(1)
-		// 	.options({windowSize: 12})
-		// 	.merge((d, c) => {
-		// 		d.ema12 = c;
-		// 	})
-		// 	.accessor(d => d.ema12);
-
-		// const macdCalculator = macd()
-		// 	.options({
-		// 		fast: 12,
-		// 		slow: 26,
-		// 		signal: 9,
-		// 	})
-		// 	.merge((d, c) => {
-		// 		d.macd = c;
-		// 	})
-		// 	.accessor(d => d.macd);
-
-		// const smaVolume50 = sma()
-		// 	.id(3)
-		// 	.options({
-		// 		windowSize: 50,
-		// 		sourcePath: 'volume',
-		// 	})
-		// 	.merge((d, c) => {
-		// 		d.smaVolume50 = c;
-		// 	})
-		// 	.accessor(d => d.smaVolume50);
-
-		// const indicators = {ema26, ema12, macdCalculator, smaVolume50};
-
-		// const maxWindowSize = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
-
-		// const indicators = [
-		// 	ema()
-		// 		.id(0)
-		// 		.options({windowSize: 1})
-		// 		.merge((d, c) => {
-		// 			// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-		// 			d.ema26 = c;
-		// 		})
-		// 		.accessor(d => d.ema26),
-		// 	ema()
-		// 		.id(1)
-		// 		.options({windowSize: 20})
-		// 		.merge((d, c) => {
-		// 			d.ema12 = c;
-		// 		})
-		// 		.accessor(d => d.ema12),
-		// ];
-
-		// const indicators = indicatorConfigurations.map(indicator => {
-		// 	return ema()
-		// 		.id(indicator.id)
-		// 		.options({windowSize: indicator.windowSize, sourcePath: indicator.sourcePath})
-		// 		.merge((d, c) => {
-		// 			// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-		// 			// d.ema26 = c;
-
-		// 			d[`${indicator.type}${indicator.windowSize}`];
-		// 		})
-		// 		.accessor(d => d[`${indicator.type}${indicator.windowSize}`]);
-		// 	// .accessor(d => d.ema26)
-		// });
-
-		// console.log(indicatorFunctions.ema(), 'indicatorFunctions');
-
 		const indicators = indicatorConfigurations.map(indicator => {
-			// console.log(
-			// 	{indicator},
-			// 	indicator.windowSize,
-			// 	`${indicator.type}${indicator.windowSize}`
-			// );
 			return (
-				//ema()
 				indicatorFunctions[indicator.type]()
 					.id(indicator.id)
 					.options({windowSize: indicator.windowSize})
 					.merge((d, c) => {
 						// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-						// d.ema1 = c;
-						d[`${indicator.type}${indicator.windowSize}`] = c;
-					})
-					// .accessor(d => {
-					// 	console.log(`${indicator.type}${indicator.windowSize}`, 'acc');
-					// 	return d.ema1;
-					// });
-					.accessor(d => d[`${indicator.type}${indicator.windowSize}`])
-			);
-			// return ema()
-			// 	.id(indicator.id)
-			// 	.options({windowSize: indicator.windowSize, sourcePath: indicator.sourcePath})
-			// 	.merge((d, c) => {
-			// 		// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-			// 		// d.ema26 = c;
 
-			// 		d[`${indicator.type}${indicator.windowSize}`];
-			// 	})
-			// 	.accessor(d => d[`${indicator.type}${indicator.windowSize}`]);
-			// // .accessor(d => d.ema26)
+						// d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`] = c;
+						d[`indicator-${indicator.id}`] = c;
+					})
+					// .accessor(d => d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`]);
+					.accessor(d => d[`indicator-${indicator.id}`])
+			);
 		});
 
-		// console.log(test, 't', test[0].id(), test[0].options(), test[0].accessor());
+		const maxUnstablePeriod = getMaxUndefined(indicators);
+		// console.log({maxUnstablePeriod});
 
-		// const indicators = [
-		// 	ema()
-		// 		.id(0)
-		// 		.options({windowSize: 1})
-		// 		.merge((d, c) => {
-		// 			// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
-		// 			d.ema26 = c;
-		// 		})
-		// 		.accessor(d => d.ema26),
-		// 	ema()
-		// 		.id(1)
-		// 		.options({windowSize: 20})
-		// 		.merge((d, c) => {
-		// 			d.ema12 = c;
-		// 		})
-		// 		.accessor(d => d.ema12),
-		// ];
-
-		// const maxWindowSize = 500;
-
-		const maxWindowSize = getMaxUndefined(indicators);
-		// console.log({maxWindowSize});
+		const startPoint = -LENGTH_TO_SHOW - maxUnstablePeriod;
 
 		/* SERVER - START */
-		const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxWindowSize);
+		// retrieves the last X candles from the data series
+		const dataToCalculate = inputData.slice(startPoint);
+		console.log({startPoint});
 
 		// const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
 		// const calculatedData = indicators[0](indicators[1](dataToCalculate));
 
+		// add the indicator values to each candle
 		const calculatedData = pipe(...indicators)(dataToCalculate);
+
+		console.log({calculatedData});
 
 		const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
 
-		// console.log(inputData.length, dataToCalculate.length, maxWindowSize)
+		// /Users/Phil/Desktop/Web Dev/Projects/stock-screener/client/node_modules/react-stockcharts/lib/scale//level.js
+		// adds index to series and level (level depends on the date, i.e. odd days = 11, even days = 12, start of week = 13, start of month = 14)
 		const {index} = indexCalculator(calculatedData);
+		console.log({index});
+
 		/* SERVER - END */
 
+		// add index to the data series
 		const xScaleProvider = discontinuousTimeScaleProviderBuilder().withIndex(index);
+		// console.log({xScaleProvider: xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW))});
 		const {
 			data: linearData,
 			xScale,
@@ -234,12 +128,14 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			displayXAccessor,
 		} = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
 
-		// console.log(head(linearData), last(linearData))
+		// console.log({xScale});
 		// console.log(linearData.length)
+
+		// linear data is same as calculatedData, with the exception that the idx property was added (idx: {index, level, date, format()}) --> done under xScaleProvider
+		// console.log({linearData});
 
 		this.state = {
 			indicators,
-			// ...indicators,
 			// linearData, //-->appears not to be needed
 			data: linearData,
 			xScale,
@@ -247,75 +143,76 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			displayXAccessor,
 			visible: false,
 			inactive: false,
+			startPoint,
 		};
 
-		// this.state = {
-		// 	ema26,
-		// 	ema12,
-		// 	macdCalculator,
-		// 	smaVolume50,
-		// 	// linearData, //-->appears not to be needed
-		// 	data: linearData,
-		// 	xScale,
-		// 	xAccessor,
-		// 	displayXAccessor,
-		// };
-
 		console.log('s', this.state);
-		// this.handleDownloadMore = this.handleDownloadMore.bind(this);
 	}
 
-	// // handleDownloadMore(start, end) {
-	// handleDownloadMore = (start, end) => {
-	// 	console.log(start, end, 'start, end');
-	// 	if (Math.ceil(start) === end) return;
-	// 	// console.log("rows to download", rowsToDownload, start, end)
-	// 	const {data: prevData, ema26, ema12, macdCalculator, smaVolume50} = this.state;
-	// 	const {data: inputData} = this.props;
+	handleDownloadMore = (start, end) => {
+		console.log(start, end, 'start, end');
+		if (Math.ceil(start) === end) return;
+		// console.log("rows to download", rowsToDownload, start, end)
 
-	// 	if (inputData.length === prevData.length) return;
+		// const {data: prevData, ema26, ema12, macdCalculator, smaVolume50} = this.state;
+		const {data: prevData, indicators} = this.state;
+		const {data: inputData} = this.props;
 
-	// 	const rowsToDownload = end - Math.ceil(start);
+		if (inputData.length === prevData.length) return;
 
-	// 	const maxWindowSize = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
+		const rowsToDownload = end - Math.ceil(start);
 
-	// 	/* SERVER - START */
-	// 	const dataToCalculate = inputData.slice(
-	// 		-rowsToDownload - maxWindowSize - prevData.length,
-	// 		-prevData.length
-	// 	);
+		// const maxUnstablePeriod = getMaxUndefined([ema26, ema12, macdCalculator, smaVolume50]);
+		const maxUnstablePeriod = getMaxUndefined(indicators);
 
-	// 	const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
-	// 	const indexCalculator = discontinuousTimeScaleProviderBuilder()
-	// 		.initialIndex(Math.ceil(start))
-	// 		.indexCalculator();
-	// 	const {index} = indexCalculator(
-	// 		calculatedData.slice(-rowsToDownload).concat(prevData)
-	// 	);
-	// 	/* SERVER - END */
+		const startPoint = -rowsToDownload - maxUnstablePeriod - prevData.length;
+		const endPoint = -prevData.length;
 
-	// 	const xScaleProvider = discontinuousTimeScaleProviderBuilder()
-	// 		.initialIndex(Math.ceil(start))
-	// 		.withIndex(index);
+		/* SERVER - START */
+		const dataToCalculate = inputData.slice(startPoint, endPoint);
 
-	// 	const {
-	// 		data: linearData,
-	// 		xScale,
-	// 		xAccessor,
-	// 		displayXAccessor,
-	// 	} = xScaleProvider(calculatedData.slice(-rowsToDownload).concat(prevData));
+		console.log(
+			'slice',
+			{startPoint},
+			{endPoint},
+			{rowsToDownload, maxUnstablePeriod, length: prevData.length}
+		);
 
-	// 	// console.log(linearData.length)
-	// 	setTimeout(() => {
-	// 		// simulate a lag for ajax
-	// 		this.setState({
-	// 			data: linearData,
-	// 			xScale,
-	// 			xAccessor,
-	// 			displayXAccessor,
-	// 		});
-	// 	}, 300);
-	// };
+		// const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
+		const calculatedData = pipe(...indicators)(dataToCalculate);
+		const indexCalculator = discontinuousTimeScaleProviderBuilder()
+			.initialIndex(Math.ceil(start))
+			.indexCalculator();
+		const {index} = indexCalculator(
+			calculatedData.slice(-rowsToDownload).concat(prevData)
+		);
+		/* SERVER - END */
+
+		const xScaleProvider = discontinuousTimeScaleProviderBuilder()
+			.initialIndex(Math.ceil(start))
+			.withIndex(index);
+
+		const {
+			data: linearData,
+			xScale,
+			xAccessor,
+			displayXAccessor,
+		} = xScaleProvider(calculatedData.slice(-rowsToDownload).concat(prevData));
+
+		// console.log({linearData}, 'update');
+
+		// console.log(linearData.length)
+		setTimeout(() => {
+			// simulate a lag for ajax
+			this.setState({
+				data: linearData,
+				xScale,
+				xAccessor,
+				displayXAccessor,
+				startPoint,
+			});
+		}, 300);
+	};
 
 	show = id => {
 		// console.log('show', id);
@@ -330,20 +227,189 @@ class CandleStickChartPanToLoadMore extends React.Component {
 	//  required to achieve the fade out effect
 	closeForm = () => this.setState({inactive: true});
 
+	// componentDidUpdate(prevProps) {
+	// 	const {data: inputData, indicatorConfigurations} = this.props;
+
+	// 	if (prevProps.indicatorConfigurations !== indicatorConfigurations) {
+	// 		// console.log('changed', indicatorConfigurations);
+
+	// 		let updatedIndicator, updatedId;
+
+	// 		for (let i = 0; i < indicatorConfigurations.length; i++) {
+	// 			if (prevProps.indicatorConfigurations[i] !== indicatorConfigurations[i]) {
+	// 				console.log({i}, indicatorConfigurations[i]);
+
+	// 				// check if state manipulation is fine
+	// 				// check if id is always in the correct location in the array
+	// 				updatedIndicator = this.state.indicators[i].options({
+	// 					windowSize: indicatorConfigurations[i].windowSize,
+	// 					sourcePath: indicatorConfigurations[i].sourcePath,
+	// 				});
+
+	// 				updatedId = i;
+	// 			}
+	// 		}
+
+	// 		const maxUnstablePeriod = getMaxUndefined([updatedIndicator]);
+	// 		// console.log('MAX-----', maxUnstablePeriod);
+	// 		/* SERVER - START */
+	// 		const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxUnstablePeriod);
+
+	// 		// const calculatedData = ema26(dataToCalculate);
+	// 		const calculatedData = updatedIndicator(dataToCalculate);
+	// 		// console.log('calculatedData-----', calculatedData);
+	// 		const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
+
+	// 		// console.log(inputData.length, dataToCalculate.length, maxUnstablePeriod)
+	// 		const {index} = indexCalculator(calculatedData);
+	// 		/* SERVER - END */
+
+	// 		const xScaleProvider = discontinuousTimeScaleProviderBuilder().withIndex(index);
+	// 		const {
+	// 			data: linearData,
+	// 			xScale,
+	// 			xAccessor,
+	// 			displayXAccessor,
+	// 		} = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
+
+	// 		this.setState(
+	// 			prevState => ({
+	// 				indicators: prevState.indicators.map((indicator, index) => {
+	// 					if (index === updatedId) {
+	// 						return updatedIndicator;
+	// 					}
+	// 					return indicator;
+	// 				}),
+	// 				data: linearData,
+	// 				xScale,
+	// 				xAccessor,
+	// 				displayXAccessor,
+	// 			}),
+	// 			() => console.log({updatedState: this.state})
+	// 		);
+	// 	}
+	// }
+
+	componentDidUpdate(prevProps) {
+		const {indicatorConfigurations, data: inputData} = this.props;
+
+		if (prevProps.indicatorConfigurations !== indicatorConfigurations) {
+			// console.log('changed', indicatorConfigurations);
+
+			let updatedIndicator, updatedId;
+
+			// 		for (let i = 0; i < indicatorConfigurations.length; i++) {
+			// 			if (prevProps.indicatorConfigurations[i] !== indicatorConfigurations[i]) {
+			// 				console.log({i}, indicatorConfigurations[i]);
+
+			// 				// check if state manipulation is fine
+			// 				// check if id is always in the correct location in the array
+			// 				updatedIndicator = this.state.indicators[i].options({
+			// 					windowSize: indicatorConfigurations[i].windowSize,
+			// 					sourcePath: indicatorConfigurations[i].sourcePath,
+			// 				});
+
+			// 				updatedId = i;
+			// 			}
+			// 		}
+
+			// const indicators = indicatorConfigurations.map((indicator, index) => {
+			// 	if (prevProps.indicatorConfigurations[index] !== indicator) {
+			// 		console.log({index});
+			// 	}
+			// 	return (
+			// 		indicatorFunctions[indicator.type]()
+			// 			.id(indicator.id)
+			// 			.options({windowSize: indicator.windowSize})
+			// 			.merge((d, c) => {
+			// 				// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
+
+			// 				// d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`] = c;
+			// 				d[`indicator-${indicator.id}`] = c;
+			// 			})
+			// 			// .accessor(d => d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`]);
+			// 			.accessor(d => d[`indicator-${indicator.id}`])
+			// 	);
+			// });
+
+			const indicators = indicatorConfigurations.map((indicator, index) => {
+				if (prevProps.indicatorConfigurations[index] !== indicator) {
+					// console.log({index});
+
+					return (
+						indicatorFunctions[indicator.type]()
+							.id(indicator.id)
+							.options({windowSize: indicator.windowSize})
+							.merge((d, c) => {
+								// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
+
+								// d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`] = c;
+								d[`indicator-${indicator.id}`] = c;
+							})
+							// .accessor(d => d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`]);
+							.accessor(d => d[`indicator-${indicator.id}`])
+					);
+				}
+				// check if id is always in the correct location in the array
+				return this.state.indicators[index];
+			});
+
+			const maxUnstablePeriod = getMaxUndefined(indicators);
+			console.log('MAX-----', maxUnstablePeriod);
+			// /* SERVER - START */
+			// const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxUnstablePeriod);
+
+			// const {startPoint} = this.state;
+
+			const startPoint = -LENGTH_TO_SHOW - maxUnstablePeriod;
+			/* SERVER - START */
+
+			const dataToCalculate = inputData.slice(startPoint);
+			// console.log({startPoint});
+
+			// const calculatedData = ema26(ema12(macdCalculator(smaVolume50(dataToCalculate))));
+			// const calculatedData = indicators[0](indicators[1](dataToCalculate));
+
+			// console.log({dataToCalculate});
+
+			const calculatedData = pipe(...indicators)(dataToCalculate);
+
+			// console.log({calculatedData});
+
+			const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
+
+			// console.log(inputData.length, dataToCalculate.length, maxUnstablePeriod)
+			const {index} = indexCalculator(calculatedData);
+
+			/* SERVER - END */
+
+			const xScaleProvider = discontinuousTimeScaleProviderBuilder().withIndex(index);
+			const {
+				data: linearData,
+				xScale,
+				xAccessor,
+				displayXAccessor,
+			} = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
+
+			// console.log(linearData.length)
+			// console.log({linearData});
+
+			this.setState({
+				indicators,
+				data: linearData,
+				xScale,
+				xAccessor,
+				displayXAccessor,
+			});
+		}
+	}
+
 	render() {
 		const {type, width, ratio, height} = this.props;
 
-		const {
-			data,
-			indicators,
-			// macdCalculator,
-			// smaVolume50,
-			xScale,
-			xAccessor,
-			displayXAccessor,
-		} = this.state;
+		const {data, indicators, xScale, xAccessor, displayXAccessor} = this.state;
 
-		const {data: inputData} = this.props;
+		const {data: inputData, indicatorConfigurations} = this.props;
 
 		return (
 			<>
@@ -358,7 +424,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 					xScale={xScale}
 					xAccessor={xAccessor}
 					displayXAccessor={displayXAccessor}
-					// onLoadMore={this.handleDownloadMore}
+					onLoadMore={this.handleDownloadMore}
 				>
 					<Chart
 						id={1}
@@ -454,12 +520,17 @@ class CandleStickChartPanToLoadMore extends React.Component {
 								// 	sourcePath: 'high',
 								// });
 
-								// // const maxWindowSize = getMaxUndefined([ema26]);
+								// const updatedIndicator = this.state[indicatorName].options({
+								// 	windowSize: 1,
+								// 	sourcePath: 'high',
+								// });
 
-								// const maxWindowSize = getMaxUndefined([updatedIndicator]);
-								// // console.log('MAX-----', maxWindowSize);
+								// // const maxUnstablePeriod = getMaxUndefined([ema26]);
+
+								// const maxUnstablePeriod = getMaxUndefined([updatedIndicator]);
+								// // console.log('MAX-----', maxUnstablePeriod);
 								// /* SERVER - START */
-								// const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxWindowSize);
+								// const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxUnstablePeriod);
 
 								// // const calculatedData = ema26(dataToCalculate);
 								// const calculatedData = updatedIndicator(dataToCalculate);
@@ -467,7 +538,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 								// const indexCalculator =
 								// 	discontinuousTimeScaleProviderBuilder().indexCalculator();
 
-								// // console.log(inputData.length, dataToCalculate.length, maxWindowSize)
+								// // console.log(inputData.length, dataToCalculate.length, maxUnstablePeriod)
 								// const {index} = indexCalculator(calculatedData);
 								// /* SERVER - END */
 
