@@ -117,39 +117,6 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		/* SERVER - END */
 
-		// const prevData = [];
-		// const end = 0;
-		// const start = -LENGTH_TO_SHOW;
-		// const rowsToDownload = end - Math.ceil(start); //--> =LENGTH_TO_SHOW
-		// const maxUnstablePeriod = getMaxUndefined(indicators);
-		// const startPoint = -rowsToDownload - maxUnstablePeriod - prevData.length;
-		// const endPoint = -prevData.length; //--> =0
-
-		// const dataToCalculate = inputData.slice(startPoint, endPoint);
-		// const calculatedData = pipe(...indicators)(dataToCalculate);
-
-		// const indexCalculator = discontinuousTimeScaleProviderBuilder()
-		// 	.initialIndex(Math.ceil(start)) //--> NEED start=0
-		// 	.indexCalculator();
-
-		// adds index to series and level (level depends on the date, i.e. odd days = 11, even days = 12, start of week = 13, start of month = 14)
-		// calculatedData goes from startPoint to endPoint, which is maxUnstablePeriod+rowsToDownload
-		// only want rowsToDownload as maxUnstablePeriod only serves as a lookback for calculating indicators
-		// const {index} = indexCalculator(
-		// 	calculatedData.slice(-rowsToDownload).concat(prevData) //--> NEED rowsToDownload=LENGTH_TO_SHOW
-		// );
-
-		// const xScaleProvider = discontinuousTimeScaleProviderBuilder()
-		// 	.initialIndex(Math.ceil(start))
-		// 	.withIndex(index);
-
-		// const {
-		// 	data: linearData,
-		// 	xScale,
-		// 	xAccessor,
-		// 	displayXAccessor,
-		// } = xScaleProvider(calculatedData.slice(-rowsToDownload).concat(prevData));
-
 		// add index to the data series
 		const xScaleProvider = discontinuousTimeScaleProviderBuilder().withIndex(index);
 		// console.log({xScaleProvider: xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW))});
@@ -227,8 +194,6 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			.indexCalculator();
 
 		// adds index to series and level (level depends on the date, i.e. odd days = 11, even days = 12, start of week = 13, start of month = 14)
-		// calculatedData goes from startPoint to endPoint, which is maxUnstablePeriod+rowsToDownload
-		// only want rowsToDownload as maxUnstablePeriod only serves as a lookback for calculating indicators
 		const {index} = indexCalculator(
 			calculatedData.slice(-rowsToDownload).concat(prevData)
 		);
@@ -261,8 +226,9 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			displayXAccessor,
 		} = xScaleProvider(calculatedData.slice(-rowsToDownload).concat(prevData));
 
-		console.log({linearData: linearData.length}, {linearData}, 'update');
+		// console.log({linearData}, 'update');
 
+		// console.log(linearData.length)
 		setTimeout(() => {
 			// simulate a lag for ajax
 			this.setState({
@@ -271,7 +237,6 @@ class CandleStickChartPanToLoadMore extends React.Component {
 				xAccessor,
 				displayXAccessor,
 				startPoint,
-				start,
 			});
 		}, 300);
 	};
@@ -421,9 +386,9 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			// /* SERVER - START */
 			// const dataToCalculate = inputData.slice(-LENGTH_TO_SHOW - maxUnstablePeriod);
 
-			const {startPoint, start} = this.state;
+			// const {startPoint} = this.state;
 
-			// const startPoint = -LENGTH_TO_SHOW - maxUnstablePeriod;
+			const startPoint = -LENGTH_TO_SHOW - maxUnstablePeriod;
 			/* SERVER - START */
 
 			const dataToCalculate = inputData.slice(startPoint);
@@ -436,42 +401,25 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 			const calculatedData = pipe(...indicators)(dataToCalculate);
 
-			console.log({calculatedData: calculatedData.length});
+			// console.log({calculatedData});
 
-			const indexCalculator = discontinuousTimeScaleProviderBuilder()
-				.initialIndex(Math.ceil(start))
-				.indexCalculator();
+			const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
 
+			// console.log(inputData.length, dataToCalculate.length, maxUnstablePeriod)
 			const {index} = indexCalculator(calculatedData);
-
-			const xScaleProvider = discontinuousTimeScaleProviderBuilder()
-				.initialIndex(Math.ceil(start))
-				.withIndex(index);
-
-			// const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
-
-			// // console.log(inputData.length, dataToCalculate.length, maxUnstablePeriod)
-			// const {index} = indexCalculator(calculatedData);
 
 			/* SERVER - END */
 
-			// console.log({
-			// 	startPoint,
-			// 	maxUnstablePeriod,
-			// 	LENGTH_TO_SHOW,
-			// 	plotLength: startPoint + maxUnstablePeriod,
-			// });
-
-			// const xScaleProvider = discontinuousTimeScaleProviderBuilder().withIndex(index);
+			const xScaleProvider = discontinuousTimeScaleProviderBuilder().withIndex(index);
 			const {
 				data: linearData,
 				xScale,
 				xAccessor,
 				displayXAccessor,
-			} = xScaleProvider(calculatedData.slice(startPoint + maxUnstablePeriod));
-			// } = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
+			} = xScaleProvider(calculatedData.slice(-LENGTH_TO_SHOW));
 
-			console.log({linearData: linearData.length}, {linearData}, 'config');
+			// console.log(linearData.length)
+			// console.log({linearData});
 
 			this.setState({
 				indicators,
