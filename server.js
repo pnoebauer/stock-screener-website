@@ -385,6 +385,25 @@ app.post('/scanner', (req, res) => {
 	});
 });
 
+app.post('/chart', (req, res) => {
+	// const {symbol} = req.body;
+	// console.log(req.body, symbol);
+	const queryObject = req.body;
+	console.log({queryObject});
+
+	const {symbol, lookBack, samplePeriod} = queryObject;
+
+	dbConnect.retrieveSampledChartData(symbol, lookBack, samplePeriod).then(data => {
+		console.log({data});
+		return res.json(data);
+	});
+
+	// retrieveSymbolWithIndicators(queryObject).then(data => {
+	// 	// console.log(queryObject, data);
+	// 	return res.json(data);
+	// });
+});
+
 const historicalDataIntoDB = async (universes, symbols, numberYears) => {
 	await dbConnect.createTables();
 	await dbConnect.insertIntoTableSymbols(universes);
@@ -454,34 +473,34 @@ const regularDataUpdate = async () => {
 let lastHistoricalUpdate;
 let dailyUpdateHasRun;
 
-let timerId = setInterval(async () => {
-	console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
+// let timerId = setInterval(async () => {
+// 	console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
 
-	// await regularDataUpdate();
+// 	// await regularDataUpdate();
 
-	// run only once a day
-	if (new Date().getDate() !== lastHistoricalUpdate) {
-		dailyUpdateHasRun = false;
-		// console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
+// 	// run only once a day
+// 	if (new Date().getDate() !== lastHistoricalUpdate) {
+// 		dailyUpdateHasRun = false;
+// 		// console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
 
-		lastHistoricalUpdate = new Date().getDate();
+// 		lastHistoricalUpdate = new Date().getDate();
 
-		// on the weekend update the last 20 years, during the week only the last 1 year
-		const numberYears = new Date().getDay() < 6 ? 1 : 20;
+// 		// on the weekend update the last 20 years, during the week only the last 1 year
+// 		const numberYears = new Date().getDay() < 6 ? 1 : 20;
 
-		dailyUpdateHasRun = await historicalDataIntoDB(
-			constants.UNIVERSES,
-			constants.SYMBOLS,
-			numberYears
-		);
-		// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
-	}
-	// make sure that the daily update has run before continuing with the regular updates so that the API limit is not exceeded
-	else if (dailyUpdateHasRun) {
-		// console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
-		await regularDataUpdate();
-	}
-}, interValTime);
+// 		dailyUpdateHasRun = await historicalDataIntoDB(
+// 			constants.UNIVERSES,
+// 			constants.SYMBOLS,
+// 			numberYears
+// 		);
+// 		// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
+// 	}
+// 	// make sure that the daily update has run before continuing with the regular updates so that the API limit is not exceeded
+// 	else if (dailyUpdateHasRun) {
+// 		// console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
+// 		await regularDataUpdate();
+// 	}
+// }, interValTime);
 
 // historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL'], 1);
 // historicalDataIntoDB(constants.UNIVERSES, ['MMM'],20);
