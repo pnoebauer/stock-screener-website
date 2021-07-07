@@ -359,8 +359,7 @@ const retrieveSampledChartData = async (
 							MAX("highPrice") "high",
 							MIN("lowPrice") "low",
 							(array_agg("closePrice" ORDER BY date_time DESC))[1] "close",
-							SUM("totalVolume") "volume",
-							count(*) ticks
+							SUM("totalVolume") "volume"
 						`)
 				)
 					.from('daily_data')

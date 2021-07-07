@@ -12,10 +12,13 @@ import './chart.styles.css';
 class ChartComponent extends React.Component {
 	constructor(props) {
 		super(props);
+		// this.selectionDisplay = React.createRef();
 		this.state = {
 			data: [],
 			symbol: 'GOOGL',
 			samplePeriod: 'day',
+			shownValue: '',
+			fetchedEndDate: undefined,
 		};
 	}
 	async componentDidMount() {
@@ -26,11 +29,30 @@ class ChartComponent extends React.Component {
 		await this.loadData(new Date());
 	}
 
+	async componentDidUpdate(prevProps, prevState) {
+		if (prevState.symbol !== this.state.symbol) {
+			this.setState({data: []});
+
+			await this.loadData(new Date());
+		}
+	}
+
 	loadData = async endDate => {
-		const {symbol, samplePeriod} = this.state;
+		console.log('loading', {endDate, data: this.state.data});
+		const {symbol, samplePeriod, fetchedEndDate} = this.state;
+
+		console.log('--------------endDate === fetchedEndDate', endDate, fetchedEndDate);
+
+		if (endDate === fetchedEndDate) {
+			console.log('already loaded', endDate);
+			return;
+		}
+
+		this.setState({fetchedEndDate: endDate});
+
 		const requestObj = {
 			symbol,
-			lookBack: 300,
+			lookBack: 1000,
 			samplePeriod,
 			endDate,
 		};
@@ -45,13 +67,8 @@ class ChartComponent extends React.Component {
 			});
 
 			let newData = await response.json();
-			// console.log({data}, 'backend');
 
-			// newData = newData.map(candle => ({...candle, date: new Date(candle.date)}));
-
-			// console.log({newData}, 'backend mapped');
-
-			// this.setState({data: newData});
+			console.log({newData});
 
 			this.setState(
 				{
@@ -59,8 +76,9 @@ class ChartComponent extends React.Component {
 						...newData.map(candle => ({...candle, date: new Date(candle.date)})),
 						...this.state.data,
 					],
-				}
-				// () => console.log({data: this.state.data})
+				},
+				() =>
+					console.log({data: this.state.data, fetchedEndDate: this.state.fetchedEndDate})
 			);
 		} catch (error) {
 			console.log({error});
@@ -68,33 +86,60 @@ class ChartComponent extends React.Component {
 	};
 
 	onChange = e => {
-		console.log(e.target.value);
+		this.setState({shownValue: e.target.value});
 	};
 
-	onClick = e => {
-		console.log(e, 'clicked');
+	// onClick = e => {
+	// 	// console.log(e, 'clicked');
+	// 	// console.log(e.target, 'clicked');
+	// 	console.log(e.target.name, e.target.value, e.target.key, 'clicked');
+	// };
+
+	onKeyDown = e => {
+		// console.log(e.keyCode, this.state.shownValue, 'kd');
+
+		if (e.keyCode === 13) {
+			if (SYMBOLS.includes(this.state.shownValue)) {
+				this.setState({symbol: this.state.shownValue});
+				e.target.blur();
+			}
+		}
 	};
+
+	handleBlur = e => {
+		e.preventDefault();
+
+		if (SYMBOLS.includes(this.state.shownValue)) {
+			// console.log('exists click out');
+			this.setState({symbol: this.state.shownValue});
+			e.target.blur();
+		} else {
+			e.target.focus();
+		}
+
+		// console.log(e, 'blur');
+	};
+
 	render() {
-		console.log({SYMBOLS});
 		if (this.state.data.length === 0) {
 			return <div>Loading...</div>;
 		}
 		return (
 			<>
-				{/* <TypeChooser>
-					{type => <Chart type={type} data={this.state.data} width={1600} />}
-				</TypeChooser> */}
 				<div className='chart-settings'>
 					<input
 						list='symbols'
 						name='stock-symbol'
 						id='stock-symbol'
 						onChange={this.onChange}
+						// onClick={this.onClick}
 						placeholder={this.state.symbol}
+						onKeyDown={this.onKeyDown}
+						onBlur={this.handleBlur}
 					/>
 					<datalist id='symbols'>
 						{SYMBOLS.map(stockName => (
-							<option value={stockName} onClick={this.onClick}>
+							<option key={stockName} value={stockName}>
 								{stockName}
 							</option>
 						))}
@@ -103,9 +148,11 @@ class ChartComponent extends React.Component {
 				<Chart
 					type={'svg'}
 					data={this.state.data}
+					stockSymbol={this.state.symbol}
 					width={1200}
 					height={600}
 					loadData={this.loadData}
+					key={this.state.symbol}
 				/>
 			</>
 		);
