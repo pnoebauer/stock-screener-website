@@ -342,7 +342,13 @@ const retrieveSampledData = async (symbol, lookBack, parameters, samplePeriod) =
 	}
 };
 
-const retrieveSampledChartData = async (symbol, lookBack, samplePeriod = 'day') => {
+const retrieveSampledChartData = async (
+	symbol,
+	lookBack,
+	samplePeriod = 'day',
+	endDate
+) => {
+	// console.log({endDate});
 	const parameters = ['*'];
 	try {
 		const selection = await knex
@@ -360,7 +366,8 @@ const retrieveSampledChartData = async (symbol, lookBack, samplePeriod = 'day') 
 					.from('daily_data')
 					.where('stock_id', symbol)
 					// .andWhere(knex.raw('date_time'), '>=', '2010-01-01')
-					// .andWhere(knex.raw('date_time'), '<=', '2011-01-01')
+					// .andWhere(knex.raw('date_time'), '<=', new Date('2020-02-01'))
+					.andWhere(knex.raw('date_time'), '<', endDate)
 					.groupBy('date')
 					.orderBy('date', 'desc')
 					.limit(lookBack);
@@ -384,7 +391,7 @@ const retrieveSampledChartData = async (symbol, lookBack, samplePeriod = 'day') 
 // 	.then(data => console.log(data))
 // 	.catch(e => console.log(e));
 
-// retrieveSampledChartData('AAPL', 20, 'day')
+// retrieveSampledChartData('AAPL', 20, 'day', new Date('2020-02-01'))
 // 	.then(data => console.log(data))
 // 	.catch(e => console.log(e));
 

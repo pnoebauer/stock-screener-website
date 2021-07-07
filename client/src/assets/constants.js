@@ -666,7 +666,8 @@ export const UNIVERSES = {
 	DJ30,
 };
 
-export const SYMBOLS = [...SP500, ...NAS100, ...DJ30];
+// export const SYMBOLS = [...SP500, ...NAS100, ...DJ30];
+export const SYMBOLS = [...new Set([...SP500, ...NAS100, ...DJ30])];
 
 export const API_TO_INDICATORS = {
 	'52WkHigh': '52 Week High',

@@ -1,3 +1,13 @@
 svg.react-stockchart {
 	left: 0;
 }
+
+.chart-settings {
+	display: flex;
+	justify-content: space-between;
+	position: relative;
+	flex-wrap: nowrap;
+	flex-shrink: 0;
+	height: 40px;
+	padding: 10px;
+}

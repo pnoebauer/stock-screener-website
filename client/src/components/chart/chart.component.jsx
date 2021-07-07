@@ -31,6 +31,8 @@ import {
 	OHLCTooltip,
 	MovingAverageTooltip,
 	MACDTooltip,
+	SingleValueTooltip,
+	ToolTipText,
 } from 'react-stockcharts/lib/tooltip';
 import {ema, sma, macd} from 'react-stockcharts/lib/indicator';
 import {fitWidth} from 'react-stockcharts/lib/helper';
@@ -73,6 +75,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		const {data: inputData} = props;
 
 		// console.log({inputData: inputData.length});
+		console.log({inputData: inputData[0]});
 
 		const {indicatorConfigurations} = props;
 		// console.log({indicatorConfigurations});
@@ -182,7 +185,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// console.log('s', this.state);
 	}
 
-	handleDownloadMore = (start, end) => {
+	handleDownloadMore = async (start, end) => {
 		// console.log(start, end, 'start, end');
 		if (Math.ceil(start) === end) return;
 		// console.log("rows to download", rowsToDownload, start, end)
@@ -191,7 +194,11 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		const {data: prevData, indicators} = this.state;
 		const {data: inputData} = this.props;
 
-		// console.log({inputData: inputData.length, prevData: prevData.length}, 'update');
+		console.log({inputData: inputData.length, prevData: prevData.length}, 'update');
+		console.log(
+			{startDate: inputData[0].date, prevStartDate: prevData[0].date},
+			'update'
+		);
 
 		if (inputData.length === prevData.length) return;
 
@@ -284,6 +291,11 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			startPoint,
 			start,
 		});
+
+		if (inputData.length - prevData.length < 50) {
+			await this.props.loadData(inputData[0].date);
+			console.log('------LOADING MORE DATA', inputData[0].date);
+		}
 	};
 
 	show = id => {
@@ -467,7 +479,18 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
 						/>
 
-						<OHLCTooltip origin={[-40, 0]} />
+						<OHLCTooltip
+							origin={[-40, 0]}
+							// displayTexts={{
+							// 	d: 'Date: ',
+							// 	o: ' Op: ',
+							// 	h: ' Hsd: ',
+							// 	l: ' L: ',
+							// 	c: ' C: ',
+							// 	v: ' Vol: ',
+							// 	na: 'n/a',
+							// }}
+						></OHLCTooltip>
 						<MovingAverageTooltip
 							// onClick={e => console.log(e)}
 							onClick={e => {
