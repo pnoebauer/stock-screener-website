@@ -29,13 +29,13 @@ class ChartComponent extends React.Component {
 		await this.loadData(new Date());
 	}
 
-	async componentDidUpdate(prevProps, prevState) {
-		if (prevState.symbol !== this.state.symbol) {
-			this.setState({data: []});
+	// async componentDidUpdate(prevProps, prevState) {
+	// 	if (prevState.symbol !== this.state.symbol) {
+	// 		this.setState({data: []});
 
-			await this.loadData(new Date());
-		}
-	}
+	// 		await this.loadData(new Date());
+	// 	}
+	// }
 
 	loadData = async endDate => {
 		console.log('loading', {endDate, data: this.state.data});
@@ -86,6 +86,7 @@ class ChartComponent extends React.Component {
 	};
 
 	onChange = e => {
+		console.log(e.target.value, 'change');
 		this.setState({shownValue: e.target.value});
 	};
 
@@ -95,8 +96,14 @@ class ChartComponent extends React.Component {
 	// 	console.log(e.target.name, e.target.value, e.target.key, 'clicked');
 	// };
 
-	onKeyDown = e => {
-		// console.log(e.keyCode, this.state.shownValue, 'kd');
+	onKeyUp = e => {
+		// console.log(e.nativeEvent, this.state.shownValue, 'nativeEvent');
+		// console.log(e.keyCode, 'target');
+
+		if (e.nativeEvent.type === 'keyup' && e.keyCode === undefined) {
+			// console.log('blurring');
+			this.handleBlur(e);
+		}
 
 		if (e.keyCode === 13) {
 			if (SYMBOLS.includes(this.state.shownValue)) {
@@ -108,6 +115,8 @@ class ChartComponent extends React.Component {
 
 	handleBlur = e => {
 		e.preventDefault();
+
+		// console.log('blur', this.state.shownValue);
 
 		if (SYMBOLS.includes(this.state.shownValue)) {
 			// console.log('exists click out');
@@ -134,7 +143,7 @@ class ChartComponent extends React.Component {
 						onChange={this.onChange}
 						// onClick={this.onClick}
 						placeholder={this.state.symbol}
-						onKeyDown={this.onKeyDown}
+						onKeyUp={this.onKeyUp}
 						onBlur={this.handleBlur}
 					/>
 					<datalist id='symbols'>

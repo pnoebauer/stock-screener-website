@@ -51,7 +51,7 @@ const pipe =
 	x =>
 		fns.reduce((v, f) => f(v), x);
 
-const LENGTH_TO_SHOW = 180;
+const LENGTH_TO_SHOW = 880;
 
 const macdAppearance = {
 	stroke: {
@@ -106,7 +106,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		/* SERVER - START */
 		// retrieves the last X candles from the data series
 		const dataToCalculate = inputData.slice(startPoint);
-		// console.log({startPoint});
+		console.log({startPoint});
 
 		// add the indicator values to each candle
 		const calculatedData = pipe(...indicators)(dataToCalculate);
@@ -138,7 +138,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		} = xScaleProvider(calculatedData.slice(maxUnstablePeriod));
 
 		// console.log({xScale});
-		// console.log(linearData.length)
+		console.log(
+			linearData.length,
+			'linearData.length',
+			maxUnstablePeriod,
+			LENGTH_TO_SHOW
+		);
 
 		// linear data is same as calculatedData, with the exception that the idx property was added (idx: {index, level, date, format()}) --> done under xScaleProvider
 		// console.log({linearData});
@@ -301,7 +306,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		const {data: prevData, indicators} = this.state;
 
-		if (inputData.length - prevData.length < 2000) {
+		if (inputData.length - prevData.length < 1000) {
 			console.log('------LOADING MORE DATA', inputData[0].date);
 			await this.props.loadData(inputData[0].date);
 
