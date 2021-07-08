@@ -389,14 +389,14 @@ app.post('/chart', (req, res) => {
 	// const {symbol} = req.body;
 	// console.log(req.body, symbol);
 	const queryObject = req.body;
-	console.log({queryObject});
+	// console.log({queryObject});
 
 	const {symbol, lookBack, samplePeriod, endDate} = queryObject;
 
 	dbConnect
 		.retrieveSampledChartData(symbol, lookBack, samplePeriod, endDate)
 		.then(data => {
-			console.log({data});
+			// console.log({data});
 			return res.json(data);
 		});
 

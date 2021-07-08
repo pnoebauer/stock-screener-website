@@ -1,8 +1,11 @@
 import React from 'react';
 
+import {NavLink} from 'react-router-dom';
+
 import {ReactComponent as Logo} from '../../logo.svg';
 
 import Clock from '../clock/clock.component';
+
 import './header.styles.css';
 
 const Header = () => (
@@ -21,11 +24,17 @@ const Header = () => (
 			<div id='time'>
 				<Clock type={'time'}></Clock>
 			</div>
-			<a href='#about'>About</a>
+			{/* <a href='#about'>About</a>
 			<a className='active' href='#trade'>
 				Trade
 			</a>
-			<a href='#settings'>Settings</a>
+			<a href='#settings'>Settings</a> */}
+			<NavLink to='/chart' activeClassName='active'>
+				Chart
+			</NavLink>
+			<NavLink to='/screen' activeClassName='active'>
+				Radarscreen
+			</NavLink>
 		</div>
 	</div>
 );
