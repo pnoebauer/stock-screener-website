@@ -8,7 +8,8 @@ import {getChartIndicatorConfiguration} from '../../redux/chart/chart.selectors'
 
 import isEqual from 'lodash.isequal';
 
-import {INDICATORS_TO_API} from '../../assets/constants';
+import {INDICATORS_TO_API, CHART_INDICATORS} from '../../assets/constants';
+// import {CUSTOM_INDICATORS} from '../../assets/constants';
 
 import './chart-indicator-config.styles.css';
 
@@ -19,17 +20,18 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 		const formConfiguration = this.props.configuration;
 
-		// console.log(formConfiguration, 'fc');
-
-		// !!!!!!!DIFFERENT TO INDICATOR-CONFIGURATION-FORM
-		let {sourcePath: parameter, windowSize: lookBack} = formConfiguration;
+		let {type, sourcePath: parameter, windowSize: lookBack} = formConfiguration;
 		parameter += 'Price';
 
-		this.state = {parameter, lookBack, errormessage: ''};
+		console.log({type});
+
+		this.state = {type, parameter, lookBack, errormessage: ''};
 	}
 
 	selectionChange = event => {
-		this.setState({parameter: event.target.value});
+		// console.log(event.target.name);
+		const {name, value} = event.target;
+		this.setState({[name]: value});
 	};
 
 	onTextChange = event => {
@@ -56,25 +58,20 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 		if (
 			Number(formConfiguration.lookBack) !== Number(configuration.windowSize) ||
-			formConfiguration.parameter.replace('Price', '') !== configuration.sourcePath
+			formConfiguration.parameter.replace('Price', '') !== configuration.sourcePath ||
+			formConfiguration.type !== configuration.type
 		) {
 			// action payload
 			const payload = {
 				windowSize: Number(formConfiguration.lookBack),
 				sourcePath: formConfiguration.parameter.replace('Price', ''),
 				id: indicator,
+				type: formConfiguration.type,
 			};
 			console.log('not equal', {payload});
 
 			this.props.updateIndicatorConfiguration(payload);
 		}
-
-		// !!!!!!!DIFFERENT TO INDICATOR-CONFIGURATION-FORM
-		// only trigger if the form inputs have changed (compare the global state with the component state)
-		// if (!isEqual(formConfiguration, configuration)) {
-		// const indicatorConfiguration = {[indicator]: formConfiguration};
-		// this.props.updateIndicatorConfiguration(indicatorConfiguration);
-		// }
 
 		this.props.closeForm();
 
@@ -85,6 +82,25 @@ class ChartIndicatorConfigurationForm extends React.Component {
 		// console.log(this.props, 'props');
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>
+				<label>
+					Select the indicator type:
+					<p>
+						<select
+							value={this.state.type}
+							onChange={this.selectionChange}
+							name='type'
+							className='indicator-type-selector'
+						>
+							{Object.keys(CHART_INDICATORS).map((value, index) => (
+								// console.log(INDICATORS_TO_API[value], value, 'v') ||
+								<option value={value} key={index}>
+									{value.toUpperCase()}
+								</option>
+							))}
+						</select>
+					</p>
+				</label>
+
 				{this.state.parameter ? (
 					<label>
 						Select the price parameter for the indicator:
@@ -92,7 +108,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 							<select
 								value={this.state.parameter}
 								onChange={this.selectionChange}
-								name='selector'
+								name='parameter'
 								className='price-parameter-selector'
 							>
 								{['Open Price', 'High Price', 'Low Price', 'Close Price'].map(

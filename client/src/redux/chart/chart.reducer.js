@@ -16,6 +16,12 @@ const initialState = {
 			sourcePath: 'close',
 			id: 1,
 		},
+		{
+			type: 'sma',
+			windowSize: 15,
+			sourcePath: 'close',
+			id: 2,
+		},
 	],
 };
 

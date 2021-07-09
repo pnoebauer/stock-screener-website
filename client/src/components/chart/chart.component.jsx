@@ -34,7 +34,7 @@ import {
 	SingleValueTooltip,
 	ToolTipText,
 } from 'react-stockcharts/lib/tooltip';
-import {ema, sma, macd} from 'react-stockcharts/lib/indicator';
+import {ema, sma, macd, atr} from 'react-stockcharts/lib/indicator';
 import {fitWidth} from 'react-stockcharts/lib/helper';
 
 import Modal from '../portal-modal/modal.component';
@@ -67,6 +67,7 @@ const indicatorFunctions = {
 	ema,
 	sma,
 	macd,
+	atr,
 };
 
 class CandleStickChartPanToLoadMore extends React.Component {
@@ -482,11 +483,11 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						<MovingAverageTooltip
 							onClick={e => {
 								const {id} = e;
-
 								this.show(id);
 							}}
-							origin={[-38, 15]}
+							origin={[-38, 25]}
 							options={indicators.map(indicator => {
+								// console.log(indicator.options(), 'opt');
 								return {
 									yAccessor: indicator.accessor(),
 									type: indicator.type(),
@@ -495,6 +496,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 									id: indicator.id(),
 								};
 							})}
+							// width={185}
+							// 						textFill: _propTypes2.default.string,
+							// labelFill: _propTypes2.default.string,
+							// fontFamily: _propTypes2.default.string,
+							// fontSize: _propTypes2.default.number,
+							// displayFormat={ (0, _d3Format.format)(".2f")}
 						/>
 					</Chart>
 					{/* 

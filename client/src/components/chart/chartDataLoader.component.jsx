@@ -1,7 +1,17 @@
 import React from 'react';
-import {render} from 'react-dom';
-import Chart from './chart.component';
+// import {render} from 'react-dom';
+
 import {getData} from './utils';
+
+import {GrSettingsOption} from 'react-icons/gr';
+
+import Chart from './chart.component';
+
+// import Modal from '../portal-modal/modal.component';
+
+// import IndicatorSelector from '../indicator-selector/indicator-selector.component';
+
+import Tooltip from '../tooltip/tooltip.component';
 
 import {SYMBOLS, INTERVALS} from '../../assets/constants';
 
@@ -53,7 +63,7 @@ class ChartComponent extends React.Component {
 
 		const requestObj = {
 			symbol,
-			lookBack: 1000,
+			lookBack: 5000,
 			samplePeriod,
 			endDate,
 		};
@@ -172,6 +182,14 @@ class ChartComponent extends React.Component {
 							</option>
 						))}
 					</select>
+					<button
+						// onClick={this.show}
+						className='chart-indicator-button tooltip'
+						// style={this.props.style}
+					>
+						<GrSettingsOption className='chart-indicator-icon' />
+						<Tooltip tooltipText={'Click to edit indicators'} position={'center'} />
+					</button>
 				</div>
 				<Chart
 					type={'svg'}

@@ -11,3 +11,30 @@ svg.react-stockchart {
 	height: 40px;
 	padding: 10px;
 }
+
+button.chart-indicator-button {
+	position: relative;
+	border: 1px solid black;
+	border-radius: 15%;
+	/* width: 30px; */
+	width: 2%;
+}
+
+.chart-indicator-icon {
+	position: absolute;
+
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: 80%;
+	height: 50%;
+
+	cursor: pointer;
+}
+
+.chart-indicator-icon:hover {
+	transform: scale(1.1);
+}

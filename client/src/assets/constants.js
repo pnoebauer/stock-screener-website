@@ -748,3 +748,22 @@ export const CUSTOM_INDICATORS = {
 		lookBack: 5,
 	},
 };
+
+export const CHART_INDICATORS = {
+	sma: {
+		sourcePath: 'close',
+		windowSize: 20,
+	},
+	ema: {
+		sourcePath: 'close',
+		windowSize: 20,
+	},
+	atr: {
+		windowSize: 5,
+	},
+	macd: {
+		fast: 12,
+		slow: 26,
+		signal: 9,
+	},
+};
