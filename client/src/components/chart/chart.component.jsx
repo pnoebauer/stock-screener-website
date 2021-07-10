@@ -562,7 +562,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						onClose={this.hide}
 					>
 						<ChartIndicatorConfigurationForm
-							indicator={this.state.visible}
+							indicatorId={this.state.visible}
 							closeForm={this.closeForm}
 						/>
 					</Modal>

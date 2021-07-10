@@ -662,7 +662,11 @@ const UNIVERSES = {
 	DJ30,
 };
 
-const SYMBOLS = Object.keys(UNIVERSES).flatMap(universe => [...UNIVERSES[universe]]); //[...SP500, ...NAS100, ...DJ30];
+// const SYMBOLS = Object.keys(UNIVERSES).flatMap(universe => [...UNIVERSES[universe]]); //[...SP500, ...NAS100, ...DJ30];
+// const SYMBOLS = [...new Set([...SP500, ...NAS100, ...DJ30])];
+const SYMBOLS = [
+	...new Set([...Object.keys(UNIVERSES).flatMap(universe => [...UNIVERSES[universe]])]),
+];
 
 const UNSTABLEPERIOD = 30;
 
