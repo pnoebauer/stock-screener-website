@@ -70,6 +70,8 @@ const indicatorFunctions = {
 	atr,
 };
 
+const mainChartIndicators = ['ema', 'sma'];
+
 class CandleStickChartPanToLoadMore extends React.Component {
 	constructor(props) {
 		super(props);
@@ -84,18 +86,21 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// console.log({indicatorConfigurations});
 
 		const indicators = indicatorConfigurations.map(indicator => {
+			const {id, type, ...optionsConfig} = indicator;
+			console.log({id, type, ...optionsConfig});
 			return (
-				indicatorFunctions[indicator.type]()
-					.id(indicator.id)
-					.options({windowSize: indicator.windowSize})
+				indicatorFunctions[type]()
+					.id(id)
+					// .options({windowSize: indicator.windowSize})
+					.options({...optionsConfig})
 					.merge((d, c) => {
 						// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
 
-						// d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`] = c;
-						d[`indicator-${indicator.id}`] = c;
+						// d[`${type}-${id}-${indicator.windowSize}`] = c;
+						d[`indicator-${id}`] = c;
 					})
-					// .accessor(d => d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`]);
-					.accessor(d => d[`indicator-${indicator.id}`])
+					// .accessor(d => d[`${type}-${id}-${indicator.windowSize}`]);
+					.accessor(d => d[`indicator-${id}`])
 			);
 		});
 
@@ -320,20 +325,31 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 			const indicators = indicatorConfigurations.map((indicator, index) => {
 				if (prevProps.indicatorConfigurations[index] !== indicator) {
-					// console.log({index});
+					const {id, type, ...optionsConfig} = indicator;
+					// console.log({
+					// 	index,
+					// 	windowSize: indicator.windowSize,
+					// 	sourcePath: indicator.sourcePath,
+					// 	indicator,
+					// 	optionsConfig,
+					// });
 
 					return (
-						indicatorFunctions[indicator.type]()
-							.id(indicator.id)
-							.options({windowSize: indicator.windowSize})
+						indicatorFunctions[type]()
+							.id(id)
+							.options({
+								// windowSize: indicator.windowSize,
+								// sourcePath: indicator.sourcePath,
+								...optionsConfig,
+							})
 							.merge((d, c) => {
 								// console.log('c=ema26', c, 'd=the full candle incl. indicators', d, 'dc');
 
-								// d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`] = c;
-								d[`indicator-${indicator.id}`] = c;
+								// d[`${type}-${id}-${indicator.windowSize}`] = c;
+								d[`indicator-${id}`] = c;
 							})
-							// .accessor(d => d[`${indicator.type}-${indicator.id}-${indicator.windowSize}`]);
-							.accessor(d => d[`indicator-${indicator.id}`])
+							// .accessor(d => d[`${type}-${id}-${indicator.windowSize}`]);
+							.accessor(d => d[`indicator-${id}`])
 					);
 				}
 				// !!check if id is always in the correct location in the array
@@ -414,7 +430,15 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		const {data: inputData, indicatorConfigurations} = this.props;
 
-		// console.log({data, displayXAccessor, xAccessor, xScale});
+		const mainIndicators = indicators.flatMap(indicator => {
+			console.log(indicator.type(), 'type');
+			if (mainChartIndicators.includes(indicator.type().toLowerCase())) {
+				// console.log(indicator.type(), 'main______');
+				return [indicator];
+			} else return [];
+		});
+
+		console.log({data, displayXAccessor, xAccessor, xScale});
 
 		return (
 			<>
@@ -436,7 +460,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						height={400}
 						yExtents={[
 							d => [d.high, d.low],
-							[...indicators.map(indicator => indicator.accessor())],
+							[...mainIndicators.map(indicator => indicator.accessor())],
 						]}
 						padding={{top: 10, bottom: 20}}
 					>
@@ -451,7 +475,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						/>
 
 						<CandlestickSeries />
-						{indicators.map(indicator => {
+						{mainIndicators.map(indicator => {
 							return (
 								<LineSeries
 									yAccessor={indicator.accessor()}
@@ -461,7 +485,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							);
 						})}
 
-						{indicators.map(indicator => {
+						{mainIndicators.map(indicator => {
 							return (
 								<CurrentCoordinate
 									yAccessor={indicator.accessor()}
@@ -471,22 +495,13 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							);
 						})}
 
-						<EdgeIndicator
-							itemType='last'
-							orient='right'
-							edgeAt='right'
-							yAccessor={d => d.close}
-							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
-						/>
-
-						<OHLCTooltip origin={[-40, 0]}></OHLCTooltip>
 						<MovingAverageTooltip
 							onClick={e => {
 								const {id} = e;
 								this.show(id);
 							}}
 							origin={[-38, 25]}
-							options={indicators.map(indicator => {
+							options={mainIndicators.map(indicator => {
 								// console.log(indicator.options(), 'opt');
 								return {
 									yAccessor: indicator.accessor(),
@@ -503,12 +518,26 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							// fontSize: _propTypes2.default.number,
 							// displayFormat={ (0, _d3Format.format)(".2f")}
 						/>
+
+						<EdgeIndicator
+							itemType='last'
+							orient='right'
+							edgeAt='right'
+							yAccessor={d => d.close}
+							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
+						/>
+
+						<OHLCTooltip origin={[-40, 0]}></OHLCTooltip>
 					</Chart>
 					{/* 
 				<Chart
 					id={2}
 					height={150}
 					yExtents={[d => d.volume, smaVolume50.accessor()]}
+					yExtents={[
+							d => [d.high, d.low],
+							[...indicators.map(indicator => indicator.accessor())],
+						]}
 					origin={(w, h) => [0, h - 300]}
 				>
 					<YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />

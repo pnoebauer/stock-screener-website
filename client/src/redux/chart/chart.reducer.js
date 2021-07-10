@@ -26,7 +26,7 @@ const initialState = {
 };
 
 const chartReducer = (state = initialState, action) => {
-	console.log({action});
+	// console.log({action});
 	switch (action.type) {
 		case ConfigurationTypes.SET_CHART_INDICATOR_CONFIGURATION:
 			return applySetChartIndicatorConfiguration(state, action);
@@ -37,7 +37,7 @@ const chartReducer = (state = initialState, action) => {
 
 const applySetChartIndicatorConfiguration = (state, action) => {
 	const indicatorConfigurationObject = action.payload;
-	console.log({indicatorConfigurationObject}, '--------');
+	// console.log({indicatorConfigurationObject}, '--------');
 	const {id} = indicatorConfigurationObject;
 
 	return {

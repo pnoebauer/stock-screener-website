@@ -78,10 +78,14 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 		Object.keys(CHART_INDICATORS[formConfiguration.type]).forEach(key => {
 			// console.log(typeof CHART_INDICATORS[formConfiguration.type][key], 'values', key);
-			payload[key] =
-				typeof CHART_INDICATORS[formConfiguration.type][key] === 'number'
-					? Number(formConfiguration[key])
-					: formConfiguration[key];
+			if (!formConfiguration[key]) {
+				payload[key] = CHART_INDICATORS[formConfiguration.type][key];
+			} else {
+				payload[key] =
+					typeof CHART_INDICATORS[formConfiguration.type][key] === 'number'
+						? Number(formConfiguration[key])
+						: formConfiguration[key];
+			}
 		});
 
 		// const payload = {
@@ -94,7 +98,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 		// };
 		// console.log({payload});
 
-		// this.props.updateIndicatorConfiguration(payload);
+		this.props.updateIndicatorConfiguration(payload);
 		// }
 
 		this.props.closeForm();
