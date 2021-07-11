@@ -43,7 +43,15 @@ import ChartIndicatorConfigurationForm from '../chart-indicator-config/chart-ind
 import {getChartIndicatorConfigs} from '../../redux/chart/chart.selectors';
 
 function getMaxUndefined(calculators) {
-	return calculators.map(each => each.undefinedLength()).reduce((a, b) => Math.max(a, b));
+	return calculators
+		.map(each => {
+			try {
+				return each.undefinedLength();
+			} catch (e) {
+				return 0;
+			}
+		})
+		.reduce((a, b) => Math.max(a, b));
 }
 
 const pipe =
@@ -430,13 +438,20 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		const {data: inputData, indicatorConfigurations} = this.props;
 
-		const mainIndicators = indicators.flatMap(indicator => {
-			console.log(indicator.type(), 'type');
-			if (mainChartIndicators.includes(indicator.type().toLowerCase())) {
-				// console.log(indicator.type(), 'main______');
-				return [indicator];
-			} else return [];
-		});
+		// const mainIndicators = indicators.flatMap(indicator => {
+		// 	console.log(indicator.type(), 'type');
+		// 	if (mainChartIndicators.includes(indicator.type().toLowerCase())) {
+		// 		// console.log(indicator.type(), 'main______');
+		// 		return [indicator];
+		// 	} else return [];
+		// });
+
+		const mainIndicators = indicators.flatMap(indicator =>
+			mainChartIndicators.includes(indicator.type().toLowerCase()) ? [indicator] : []
+		);
+		const subIndicators = indicators.flatMap(indicator =>
+			mainChartIndicators.includes(indicator.type().toLowerCase()) ? [] : [indicator]
+		);
 
 		console.log({data, displayXAccessor, xAccessor, xScale});
 
@@ -445,7 +460,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 				<ChartCanvas
 					ratio={ratio}
 					width={width}
-					height={500}
+					height={800}
 					margin={{left: 70, right: 70, top: 20, bottom: 30}}
 					type={type}
 					seriesName={this.props.stockSymbol}
@@ -529,6 +544,59 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 						<OHLCTooltip origin={[-40, 0]}></OHLCTooltip>
 					</Chart>
+
+					{subIndicators[0] ? (
+						<Chart
+							id={2}
+							height={150}
+							yExtents={subIndicators[0].accessor()}
+							// origin={(w, h) => [0, h - 150]}
+							// height={125}
+							// origin={(w, h) => [0, h - 125]}
+							origin={(w, h) => [0, 500]}
+							padding={{top: 10, bottom: 10}}
+						>
+							{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
+
+					<MouseCoordinateY at='left' orient='left' displayFormat={format('.4s')} /> */}
+							<XAxis axisAt='bottom' orient='bottom' />
+							<YAxis axisAt='right' orient='right' ticks={2} />
+
+							<MouseCoordinateX
+								at='bottom'
+								orient='bottom'
+								displayFormat={timeFormat('%Y-%m-%d')}
+							/>
+							<MouseCoordinateY at='right' orient='right' displayFormat={format('.2f')} />
+
+							<LineSeries
+								yAccessor={subIndicators[0].accessor()}
+								stroke={subIndicators[0].stroke()}
+							/>
+							<SingleValueTooltip
+								yAccessor={subIndicators[0].accessor()}
+								yLabel={`ATR (${subIndicators[0].options().windowSize})`}
+								yDisplayFormat={format('.2f')}
+								/* valueStroke={atr14.stroke()} - optional prop */
+								/* labelStroke="#4682B4" - optional prop */
+								origin={[-40, 15]}
+								onClick={e => {
+									console.log('clicked', e);
+								}}
+							/>
+
+							{/* <BarSeries
+							yAccessor={d => d.volume}
+							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
+						/>
+						<AreaSeries
+							yAccessor={smaVolume50.accessor()}
+							stroke={smaVolume50.stroke()}
+							fill={smaVolume50.fill()}
+						/> */}
+						</Chart>
+					) : null}
+
 					{/* 
 				<Chart
 					id={2}
