@@ -550,10 +550,11 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							id={2}
 							height={150}
 							yExtents={subIndicators[0].accessor()}
-							// origin={(w, h) => [0, h - 150]}
+							// origin={(w, h) => [0, h - 150]}	//h is 50 less than main height
 							// height={125}
-							// origin={(w, h) => [0, h - 125]}
-							origin={(w, h) => [0, 500]}
+							// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
+							// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
+							origin={(w, h) => console.log({h}) || [0, 400]}
 							padding={{top: 10, bottom: 10}}
 						>
 							{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
