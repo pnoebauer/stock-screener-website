@@ -27,3 +27,16 @@
 	/* margin-top: 15px;
 	float: right; */
 }
+
+.config-parameter {
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+}
+
+/* label.config-parameter-header {
+	display: inline-block;
+} */
+
+.config-parameter-header {
+	padding-bottom: 5px;
+}

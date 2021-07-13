@@ -34,13 +34,15 @@ import {
 	SingleValueTooltip,
 	ToolTipText,
 } from 'react-stockcharts/lib/tooltip';
-import {ema, sma, macd, atr} from 'react-stockcharts/lib/indicator';
+import {ema, sma, wma, tma, macd, atr} from 'react-stockcharts/lib/indicator';
 import {fitWidth} from 'react-stockcharts/lib/helper';
 
 import Modal from '../portal-modal/modal.component';
 import ChartIndicatorConfigurationForm from '../chart-indicator-config/chart-indicator-config.component';
 
 import {getChartIndicatorConfigs} from '../../redux/chart/chart.selectors';
+
+import {MAIN_CHART_INDICATORS} from '../../assets/constants';
 
 function getMaxUndefined(calculators) {
 	return calculators
@@ -74,11 +76,11 @@ const macdAppearance = {
 const indicatorFunctions = {
 	ema,
 	sma,
+	wma,
+	tma,
 	macd,
 	atr,
 };
-
-const mainChartIndicators = ['ema', 'sma'];
 
 class CandleStickChartPanToLoadMore extends React.Component {
 	constructor(props) {
@@ -440,17 +442,17 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		// const mainIndicators = indicators.flatMap(indicator => {
 		// 	console.log(indicator.type(), 'type');
-		// 	if (mainChartIndicators.includes(indicator.type().toLowerCase())) {
+		// 	if (MAIN_CHART_INDICATORS.includes(indicator.type().toLowerCase())) {
 		// 		// console.log(indicator.type(), 'main______');
 		// 		return [indicator];
 		// 	} else return [];
 		// });
 
 		const mainIndicators = indicators.flatMap(indicator =>
-			mainChartIndicators.includes(indicator.type().toLowerCase()) ? [indicator] : []
+			MAIN_CHART_INDICATORS.includes(indicator.type().toLowerCase()) ? [indicator] : []
 		);
 		const subIndicators = indicators.flatMap(indicator =>
-			mainChartIndicators.includes(indicator.type().toLowerCase()) ? [] : [indicator]
+			MAIN_CHART_INDICATORS.includes(indicator.type().toLowerCase()) ? [] : [indicator]
 		);
 
 		console.log({data, displayXAccessor, xAccessor, xScale});
@@ -512,6 +514,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 						<MovingAverageTooltip
 							onClick={e => {
+								console.log(e, e.target, e.buttons, e.type, e.nativeEvent, 'e----------');
 								const {id} = e;
 								this.show(id);
 							}}
@@ -533,6 +536,23 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							// fontSize: _propTypes2.default.number,
 							// displayFormat={ (0, _d3Format.format)(".2f")}
 						/>
+						{/* <SingleValueTooltip
+							yAccessor={mainIndicators[0].accessor()}
+							yLabel={`${mainIndicators[0].type()} (${
+								mainIndicators[0].options().windowSize
+							})`}
+							valueStroke={mainIndicators[0].stroke()}
+							labelStroke='#b45c46'
+							valueFill={mainIndicators[0].stroke()}
+							labelFill='#b45c46'
+							yDisplayFormat={format('.2f')}
+							origin={[140, 90]}
+							onClick={e => {
+								console.log(e, e.buttons, e.type, e.nativeEvent, 'e----------');
+								const {id} = e;
+								this.show(id);
+							}}
+						/> */}
 
 						<EdgeIndicator
 							itemType='last'
@@ -545,48 +565,68 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						<OHLCTooltip origin={[-40, 0]}></OHLCTooltip>
 					</Chart>
 
-					{subIndicators[0] ? (
-						<Chart
-							id={2}
-							height={150}
-							yExtents={subIndicators[0].accessor()}
-							// origin={(w, h) => [0, h - 150]}	//h is 50 less than main height
-							// height={125}
-							// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
-							// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
-							origin={(w, h) => console.log({h}) || [0, 400]}
-							padding={{top: 10, bottom: 10}}
-						>
-							{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
+					{subIndicators[0]
+						? console.log(subIndicators[0].id(), 'id') || (
+								<Chart
+									id={`${1 + 1}`}
+									height={150}
+									yExtents={subIndicators[0].accessor()}
+									// origin={(w, h) => [0, h - 150]}	//h is 50 less than main height
+									// height={125}
+									// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
+									// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
+									origin={(w, h) => console.log({h}) || [0, 400]}
+									padding={{top: 10, bottom: 10}}
+								>
+									{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
 
 					<MouseCoordinateY at='left' orient='left' displayFormat={format('.4s')} /> */}
-							<XAxis axisAt='bottom' orient='bottom' />
-							<YAxis axisAt='right' orient='right' ticks={2} />
+									<XAxis axisAt='bottom' orient='bottom' />
+									<YAxis axisAt='right' orient='right' ticks={2} />
 
-							<MouseCoordinateX
-								at='bottom'
-								orient='bottom'
-								displayFormat={timeFormat('%Y-%m-%d')}
-							/>
-							<MouseCoordinateY at='right' orient='right' displayFormat={format('.2f')} />
+									<MouseCoordinateX
+										at='bottom'
+										orient='bottom'
+										displayFormat={timeFormat('%Y-%m-%d')}
+									/>
+									<MouseCoordinateY
+										at='right'
+										orient='right'
+										displayFormat={format('.2f')}
+									/>
 
-							<LineSeries
-								yAccessor={subIndicators[0].accessor()}
-								stroke={subIndicators[0].stroke()}
-							/>
-							<SingleValueTooltip
-								yAccessor={subIndicators[0].accessor()}
-								yLabel={`ATR (${subIndicators[0].options().windowSize})`}
-								yDisplayFormat={format('.2f')}
-								/* valueStroke={atr14.stroke()} - optional prop */
-								/* labelStroke="#4682B4" - optional prop */
-								origin={[-40, 15]}
-								onClick={e => {
-									console.log('clicked', e);
-								}}
-							/>
+									<LineSeries
+										yAccessor={subIndicators[0].accessor()}
+										stroke={subIndicators[0].stroke()}
+									/>
+									<SingleValueTooltip
+										yAccessor={subIndicators[0].accessor()}
+										yLabel={`ATR (${subIndicators[0].options().windowSize})`}
+										yDisplayFormat={format('.2f')}
+										/* valueStroke={atr14.stroke()} - optional prop */
+										/* labelStroke="#4682B4" - optional prop */
+										origin={[-40, 15]}
+										// onClick={e => {
+										// 	console.log('clicked', e);
+										// }}
+										onClick={e => {
+											// console.log(
+											// 	e,
+											// 	e.target,
+											// 	// e.value,
+											// 	// e.buttons,
+											// 	// e.type,
+											// 	e.nativeEvent,
+											// 	'eSUB----------'
+											// );
 
-							{/* <BarSeries
+											// const {id} = e;
+											const id = subIndicators[0].id();
+											this.show(id);
+										}}
+									/>
+
+									{/* <BarSeries
 							yAccessor={d => d.volume}
 							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
 						/>
@@ -595,8 +635,9 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							stroke={smaVolume50.stroke()}
 							fill={smaVolume50.fill()}
 						/> */}
-						</Chart>
-					) : null}
+								</Chart>
+						  )
+						: null}
 
 					{/* 
 				<Chart

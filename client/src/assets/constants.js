@@ -749,6 +749,10 @@ export const CUSTOM_INDICATORS = {
 	},
 };
 
+// import {BollingerBand} from 'react-stockcharts/lib/calculator/defaultOptionsForComputation';
+
+export const MAIN_CHART_INDICATORS = ['ema', 'sma', 'wma', 'tma'];
+
 export const CHART_INDICATORS = {
 	sma: {
 		sourcePath: 'close',
@@ -758,12 +762,28 @@ export const CHART_INDICATORS = {
 		sourcePath: 'close',
 		windowSize: 20,
 	},
+	wma: {
+		sourcePath: 'close',
+		windowSize: 20,
+	},
 	atr: {
 		windowSize: 5,
 	},
 	macd: {
+		sourcePath: 'close',
 		fast: 12,
 		slow: 26,
 		signal: 9,
+	},
+	bollingerBand: {
+		windowSize: 20,
+		// source: d => d.close, // "high", "low", "open", "close"
+		sourcePath: 'close',
+		movingAverageType: 'sma',
+		multiplier: 2,
+	},
+	tma: {
+		sourcePath: 'close',
+		windowSize: 20,
 	},
 };

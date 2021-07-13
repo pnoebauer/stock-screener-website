@@ -8,11 +8,8 @@ import {getChartIndicatorConfiguration} from '../../redux/chart/chart.selectors'
 
 import isEqual from 'lodash.isequal';
 
-import {
-	INDICATORS_TO_API,
-	CHART_INDICATORS,
-	MAIN_CHART_INDICATORS,
-} from '../../assets/constants';
+import {INDICATORS_TO_API, CHART_INDICATORS} from '../../assets/constants';
+// import {CUSTOM_INDICATORS} from '../../assets/constants';
 
 import './chart-indicator-config.styles.css';
 
@@ -29,10 +26,6 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 		// this.state = {type, sourcePath, windowSize, fast, slow, signal, errormessage: ''};
 		this.state = {...config, errormessage: ''};
-
-		this.chartType = MAIN_CHART_INDICATORS.includes(formConfiguration.type)
-			? 'main'
-			: 'sub';
 	}
 
 	selectionChange = event => {
@@ -44,7 +37,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 	onTextChange = event => {
 		const {name, value} = event.target;
 		let err = '';
-
+		// if (name === 'windowSize') {
 		if (!Number(value)) {
 			err = (
 				<p>
@@ -52,7 +45,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 				</p>
 			);
 		}
-
+		// }
 		this.setState({errormessage: err});
 		this.setState({[name]: value});
 	};
@@ -62,6 +55,24 @@ class ChartIndicatorConfigurationForm extends React.Component {
 		const {errormessage, ...formConfiguration} = this.state;
 
 		console.log({formConfiguration, configuration});
+
+		// if (
+		// 	Number(formConfiguration.windowSize) !== Number(configuration.windowSize) ||
+		// 	formConfiguration.sourcePath !== configuration.sourcePath ||
+		// 	formConfiguration.type !== configuration.type
+		// ) {
+		// action payload
+		// const payload = {
+		// 	windowSize: Number(formConfiguration.windowSize),
+		// 	sourcePath: formConfiguration.sourcePath,
+		// 	id: indicatorId,
+		// 	type: formConfiguration.type,
+		// 	// fast: formConfiguration.fast,
+		// 	// slow: formConfiguration.slow,
+		// 	// signal: formConfiguration.signal,
+		// };
+
+		// console.log(Object.keys(CHART_INDICATORS[formConfiguration.type]), 'keys');
 
 		let payload = {type: formConfiguration.type, id: indicatorId};
 
@@ -77,7 +88,18 @@ class ChartIndicatorConfigurationForm extends React.Component {
 			}
 		});
 
+		// const payload = {
+		// 	...formConfiguration,
+		// 	windowSize: Number(formConfiguration.windowSize),
+		// 	id: indicatorId,
+		// 	// fast: formConfiguration.fast,
+		// 	// slow: formConfiguration.slow,
+		// 	// signal: formConfiguration.signal,
+		// };
+		// console.log({payload});
+
 		this.props.updateIndicatorConfiguration(payload);
+		// }
 
 		this.props.closeForm();
 
@@ -85,8 +107,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 	};
 
 	render() {
-		// console.log(this.props.configuration.type, this.chartType, 'props');
-
+		// console.log(this.props, 'props');
 		return (
 			<form onSubmit={this.handleSubmit} className='indicator-configuration-form'>
 				<label>
@@ -98,30 +119,20 @@ class ChartIndicatorConfigurationForm extends React.Component {
 							name='type'
 							className='indicator-type-selector'
 						>
-							{Object.keys(CHART_INDICATORS).map((value, index) => {
-								if (
-									(this.chartType === 'main' && MAIN_CHART_INDICATORS.includes(value)) ||
-									(this.chartType === 'sub' && !MAIN_CHART_INDICATORS.includes(value))
-								) {
-									return (
-										<option value={value} key={index}>
-											{value.toUpperCase()}
-										</option>
-									);
-								}
-								return null;
-							})}
+							{Object.keys(CHART_INDICATORS).map((value, index) => (
+								// console.log(INDICATORS_TO_API[value], value, 'v') ||
+								<option value={value} key={index}>
+									{value.toUpperCase()}
+								</option>
+							))}
 						</select>
 					</p>
 				</label>
 
-				<p style={{fontWeight: 'bold'}}>Set the indicator configuration</p>
-
 				{CHART_INDICATORS[this.state.type].sourcePath ? (
 					<label>
-						<div className='config-parameter-header'>Price parameter</div>
-
-						<div className='config-parameter'>
+						Select the price parameter for the indicator:
+						<p>
 							<select
 								value={
 									this.state.sourcePath ?? CHART_INDICATORS[this.state.type].sourcePath
@@ -139,62 +150,59 @@ class ChartIndicatorConfigurationForm extends React.Component {
 									)
 								)}
 							</select>
-						</div>
+						</p>
 					</label>
 				) : null}
 
-				{Object.keys(CHART_INDICATORS[this.state.type]).map(configType => {
-					// console.log(this.state.type, {configType});
-					if (configType === 'sourcePath') return null;
+				{CHART_INDICATORS[this.state.type].windowSize ? (
+					<>
+						<p>Enter the lookback period:</p>
+						<input
+							type='text'
+							name='windowSize'
+							onChange={this.onTextChange}
+							value={
+								this.state.windowSize ?? CHART_INDICATORS[this.state.type].windowSize
+							}
+							className='windowSize-input'
+							required
+						/>
+						{this.state.errormessage}
+					</>
+				) : null}
 
-					if (configType === 'movingAverageType') {
-						return (
-							<div key={configType} className='config-parameter'>
-								<label>
-									Moving average type
-									<div className='config-parameter-header'>
-										<select
-											value={
-												this.state[configType] ??
-												CHART_INDICATORS[this.state.type][configType]
-											}
-											onChange={this.selectionChange}
-											name={configType}
-											className='price-parameter-selector'
-										>
-											{['SMA', 'EMA', 'WMA', 'TMA'].map((value, index) => (
-												// console.log(INDICATORS_TO_API[value], value, 'v') ||
-												<option value={value.toLowerCase()} key={index}>
-													{value}
-												</option>
-											))}
-										</select>
-									</div>
-								</label>
-							</div>
-						);
-					}
-					// return null;
-					else {
-						return (
-							<div key={configType} className='config-parameter'>
-								<div className='config-parameter-header'>{configType}</div>
-								<input
-									type='text'
-									name={configType}
-									onChange={this.onTextChange}
-									value={
-										this.state[configType] ??
-										CHART_INDICATORS[this.state.type][configType]
-									}
-									className='windowSize-input'
-									required
-								/>
-								{this.state.errormessage}
-							</div>
-						);
-					}
-				})}
+				{this.state.type === 'macd' ? (
+					<>
+						<p>Enter the fast period:</p>
+						<input
+							type='text'
+							name='fast'
+							onChange={this.onTextChange}
+							value={this.state.fast ?? CHART_INDICATORS[this.state.type].fast}
+							className='windowSize-input'
+							required
+						/>
+						<p>Enter the slow period:</p>
+						<input
+							type='text'
+							name='slow'
+							onChange={this.onTextChange}
+							value={this.state.slow ?? CHART_INDICATORS[this.state.type].slow}
+							className='windowSize-input'
+							required
+						/>
+						<p>Enter the signal:</p>
+						<input
+							type='text'
+							name='signal'
+							onChange={this.onTextChange}
+							value={this.state.signal ?? CHART_INDICATORS[this.state.type].signal}
+							className='windowSize-input'
+							required
+						/>
+						{this.state.errormessage}
+					</>
+				) : null}
 
 				<p className='indicator-configuration-submit-container'>
 					<input
