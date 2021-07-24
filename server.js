@@ -483,7 +483,7 @@ let timerId = setInterval(async () => {
 	// run only once a day
 	if (new Date().getDate() !== lastHistoricalUpdate) {
 		dailyUpdateHasRun = false;
-		// console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
+		console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
 
 		lastHistoricalUpdate = new Date().getDate();
 
