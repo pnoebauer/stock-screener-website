@@ -2,6 +2,40 @@ const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
+let sp500List;
+
+try {
+	sp500List = JSON.parse(fs.readFileSync('sp500.txt', 'utf8'));
+} catch (e) {
+	console.log('no list stored yet');
+}
+
+const readList = listName => {
+	return new Promise(resolve => {
+		fs.readFile(`${listName}.txt`, 'utf8', function (err, data) {
+			// Display the file content
+			// console.log(JSON.parse(data));
+			return resolve(JSON.parse(data));
+		});
+	});
+};
+// fs.readFile('sp500.txt', 'utf8', function (err, data) {
+// 	// Display the file content
+// 	// console.log(JSON.parse(data));
+// 	sp500List = JSON.parse(data);
+// });
+
+const getList = listName => {
+	// readList(listName).then(data => console.log(data));
+	return readList(listName).then(data => data);
+};
+
+// getList('sp500');
+
+// getList('sp500').then(list => (sp500List = list));
+
+console.log(sp500List, 'listA');
+
 // function to get the raw data
 const getRawData = URL => {
 	return fetch(URL)
@@ -13,8 +47,9 @@ const getRawData = URL => {
 };
 
 // start of the program
-const scrapeData = async (URL, processData) => {
+const scrapeData = async (URL, processData, fileName) => {
 	const rawData = await getRawData(URL);
+
 	// console.log({rawData});
 	// parsing the data (load will introduce <html>, <head>, and <body> elements)
 	const parsedData = cheerio.load(rawData);
@@ -22,20 +57,21 @@ const scrapeData = async (URL, processData) => {
 
 	const symbolList = processData(parsedData);
 
-	// console.log(symbolList);var fs = require('fs');
-	fs.writeFile('sp500.txt', JSON.stringify(symbolList), err => {
+	if (!symbolList.length) {
+		return;
+	}
+
+	fs.writeFile(`${fileName}.txt`, JSON.stringify(symbolList), async err => {
 		if (err) {
 			console.log(err);
 		} else {
-			console.log('File written successfully');
+			console.log(`Stored ${symbolList.length} S&P500 stocks`);
+			// readList();
+			sp500List = await getList('sp500');
+			console.log(sp500List);
 		}
 	});
 };
-
-// fs.readFile('sp500.txt', 'utf8', function (err, data) {
-// 	// Display the file content
-// 	console.log(JSON.parse(data));
-// });
 
 const processSP500 = parsedData => {
 	const tableElement = parsedData('table.wikitable')[0];
@@ -71,7 +107,21 @@ const processSP500 = parsedData => {
 const URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
 
 // invoking the main function
-scrapeData(URL, processSP500);
+const updateSP500List = () => scrapeData(URL, processSP500, 'sp500');
+
+// fs.readFile('sp500.txt', 'utf8', function (err, data) {
+// 	// Display the file content
+// 	console.log(JSON.parse(data));
+// });
+
+updateSP500List();
+
+// console.log(sp500List);
+
+module.exports = {
+	updateSP500List,
+	sp500List,
+};
 
 // const fetch = require('node-fetch');
 // const cheerio = require('cheerio');

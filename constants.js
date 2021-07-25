@@ -1,3 +1,5 @@
+const sp500List = require('./webscraper').sp500List;
+
 const INTERVALS = [
 	'Monthly',
 	'Weekly',
