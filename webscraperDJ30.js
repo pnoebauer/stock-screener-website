@@ -3,16 +3,16 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const {contains} = require('cheerio/lib/static');
 
-let sp500List;
+let dj30List;
 
 try {
-	// read the list from the current sp500.txt file and assign to sp500List
-	sp500List = JSON.parse(fs.readFileSync('sp500.txt', 'utf8'));
+	// read the list from the current dj30.txt file and assign to dj30List
+	dj30List = JSON.parse(fs.readFileSync('dj30.txt', 'utf8'));
 } catch (e) {
 	console.log('no list stored yet');
 
-	// updateSP500List().then(updatedList => {
-	// 	sp500List = updatedList;
+	// updatedj30List().then(updatedList => {
+	// 	dj30List = updatedList;
 	// });
 }
 
@@ -45,38 +45,42 @@ const scrapeData = async (URL, processData, fileName) => {
 		if (err) {
 			console.log(err);
 		} else {
-			console.log(`Stored ${symbolList.length} S&P500 stocks`);
+			console.log(`Stored ${symbolList.length} DJ30 stocks`);
 
-			sp500List = symbolList;
+			dj30List = symbolList;
 		}
 	});
 
 	return symbolList;
 };
 
-const processSP500 = parsedData => {
+const processDJ30 = parsedData => {
 	const tableElement = parsedData('table.wikitable#constituents')[0];
-	const tbodyElement = tableElement.children[1];
-	const sp500DataTable = tbodyElement.children;
+	// ONLY DIFFERENCE TO SP500
+	// const tbodyElement = tableElement.children[1];
 
-	// console.log(sp500DataTable);
+	const tbodyElement = tableElement.children[3];
+	const dj30DataTable = tbodyElement.children;
 
-	const trElements = sp500DataTable.filter(row => row.name === 'tr');
-	// console.log(trElements);
+	const trElements = dj30DataTable.filter(row => row.name === 'tr');
 
 	const symbolList = trElements.flatMap((row, index) => {
-		// console.log(index);
 		const columns = row.children.filter(column => column.name === 'td');
 		if (columns.length === 0) return [];
 
-		const stockSymbolColumn = columns[0];
-		// console.log(stockSymbolColumn);
+		// ONLY DIFFERENCE TO SP500
+		// const stockSymbolColumn = columns[0];
+
+		// column: 0 = Exchange, 1 = Symbol {very first is Company is a th element}
+		const stockSymbolColumn = columns[1];
 
 		let stockSymbol = null;
 
 		stockSymbol = stockSymbolColumn.children[0];
 
 		stockSymbol = stockSymbol.children[0].data;
+
+		// console.log(stockSymbol);
 		return [stockSymbol];
 	});
 
@@ -84,19 +88,23 @@ const processSP500 = parsedData => {
 };
 
 // URL for data
+// const URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
+const URL = 'https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average';
 
-const URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
+// scrapeData(URL, processDJ30, 'dj30');
 
 // invoking the main function
-const updateSP500List = async () => {
-	sp500List = await scrapeData(URL, processSP500, 'sp500');
-	// console.log({sp500List});
-	return sp500List;
+const updatedj30List = async () => {
+	dj30List = await scrapeData(URL, processDJ30, 'dj30');
+	// console.log({dj30List});
+	return dj30List;
 };
 
-// console.log(sp500List);
+updatedj30List();
+
+// console.log(dj30List);
 
 module.exports = {
-	updateSP500List,
-	sp500List,
+	updatedj30List,
+	dj30List,
 };

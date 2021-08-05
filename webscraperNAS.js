@@ -3,16 +3,16 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const {contains} = require('cheerio/lib/static');
 
-let sp500List;
+let nas100List;
 
 try {
-	// read the list from the current sp500.txt file and assign to sp500List
-	sp500List = JSON.parse(fs.readFileSync('sp500.txt', 'utf8'));
+	// read the list from the current nas100.txt file and assign to nas100List
+	nas100List = JSON.parse(fs.readFileSync('nas100.txt', 'utf8'));
 } catch (e) {
 	console.log('no list stored yet');
 
-	// updateSP500List().then(updatedList => {
-	// 	sp500List = updatedList;
+	// updatenas100List().then(updatedList => {
+	// 	nas100List = updatedList;
 	// });
 }
 
@@ -45,23 +45,27 @@ const scrapeData = async (URL, processData, fileName) => {
 		if (err) {
 			console.log(err);
 		} else {
-			console.log(`Stored ${symbolList.length} S&P500 stocks`);
+			console.log(`Stored ${symbolList.length} NAS100 stocks`);
 
-			sp500List = symbolList;
+			nas100List = symbolList;
 		}
 	});
 
 	return symbolList;
 };
 
-const processSP500 = parsedData => {
+const processNAS100 = parsedData => {
 	const tableElement = parsedData('table.wikitable#constituents')[0];
+
 	const tbodyElement = tableElement.children[1];
-	const sp500DataTable = tbodyElement.children;
 
-	// console.log(sp500DataTable);
+	const nas100DataTable = tbodyElement.children;
 
-	const trElements = sp500DataTable.filter(row => row.name === 'tr');
+	// console.log(nas100DataTable);
+
+	// console.log(nas100DataTable);
+
+	const trElements = nas100DataTable.filter(row => row.name === 'tr');
 	// console.log(trElements);
 
 	const symbolList = trElements.flatMap((row, index) => {
@@ -69,14 +73,20 @@ const processSP500 = parsedData => {
 		const columns = row.children.filter(column => column.name === 'td');
 		if (columns.length === 0) return [];
 
-		const stockSymbolColumn = columns[0];
+		// ONLY DIFFERENCE TO SP500
+		// const stockSymbolColumn = columns[0];
+
+		const stockSymbolColumn = columns[1];
 		// console.log(stockSymbolColumn);
 
 		let stockSymbol = null;
 
-		stockSymbol = stockSymbolColumn.children[0];
+		// ONLY DIFFERENCE TO SP500
+		// stockSymbol = stockSymbolColumn.children[0]; //goes into <a> tag first
 
-		stockSymbol = stockSymbol.children[0].data;
+		stockSymbol = stockSymbolColumn.children[0].data;
+		// console.log(stockSymbol);
+
 		return [stockSymbol];
 	});
 
@@ -84,19 +94,21 @@ const processSP500 = parsedData => {
 };
 
 // URL for data
+const URL = 'https://en.wikipedia.org/wiki/Nasdaq-100';
+// const URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
 
-const URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
+// scrapeData(URL, processNAS100, 'nas100');
 
 // invoking the main function
-const updateSP500List = async () => {
-	sp500List = await scrapeData(URL, processSP500, 'sp500');
-	// console.log({sp500List});
-	return sp500List;
+const updateNAS100List = async () => {
+	nas100List = await scrapeData(URL, processNAS100, 'nas100');
+	// console.log({nas100List});
+	return nas100List;
 };
 
-// console.log(sp500List);
+// console.log(nas100List);
 
 module.exports = {
-	updateSP500List,
-	sp500List,
+	updateNAS100List,
+	nas100List,
 };
