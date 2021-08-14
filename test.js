@@ -1,10 +1,10 @@
-const {updateSP500List, sp500List} = require('./webscraper');
+const {updateLists, universes} = require('./webscraper');
 
 const updateList = async () => {
-	const updatedList = await updateSP500List();
+	const updatedList = await updateLists();
 
-	// console.log(updatedList, sp500List);
+	console.log(updatedList, universes);
 };
 
-// console.log({sp500List});
+console.log({universes});
 updateList();

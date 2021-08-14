@@ -30,7 +30,7 @@ app.listen(PORT, error => {
 let clients = [];
 let cachedData = {};
 
-const {SYMBOLS, API_TO_INDICATORS} = constants;
+const {SYMBOLS, API_TO_INDICATORS, UNIVERSES} = constants;
 
 // fetchData.fetchLiveData(['SPY']).then(data => console.log(data));
 
@@ -262,7 +262,7 @@ const getLatestIndicators = async (queryObject, data, maxLookBack) => {
 				// console.log(
 				// 	indicator,
 				// 	maxLookBack,
-				// 	maxLookBack + constants.UNSTABLEPERIOD - 1,
+				// 	maxLookBack + UNSTABLEPERIOD - 1,
 				// 	index
 				// );
 				// at the calculated indicator to the candle object (will also update in the currentDataSeries array due to pass by ref)
@@ -330,7 +330,7 @@ const retrieveSymbolWithIndicators = async queryObject => {
 		// retrieve data
 		const latestPriceData = await dbConnect.retrieveSampledData(
 			queryObject.symbol,
-			constants.UNSTABLEPERIOD + maxLookBack,
+			UNSTABLEPERIOD + maxLookBack,
 			Array.from(queryParameters),
 			queryObject.interval
 		);
@@ -346,32 +346,32 @@ const retrieveSymbolWithIndicators = async queryObject => {
 	}
 };
 
-const queryObject = {
-	symbol: 'MMM',
-	interval: 'day',
-	indicators: {
-		sma: {
-			parameter: 'closePrice',
-			lookBack: 35,
-		},
-		ema: {
-			parameter: 'openPrice',
-			lookBack: 20,
-		},
-		atr: {
-			lookBack: 5,
-		},
-		reg: {
-			parameter: 'closePrice',
-			lookBack: 250,
-		},
-		mom: {
-			parameter: 'closePrice',
-			lookBack: 250,
-		},
-	},
-};
-// retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+// const queryObject = {
+// 	symbol: 'MMM',
+// 	interval: 'day',
+// 	indicators: {
+// 		sma: {
+// 			parameter: 'closePrice',
+// 			lookBack: 35,
+// 		},
+// 		ema: {
+// 			parameter: 'openPrice',
+// 			lookBack: 20,
+// 		},
+// 		atr: {
+// 			lookBack: 5,
+// 		},
+// 		reg: {
+// 			parameter: 'closePrice',
+// 			lookBack: 250,
+// 		},
+// 		mom: {
+// 			parameter: 'closePrice',
+// 			lookBack: 250,
+// 		},
+// 	},
+// };
+// // retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;
@@ -490,11 +490,7 @@ let timerId = setInterval(async () => {
 		// on the weekend update the last 20 years, during the week only the last 1 year
 		const numberYears = new Date().getDay() < 6 ? 1 : 20;
 
-		dailyUpdateHasRun = await historicalDataIntoDB(
-			constants.UNIVERSES,
-			constants.SYMBOLS,
-			numberYears
-		);
+		dailyUpdateHasRun = await historicalDataIntoDB(UNIVERSES, SYMBOLS, numberYears);
 		// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
 	}
 	// make sure that the daily update has run before continuing with the regular updates so that the API limit is not exceeded
@@ -504,6 +500,6 @@ let timerId = setInterval(async () => {
 	}
 }, interValTime);
 
-// historicalDataIntoDB(constants.UNIVERSES, ['GOOGL', 'AAPL'], 1);
-// historicalDataIntoDB(constants.UNIVERSES, ['MMM'],20);
-// historicalDataIntoDB(constants.UNIVERSES, constants.SYMBOLS,1);
+// historicalDataIntoDB(UNIVERSES, ['GOOGL', 'AAPL'], 1);
+// historicalDataIntoDB(UNIVERSES, ['MMM'],20);
+// historicalDataIntoDB(UNIVERSES, SYMBOLS,1);

@@ -6,14 +6,14 @@ const path = require('path');
 const compression = require('compression');
 const enforce = require('express-sslify');
 
-const fetchData = require('./fetchData');
-const processData = require('./processData');
+const fetchData = require('../fetchData');
+const processData = require('../processData');
 
-const dbConnect = require('./dbConnect');
+const dbConnect = require('../dbConnect');
 
-const constants = require('./constants');
+const constants = require('../constants');
 
-const calculateIndicators = require('./calculateIndicators');
+const calculateIndicators = require('../calculateIndicators');
 
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)

@@ -10,29 +10,11 @@ try {
 	sp500List = JSON.parse(fs.readFileSync('sp500.txt', 'utf8'));
 } catch (e) {
 	console.log('no list stored yet');
+
+	// updateSP500List().then(updatedList => {
+	// 	sp500List = updatedList;
+	// });
 }
-
-// const readList = listName => {
-// 	return new Promise(resolve => {
-// 		fs.readFile(`${listName}.txt`, 'utf8', function (err, data) {
-// 			// Display the file content
-// 			// console.log(JSON.parse(data));
-// 			return resolve(JSON.parse(data));
-// 		});
-// 	});
-// };
-// fs.readFile('sp500.txt', 'utf8', function (err, data) {
-// 	// Display the file content
-// 	// console.log(JSON.parse(data));
-// 	sp500List = JSON.parse(data);
-// });
-
-// const getList = listName => {
-// 	// readList(listName).then(data => console.log(data));
-// 	return readList(listName).then(data => data);
-// };
-
-// console.log(sp500List, 'listA');
 
 // function to get the raw data
 const getRawData = URL => {
@@ -64,15 +46,8 @@ const scrapeData = async (URL, processData, fileName) => {
 			console.log(err);
 		} else {
 			console.log(`Stored ${symbolList.length} S&P500 stocks`);
-			// readList();
-			// sp500List = await getList('sp500');
-
-			// sp500List = await readList('sp500');
-			// console.log({sp500List, symbolList});
 
 			sp500List = symbolList;
-
-			// return symbolList;
 		}
 	});
 
@@ -80,7 +55,7 @@ const scrapeData = async (URL, processData, fileName) => {
 };
 
 const processSP500 = parsedData => {
-	const tableElement = parsedData('table.wikitable')[0];
+	const tableElement = parsedData('table.wikitable#constituents')[0];
 	const tbodyElement = tableElement.children[1];
 	const sp500DataTable = tbodyElement.children;
 
@@ -109,7 +84,7 @@ const processSP500 = parsedData => {
 };
 
 // URL for data
-// const URL = 'https://en.wikipedia.org/wiki/Cricket_World_Cup';
+
 const URL = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
 
 // invoking the main function
@@ -118,13 +93,6 @@ const updateSP500List = async () => {
 	// console.log({sp500List});
 	return sp500List;
 };
-
-// fs.readFile('sp500.txt', 'utf8', function (err, data) {
-// 	// Display the file content
-// 	console.log(JSON.parse(data));
-// });
-
-// updateSP500List();
 
 // console.log(sp500List);
 

@@ -1,4 +1,4 @@
-const sp500List = require('./webscraper').sp500List;
+const {updateLists, universes} = require('./webscraper');
 
 const INTERVALS = [
 	'Monthly',
@@ -11,7 +11,7 @@ const INTERVALS = [
 	'1 Min',
 ];
 
-const SP500 = [
+const SP500 = universes.sp500 || [
 	'MMM',
 	'AOS',
 	'ABT',
@@ -518,7 +518,7 @@ const SP500 = [
 	'ZTS',
 ];
 
-const NAS100 = [
+const NAS100 = universes.nas100 || [
 	'AAL',
 	'AAPL',
 	'ADBE',
@@ -625,7 +625,7 @@ const NAS100 = [
 	'ZM', // added
 ];
 
-const DJ30 = [
+const DJ30 = universes.dj30 || [
 	'AAPL',
 	'CSCO',
 	'INTC',
