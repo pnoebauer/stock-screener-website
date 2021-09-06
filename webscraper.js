@@ -8,7 +8,7 @@ const urlSP500 = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies';
 const urlDJ30 = 'https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average';
 const urlNAS100 = 'https://en.wikipedia.org/wiki/Nasdaq-100';
 
-const universes = {
+let universes = {
 	sp500: [],
 	nas100: [],
 	dj30: [],
@@ -32,8 +32,9 @@ try {
 }
 
 // function to get the raw data
-const getRawData = URL => {
-	return fetch(URL).then(response => response.text());
+const getRawData = async URL => {
+	const response = await fetch(URL);
+	return response.text();
 	// .then(data => data);
 };
 
@@ -183,10 +184,21 @@ const updateLists = async () => {
 	return universes;
 };
 
+// let testObj = {t: new Date().getSeconds()};
+// let a;
+
+// let timerId = setInterval(async () => {
+// 	console.log('new interval at', new Date().getSeconds());
+
+// 	testObj.t = new Date().getSeconds();
+// 	a = new Date().getSeconds();
+// }, 5 * 1000);
+
 // updateLists().then(universes => console.log('updated', universes));
 // console.log(universes);
 
 module.exports = {
 	updateLists,
 	universes,
+	// testObj,
 };

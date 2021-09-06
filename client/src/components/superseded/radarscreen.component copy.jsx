@@ -2,25 +2,25 @@ import React from 'react';
 
 import Dropdown from './dropdown.component';
 
-import { SYMBOLS, INTERVALS, SP500 } from '../../assets/constants';
+import {SYMBOLS, INTERVALS} from '../../assets/constants';
 
 import './radarscreen.styles.css';
 
 const urlRealTime = 'https://api.tdameritrade.com/v1/marketdata/quotes';
 const apikey = 'APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD';
 
-const headerConst = ['Symbol', 'Interval', 'Price']
+const headerConst = ['Symbol', 'Interval', 'Price'];
 
 const selectTbl = {
 	Symbol: SYMBOLS,
-	Interval: INTERVALS
-}
+	Interval: INTERVALS,
+};
 
 // const retrieveData = () => {
 
 // 	const symbol = SYMBOLS;
 // 	const params = {apikey, symbol};
-	
+
 // 	const queryExt = new URLSearchParams(params).toString();
 // 	const queryString = urlRealTime.concat('?', queryExt);
 
@@ -29,9 +29,9 @@ const selectTbl = {
 // 		.then(data => console.log(data))
 // }
 
-const fetchRealTimeData = async (symbol) => {
+const fetchRealTimeData = async symbol => {
 	const params = {apikey, symbol};
-	
+
 	const queryExt = new URLSearchParams(params).toString();
 	const queryString = urlRealTime.concat('?', queryExt);
 
@@ -45,36 +45,34 @@ const fetchRealTimeData = async (symbol) => {
 	const data = await response.json();
 
 	return data;
-}
+};
 
 class RadarScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			header: headerConst,
-			Symbol: SP500.slice(0,8),
+			Symbol: SYMBOLS.slice(0, 8),
 			Interval: Array(8).fill(INTERVALS[0]),
-			Price: Array(8).fill(0)
-		}
+			Price: Array(8).fill(0),
+		};
 	}
 
 	componentDidMount() {
-		const { Symbol } = this.state;
+		const {Symbol} = this.state;
 
-		fetchRealTimeData(Symbol)
-			.then(data => {
-				const prices = Symbol.map((symbolName, index) => {
-					return data[symbolName].lastPrice;
-				})
-				// console.log(prices);
-				this.setState({
-					Price: prices
-				});
-			})
+		fetchRealTimeData(Symbol).then(data => {
+			const prices = Symbol.map((symbolName, index) => {
+				return data[symbolName].lastPrice;
+			});
+			// console.log(prices);
+			this.setState({
+				Price: prices,
+			});
+		});
 	}
 
 	onChange = (updatedValue, headerCol, valueRow) => {
-
 		const stateKey = this.state.header[headerCol];
 		const values = [...this.state[stateKey]];
 		const prices = [...this.state.Price];
@@ -82,12 +80,12 @@ class RadarScreen extends React.Component {
 		values[valueRow] = updatedValue;
 
 		// console.log('change', stateKey, updatedValue, this.state.header[headerCol], valueRow);
-		
-		let symbol = updatedValue, interval = updatedValue;
-		if (stateKey==='Symbol') {
+
+		let symbol = updatedValue,
+			interval = updatedValue;
+		if (stateKey === 'Symbol') {
 			interval = this.state.Interval[valueRow];
-		}
-		else if (stateKey==='Interval'){
+		} else if (stateKey === 'Interval') {
 			symbol = this.state.Symbol[valueRow];
 		}
 
@@ -103,21 +101,17 @@ class RadarScreen extends React.Component {
 				// console.log(prices);
 
 				this.setState({
-					Price: prices
+					Price: prices,
 				});
-
 			})
 			.catch(e => {
 				console.log('An error occurred during fetching: ' + e.message);
-		  	});
-
+			});
 
 		this.setState({
-			[stateKey]: values
+			[stateKey]: values,
 		});
-		
-
-	}
+	};
 
 	// onChange = key => (updatedValue, headerCol, valueRow) => {
 	// 	// console.log('change', key, updatedValue, this.state.header[headerCol], valueRow);
@@ -139,75 +133,74 @@ class RadarScreen extends React.Component {
 	// }
 
 	render() {
-	let i=0;
+		let i = 0;
 
-	const { header } = this.state;
+		const {header} = this.state;
 
-		return(
-			<div className="radarscreen">
+		return (
+			<div className='radarscreen'>
 				<div className='space'></div>
-				
-				<div id="grid-container">
+
+				<div id='grid-container'>
+					{header.map((value, colIdx) => {
+						i++;
+						return (
+							<div
+								key={i}
+								id={i}
+								className='header'
+								style={{
+									gridRow: 1,
+									gridColumn: colIdx + 1,
+								}}
+							>
+								{value}
+							</div>
+						);
+					})}
+
 					{
-						header.map((value, colIdx) => {
-							i++;
-							return (
-								<div 
-									key={i} 
-									id={i} 
-									className='header'
-									style={{ 
-										gridRow: 1,
-										gridColumn: colIdx+1}}
-								>
-									{value}
-								</div>
-							)
-						})
-					}
-					
-					{
-						//loop through the header items (columns) and afterwards loop through stored values (rows)  
-						header.map((value, colIdx) => this.state[value].map((rowVal,rowIdx) => {
+						//loop through the header items (columns) and afterwards loop through stored values (rows)
+						header.map((value, colIdx) =>
+							this.state[value].map((rowVal, rowIdx) => {
 								i++;
-								if(selectTbl[header[colIdx]] !== undefined) {
+								if (selectTbl[header[colIdx]] !== undefined) {
 									return (
-										<Dropdown 
+										<Dropdown
 											options={selectTbl[header[colIdx]]}
 											defaultValue={this.state[header[colIdx]][rowIdx]}
-											style={{ 
-												gridRow: rowIdx+2,
-												gridColumn: colIdx+1}}
-											key={i} 
-											id={i} 
+											style={{
+												gridRow: rowIdx + 2,
+												gridColumn: colIdx + 1,
+											}}
+											key={i}
+											id={i}
 											// onChange={this.onChange(i)}
 											onChange={this.onChange}
-										/> 
-									)
-								}
-								else {
+										/>
+									);
+								} else {
 									return (
-										<div 
-											key={i} 
-											id={i} 
+										<div
+											key={i}
+											id={i}
 											className='item'
-											style={{ 
-												gridRow: rowIdx+2,
-												gridColumn: colIdx+1}}
+											style={{
+												gridRow: rowIdx + 2,
+												gridColumn: colIdx + 1,
+											}}
 										>
 											{rowVal.toFixed(2)}
 										</div>
-									)
+									);
 								}
 							})
-						) 
+						)
 					}
-					
 				</div>
-		</div>
-		)
+			</div>
+		);
 	}
 }
-
 
 export default RadarScreen;

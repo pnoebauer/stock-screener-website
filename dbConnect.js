@@ -227,6 +227,20 @@ const retrieveData = async (symbol, lookBack, parameters) => {
 	}
 };
 
+const retrieveSymbolData = async () => {
+	try {
+		const selection = await knex('symbol')
+			// .where('DJ30', true)
+			.select(['ticker', 'DJ30', 'NAS100', 'SP500']);
+
+		return selection;
+		// return selection.reverse();
+	} catch (e) {
+		console.log('error retrieving symbols data', e);
+		return Promise.reject('could not symbols retrieve data');
+	}
+};
+
 const insertIntoTableSymbols = async stockUniverses => {
 	// console.log(stockUniverses);
 
@@ -234,6 +248,7 @@ const insertIntoTableSymbols = async stockUniverses => {
 
 	for (let i = 0; i < universes.length; i++) {
 		const universe = universes[i];
+
 		const stocks = stockUniverses[universe];
 		// console.log(universe, stocks);
 		const insertQuery = stocks.map(stock => ({ticker: stock, [universe]: true}));
@@ -401,4 +416,5 @@ module.exports = {
 	retrieveSampledData,
 	retrieveSampledChartData,
 	insertIntoTableSymbols,
+	retrieveSymbolData,
 };

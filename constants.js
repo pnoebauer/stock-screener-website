@@ -1,4 +1,11 @@
-const {updateLists, universes} = require('./webscraper');
+let {updateLists, universes} = require('./webscraper');
+
+const {testObj} = require('./webscraper');
+
+// const adjTestObj = {t: testObj.t || 1};
+const adjTestObj = testObj;
+
+updateLists().then(updatedUniverses => (universes = updatedUniverses));
 
 const INTERVALS = [
 	'Monthly',
@@ -664,6 +671,12 @@ const UNIVERSES = {
 	DJ30,
 };
 
+// const UNIVERSES = () => ({
+// 	SP500: SP500 || universes.sp500,
+// 	NAS100: NAS100 || universes.nas100,
+// 	DJ30: DJ30 || universes.dj30,
+// });
+
 // const SYMBOLS = Object.keys(UNIVERSES).flatMap(universe => [...UNIVERSES[universe]]); //[...SP500, ...NAS100, ...DJ30];
 // const SYMBOLS = [...new Set([...SP500, ...NAS100, ...DJ30])];
 const SYMBOLS = [
@@ -735,4 +748,5 @@ module.exports = {
 	SYMBOLS,
 	UNSTABLEPERIOD,
 	API_TO_INDICATORS,
+	adjTestObj,
 };

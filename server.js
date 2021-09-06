@@ -4,13 +4,15 @@ const cors = require('cors');
 
 const fetchData = require('./fetchData');
 
-const constants = require('./constants');
+const {SYMBOLS, API_TO_INDICATORS, UNIVERSES} = require('./constants');
 
 const processData = require('./processData');
 
 const dbConnect = require('./dbConnect');
 
 const calculateIndicators = require('./calculateIndicators');
+
+const {sleep, waitTillSecond} = require('./utils');
 
 //during testing or development
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
@@ -30,13 +32,20 @@ app.listen(PORT, error => {
 let clients = [];
 let cachedData = {};
 
-const {SYMBOLS, API_TO_INDICATORS, UNIVERSES} = constants;
-
 // fetchData.fetchLiveData(['SPY']).then(data => console.log(data));
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
+// // helper function to wait in async function till ms have passed
+// function sleep(ms) {
+// 	return new Promise(resolve => setTimeout(resolve, ms));
+// }
+
+// // helper function to wait till time has reached a certain second (e.g. 10 --> async function will await till 01:30:10, 01:31:10, etc.)
+// const waitTillSecond = async timeSecond => {
+// 	const second = new Date().getSeconds();
+// 	const delay = (60 - second + timeSecond) * 1000;
+
+// 	await sleep(delay);
+// };
 
 //only keep required indicators and remove unnessary ones such as:
 //  	quoteTimeInLong, tradeTimeInLong, regularMarketTradeTimeInLong
@@ -65,6 +74,8 @@ const splits = 5;
 const interValTime = 60000;
 const symbolsPerSplit = Math.round(SYMBOLS.length / splits);
 
+// fetch x symbols at a time and then waits till fetching again
+// used to overcome API data limit
 const batchFetch = async symbolList => {
 	let startIndex = 0;
 	let endIndex = symbolsPerSplit;
@@ -88,6 +99,7 @@ const batchFetch = async symbolList => {
 		endIndex += symbolsPerSplit;
 		endIndex = Math.min(endIndex, symbolList.length);
 
+		// sleep after a batch except the final one
 		if (i !== splits - 1) {
 			// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
 			await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
@@ -98,6 +110,7 @@ const batchFetch = async symbolList => {
 	return data;
 };
 
+//check if data has changed since the last fetch (use to only send data to front end users if the data has changed)
 const compareCacheWithFetch = data => {
 	let identical = true;
 
@@ -134,13 +147,7 @@ const compareCacheWithFetch = data => {
 
 // batchFetch(SYMBOLS.slice(0, 5)).then(data => console.log(data));
 
-const waitTillSecond = async timeSecond => {
-	const second = new Date().getSeconds();
-	const delay = (60 - second + timeSecond) * 1000;
-
-	await sleep(delay);
-};
-
+// handler function for sending the queried data to client and adds the client to clients array
 function eventsHandler(req, res, queriedSymbols) {
 	// console.log(queriedSymbols.split(','));
 
@@ -176,7 +183,7 @@ function eventsHandler(req, res, queriedSymbols) {
 	// console.log(newClient, 'newClient');
 	console.log(clientId, 'clientId');
 
-	// add this client to clients array
+	// add this client to clients array (clients is a global variable)
 	clients.push(newClient);
 
 	// when the client closes the connection that client will be filtered out from the clients array
@@ -193,16 +200,19 @@ function eventsHandler(req, res, queriedSymbols) {
 
 // app.get('/events', eventsHandler);
 app.get('/events/:id', async function (req, res) {
-	// Retrieve the tag from our URL path
+	// client send queriedSymbols through url query string
 	const queriedSymbols = req.query.id;
 	// console.log(queriedSymbols);
 
+	// add client to clients array and send the data of all queriedSymbols
 	eventsHandler(req, res, queriedSymbols);
 });
 
-const eventType = 'test';
-// sendEventsToAll iterates the clients array and uses the write method of each Express object to send the update.
+// const eventType = 'test';
+
+// sendEventsToAll iterates the clients array and uses the write method of each Express object to send the update
 function sendEventsToAll(data) {
+	// loop through global clients array
 	clients.forEach(client => {
 		// console.log(client) ||
 		// console.log(client.id);
@@ -224,6 +234,7 @@ function sendEventsToAll(data) {
 }
 
 // ------------ return custom indicators ------------
+// --------------------------------------------------
 
 const serialIndicators = ['reg', 'mom'];
 
