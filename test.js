@@ -1,12 +1,5 @@
-// const {testObj, a} = require('./webscraper');
-// const {adjTestObj} = require('./constants');
-
-// let timerId = setInterval(async () => {
-// 	console.log('testObj at', new Date().getSeconds(), testObj, a);
-// 	console.log('adjTestObj at', new Date().getSeconds(), adjTestObj);
-// }, 3 * 1000);
-
 const dbConnect = require('./dbConnect');
+let {SYMBOLS, UNIVERSES} = require('./constants');
 let {updateLists, universes} = require('./webscraper');
 
 let transformedUniverse = {
@@ -21,18 +14,43 @@ const transformUniverse = universes => {
 	transformedUniverse.DJ30 = universes.dj30;
 };
 
-async function returnSymbols() {
+async function updateUNIVERSESfromDB() {
 	const symbols = await dbConnect.retrieveSymbolData();
-	console.log({symbols});
-	// await dbConnect.insertIntoTableSymbols(universes);
-	// await dbConnect.insertIntoTableSymbols({SP500,NAS100,DJ30});
+	// const symbols = [
+	// 	{ticker: 'a', DJ30: false, NAS100: false, SP500: true},
+	// 	{ticker: 'b', DJ30: false, NAS100: false, SP500: true},
+	// ];
+	// console.log({symbols}, symbols.length);
+
+	SYMBOLS.splice(symbols.length);
+
+	for (let i = 0; i < symbols.length; i++) {
+		const stock = symbols[i];
+		SYMBOLS[i] = stock.ticker;
+	}
+
+	// console.log(SYMBOLS, 'map');
+	UNIVERSES.SP500 = symbols.filter(stock => stock.SP500).map(stock => stock.ticker);
+	UNIVERSES.NAS100 = symbols.filter(stock => stock.NAS100).map(stock => stock.ticker);
+	UNIVERSES.DJ30 = symbols.filter(stock => stock.DJ30).map(stock => stock.ticker);
+}
+
+async function updateAndInsertUNIVERSES() {
+	// run the webscraper to update all stock universes
+	universes = await updateLists();
+	// db requires uppercase keys - transform universes object to required format
+	transformUniverse(universes);
+	// insert the updated stock universe list into the table
+	await dbConnect.insertIntoTableSymbols(transformedUniverse);
 }
 
 let timerId = setInterval(async () => {
-	universes = await updateLists();
-	transformUniverse(universes);
-	await dbConnect.insertIntoTableSymbols(transformedUniverse);
+	await updateAndInsertUNIVERSES();
 }, 60 * 1000);
 
 dbConnect.insertIntoTableSymbols(transformedUniverse);
-returnSymbols();
+// updateUNIVERSESfromDB();
+
+module.exports = {
+	updateUNIVERSESfromDB,
+};

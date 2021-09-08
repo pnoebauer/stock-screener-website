@@ -12,10 +12,12 @@ import Chart from './chart.component';
 // import IndicatorSelector from '../indicator-selector/indicator-selector.component';
 
 import Tooltip from '../tooltip/tooltip.component';
+import EditChartIndicatorsButton from '../edit-chart-indicators/edit-chart-indicators.component';
 
 import {SYMBOLS, INTERVALS} from '../../assets/constants';
 
 import './chart.styles.css';
+import editChartIndicatorsComponent from '../edit-chart-indicators/edit-chart-indicators.component';
 
 class ChartComponent extends React.Component {
 	constructor(props) {
@@ -182,14 +184,15 @@ class ChartComponent extends React.Component {
 							</option>
 						))}
 					</select>
-					<button
+					<EditChartIndicatorsButton />
+					{/* <button
 						// onClick={this.show}
 						className='chart-indicator-button tooltip'
 						// style={this.props.style}
 					>
 						<GrSettingsOption className='chart-indicator-icon' />
 						<Tooltip tooltipText={'Click to edit indicators'} position={'center'} />
-					</button>
+					</button> */}
 				</div>
 				<Chart
 					type={'svg'}

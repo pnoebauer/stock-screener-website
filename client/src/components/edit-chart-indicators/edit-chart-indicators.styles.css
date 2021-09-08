@@ -1,0 +1,41 @@
+button.add-column-button {
+	border: none;
+	/* border-bottom: 1px solid black;
+	margin-bottom: -1px; */
+	/* width: 25px; */
+	/* width: 50%; */
+	/* height: 50%; */
+
+	/* position: relative; */
+
+	position: sticky;
+	top: 0;
+
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	margin-bottom: -1px;
+	margin-left: -1px;
+}
+
+.add-column-icon {
+	position: absolute;
+
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: 80%;
+	height: 50%;
+
+	cursor: pointer;
+}
+
+.add-column-icon:hover {
+	color: green;
+	/* background-color: white; */
+
+	transform: scale(1.1);
+}

@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const fetchData = require('./fetchData');
 
-const {SYMBOLS, API_TO_INDICATORS, UNIVERSES} = require('./constants');
+const {SYMBOLS, API_TO_INDICATORS, UNIVERSES, UNSTABLEPERIOD} = require('./constants');
 
 const processData = require('./processData');
 
@@ -383,6 +383,10 @@ const retrieveSymbolWithIndicators = async queryObject => {
 // 	},
 // };
 // // retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
+
+app.get('/universes', (req, res) => {
+	return res.json(UNIVERSES);
+});
 
 app.post('/scanner', (req, res) => {
 	// const {symbol} = req.body;

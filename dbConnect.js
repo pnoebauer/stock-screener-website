@@ -243,6 +243,12 @@ const retrieveSymbolData = async () => {
 
 const insertIntoTableSymbols = async stockUniverses => {
 	// console.log(stockUniverses);
+	try {
+		// clears entire table
+		// await knex('symbol').truncate();
+	} catch (e) {
+		console.log(e, 'error clearing the symbol table');
+	}
 
 	const universes = Object.keys(stockUniverses);
 
@@ -261,7 +267,7 @@ const insertIntoTableSymbols = async stockUniverses => {
 
 			console.log('Successfully inserted the data for', universe);
 		} catch (error) {
-			console.log(error, 'error');
+			console.log(error, 'error inserting stocks for', universe);
 		}
 	}
 };
@@ -400,10 +406,10 @@ const retrieveSampledChartData = async (
 // 	.then(data => console.log(data))
 // 	.catch(e => console.log(e));
 
-// retrieveSampledData('AAPL', 20, ['closePrice'], 'day')
-// retrieveSampledData('AAPL', 20, 'day')
-// 	.then(data => console.log(data))
-// 	.catch(e => console.log(e));
+// retrieveSampledData('AAPL', 20, ['closePrice'], 'day');
+retrieveSampledData('AAPL', 20, ['closePrice'], 'day')
+	.then(data => console.log(data))
+	.catch(e => console.log(e));
 
 // retrieveSampledChartData('AAPL', 20, 'day', new Date('2020-02-01'))
 // 	.then(data => console.log(data))

@@ -184,21 +184,10 @@ const updateLists = async () => {
 	return universes;
 };
 
-// let testObj = {t: new Date().getSeconds()};
-// let a;
-
-// let timerId = setInterval(async () => {
-// 	console.log('new interval at', new Date().getSeconds());
-
-// 	testObj.t = new Date().getSeconds();
-// 	a = new Date().getSeconds();
-// }, 5 * 1000);
-
 // updateLists().then(universes => console.log('updated', universes));
 // console.log(universes);
 
 module.exports = {
 	updateLists,
 	universes,
-	// testObj,
 };

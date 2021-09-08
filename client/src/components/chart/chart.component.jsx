@@ -97,7 +97,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		const indicators = indicatorConfigurations.map(indicator => {
 			const {id, type, ...optionsConfig} = indicator;
-			console.log({id, type, ...optionsConfig});
+			// console.log({id, type, ...optionsConfig});
 			return (
 				indicatorFunctions[type]()
 					.id(id)
@@ -122,12 +122,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		/* SERVER - START */
 		// retrieves the last X candles from the data series
 		const dataToCalculate = inputData.slice(startPoint);
-		console.log({startPoint});
+		// console.log({startPoint});
 
 		// add the indicator values to each candle
 		const calculatedData = pipe(...indicators)(dataToCalculate);
 
-		console.log({length: calculatedData.length, calculatedData});
+		// console.log({length: calculatedData.length, calculatedData});
 
 		const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
 
@@ -135,7 +135,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// adds index to series and level (level depends on the date, i.e. odd days = 11, even days = 12, start of week = 13, start of month = 14)
 		const {index} = indexCalculator(calculatedData.slice(maxUnstablePeriod));
 		// const {index} = indexCalculator(calculatedData);
-		console.log({index});
+		// console.log({index});
 
 		/* SERVER - END */
 
@@ -154,12 +154,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		} = xScaleProvider(calculatedData.slice(maxUnstablePeriod));
 
 		// console.log({xScale});
-		console.log(
-			linearData.length,
-			'linearData.length',
-			maxUnstablePeriod,
-			LENGTH_TO_SHOW
-		);
+		// console.log(
+		// 	linearData.length,
+		// 	'linearData.length',
+		// 	maxUnstablePeriod,
+		// 	LENGTH_TO_SHOW
+		// );
 
 		// linear data is same as calculatedData, with the exception that the idx property was added (idx: {index, level, date, format()}) --> done under xScaleProvider
 		// console.log({linearData});
@@ -177,11 +177,11 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			start: 0,
 		};
 
-		console.log('s', this.state);
+		// console.log('s', this.state);
 	}
 
 	handleDownloadMore = async (start, end) => {
-		console.log(start, end, 'start, end', Math.ceil(start) === end);
+		// console.log(start, end, 'start, end', Math.ceil(start) === end);
 		if (Math.ceil(start) === end) return;
 		// console.log("rows to download", rowsToDownload, start, end)
 
@@ -194,14 +194,14 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// 	await this.props.loadData(inputData[0].date);
 		// }
 
-		console.log(
-			{inputData, length: inputData.length, prevData, prevLength: prevData.length},
-			'update'
-		);
-		console.log(
-			{startDate: inputData[0].date, prevStartDate: prevData[0].date},
-			'update'
-		);
+		// console.log(
+		// 	{inputData, length: inputData.length, prevData, prevLength: prevData.length},
+		// 	'update'
+		// );
+		// console.log(
+		// 	{startDate: inputData[0].date, prevStartDate: prevData[0].date},
+		// 	'update'
+		// );
 
 		if (inputData.length === prevData.length) {
 			// await this.props.loadData(inputData[0].date);
@@ -221,18 +221,18 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		// in short: new window is rowsToDownload(=>how far the cursor moved chart to the left) plus the unstablePeriod moved to the left of the prior window
 		const dataToCalculate = inputData.slice(startPoint, endPoint);
 
-		console.log(
-			'slice',
-			{startPoint},
-			{endPoint},
-			{rowsToDownload, maxUnstablePeriod, length: prevData.length},
-			{dataToCalculate}
-		);
+		// console.log(
+		// 	'slice',
+		// 	{startPoint},
+		// 	{endPoint},
+		// 	{rowsToDownload, maxUnstablePeriod, length: prevData.length},
+		// 	{dataToCalculate}
+		// );
 
 		// add the indicator values to each candle
 		const calculatedData = pipe(...indicators)(dataToCalculate);
 
-		console.log({calculatedData}, 'update');
+		// console.log({calculatedData}, 'update');
 
 		// BEFORE:
 		// const indexCalculator = discontinuousTimeScaleProviderBuilder().indexCalculator();
@@ -260,14 +260,14 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			.initialIndex(Math.ceil(start))
 			.withIndex(index);
 
-		console.log(
-			{
-				xScaleProvider: xScaleProvider(
-					calculatedData.slice(-rowsToDownload).concat(prevData)
-				),
-			},
-			'update'
-		);
+		// console.log(
+		// 	{
+		// 		xScaleProvider: xScaleProvider(
+		// 			calculatedData.slice(-rowsToDownload).concat(prevData)
+		// 		),
+		// 	},
+		// 	'update'
+		// );
 
 		const {
 			data: linearData,
@@ -323,7 +323,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		const {data: prevData, indicators} = this.state;
 
 		if (inputData.length - prevData.length < 1000) {
-			console.log('------LOADING MORE DATA', inputData[0].date);
+			// console.log('------LOADING MORE DATA', inputData[0].date);
 			await this.props.loadData(inputData[0].date);
 
 			return;
@@ -455,7 +455,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			MAIN_CHART_INDICATORS.includes(indicator.type().toLowerCase()) ? [] : [indicator]
 		);
 
-		console.log({data, displayXAccessor, xAccessor, xScale});
+		// console.log({data, displayXAccessor, xAccessor, xScale});
 
 		return (
 			<>
@@ -514,7 +514,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 						<MovingAverageTooltip
 							onClick={e => {
-								console.log(e, e.target, e.buttons, e.type, e.nativeEvent, 'e----------');
+								// console.log(e, e.target, e.buttons, e.type, e.nativeEvent, 'e----------');
 								const {id} = e;
 								this.show(id);
 							}}

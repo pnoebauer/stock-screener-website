@@ -13,6 +13,11 @@ import {createCachedSelector} from 're-reselect';
 import {createSelectorCreator, defaultMemoize} from 'reselect';
 import isEqual from 'lodash.isequal';
 
+// import {MAIN_CHART_INDICATORS, CHART_INDICATORS} from '../../assets/constants';
+import {CHART_INDICATORS} from '../../assets/constants';
+
+const availableIndicators = Object.keys(CHART_INDICATORS);
+
 // create a "selector creator" that uses lodash.isequal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
@@ -24,6 +29,40 @@ export const getChartIndicatorConfigs = createDeepEqualSelector(
 	getChartConfiguration,
 	chartConfiguration => chartConfiguration.indicators
 );
+
+export const getUsedIndicators = createDeepEqualSelector(
+	getChartIndicatorConfigs,
+	indicatorConfigsList => indicatorConfigsList.map(({type}) => type)
+);
+
+// export const getUnusedIndicators = createDeepEqualSelector(
+// 	getUsedIndicators,
+// 	usedIndicators =>
+// 		availableIndicators.filter(indicator => !usedIndicators.includes(indicator))
+// );
+
+// allow duplicates
+export const getUnusedIndicators = () => availableIndicators;
+
+// export const getMainChartIndicatorList = createDeepEqualSelector(
+// 	getChartIndicatorConfigs,
+// 	indicatorConfigsList =>
+// 		indicatorConfigsList.flatMap(indicatorObj =>
+// 			MAIN_CHART_INDICATORS.includes(indicatorObj.type.toLowerCase())
+// 				? [indicatorObj.type]
+// 				: []
+// 		)
+// );
+
+// export const getSubChartIndicatorList = createDeepEqualSelector(
+// 	getChartIndicatorConfigs,
+// 	indicatorConfigsList =>
+// 		indicatorConfigsList.flatMap(indicatorObj =>
+// 			MAIN_CHART_INDICATORS.includes(indicatorObj.type.toLowerCase())
+// 				? []
+// 				: [indicatorObj.type]
+// 		)
+// );
 
 export const getChartIndicatorConfiguration = createCachedSelector(
 	// getChartConfiguration,
