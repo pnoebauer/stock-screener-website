@@ -1,12 +1,5 @@
-button.add-column-button {
+/* button.add-column-button {
 	border: none;
-	/* border-bottom: 1px solid black;
-	margin-bottom: -1px; */
-	/* width: 25px; */
-	/* width: 50%; */
-	/* height: 50%; */
-
-	/* position: relative; */
 
 	position: sticky;
 	top: 0;
@@ -35,7 +28,6 @@ button.add-column-button {
 
 .add-column-icon:hover {
 	color: green;
-	/* background-color: white; */
 
 	transform: scale(1.1);
-}
+} */

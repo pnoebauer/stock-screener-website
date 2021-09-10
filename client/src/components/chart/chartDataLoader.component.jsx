@@ -1,5 +1,6 @@
 import React from 'react';
-// import {render} from 'react-dom';
+
+import {connect} from 'react-redux';
 
 import {getData} from './utils';
 
@@ -13,6 +14,9 @@ import Chart from './chart.component';
 
 import Tooltip from '../tooltip/tooltip.component';
 import EditChartIndicatorsButton from '../edit-chart-indicators/edit-chart-indicators.component';
+import AddChartIndicator from '../add-chart-indicator/add-chart-indicator.component';
+
+import {getChartIndicatorConfigs} from '../../redux/chart/chart.selectors';
 
 import {SYMBOLS, INTERVALS} from '../../assets/constants';
 
@@ -98,7 +102,7 @@ class ChartComponent extends React.Component {
 	};
 
 	onChange = e => {
-		console.log(e.target.value, 'change');
+		// console.log(e.target.value, 'change');
 		this.setState({shownValue: e.target.value});
 	};
 
@@ -192,6 +196,7 @@ class ChartComponent extends React.Component {
 						<GrSettingsOption className='chart-indicator-icon' />
 						<Tooltip tooltipText={'Click to edit indicators'} position={'center'} />
 					</button> */}
+					<AddChartIndicator key={this.props.indicatorConfigurations.length} />
 				</div>
 				<Chart
 					type={'svg'}
@@ -207,4 +212,12 @@ class ChartComponent extends React.Component {
 	}
 }
 
-export default ChartComponent;
+const mapStateToProps = state => ({
+	indicatorConfigurations: getChartIndicatorConfigs(state),
+});
+
+// export default CandleStickChartPanToLoadMore;
+
+export default connect(mapStateToProps)(ChartComponent);
+
+// export default ChartComponent;

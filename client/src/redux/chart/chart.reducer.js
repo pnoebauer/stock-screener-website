@@ -1,4 +1,4 @@
-import {CUSTOM_INDICATORS, CHART_INDICATORS} from '../../assets/constants';
+import {CHART_INDICATORS} from '../../assets/constants';
 
 import {ConfigurationTypes} from './chart.types';
 
@@ -34,9 +34,29 @@ const chartReducer = (state = initialState, action) => {
 			return applySetIndicators(state, action);
 		case ConfigurationTypes.DELETE_CHART_INDICATOR:
 			return applyDeleteIndicator(state, action);
+		case ConfigurationTypes.ADD_CHART_INDICATOR:
+			return applyAddIndicator(state, action);
+
 		default:
 			return state;
 	}
+};
+
+const applyAddIndicator = (state, action) => {
+	const type = action.payload;
+
+	const maxId = state.indicators.reduce(
+		(priorValue, currentValue) => Math.max(priorValue, currentValue.id),
+		1
+	);
+	// console.log({maxId});
+
+	const indicatorObj = {type, id: maxId + 1, ...CHART_INDICATORS[type]};
+
+	return {
+		...state,
+		indicators: [...state.indicators, indicatorObj],
+	};
 };
 
 const applyDeleteIndicator = (state, action) => {
