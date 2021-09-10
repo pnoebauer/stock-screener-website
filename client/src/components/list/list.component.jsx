@@ -2,7 +2,8 @@ import React from 'react';
 
 import './list.styles.css';
 
-const List = ({ displayedItems, onToggle, className, headerName, style }) => {
+const List = ({displayedItems, onToggle, className, headerName, style}) => {
+	// console.log({displayedItems});
 	return (
 		<div className='list-container' style={style}>
 			<span>{headerName}</span>
@@ -13,6 +14,8 @@ const List = ({ displayedItems, onToggle, className, headerName, style }) => {
 						<li
 							key={item.id}
 							id={item.id}
+							// key={`${item.id} ${index}`}
+							// id={`${item.id} ${index}`}
 							onClick={onToggle}
 							className={`${className} ${item.selected ? 'selected' : ''}`}
 						>

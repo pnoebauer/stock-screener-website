@@ -42,6 +42,7 @@ class EditChartIndicatorsButton extends React.Component {
 		indicators.map((indicator, index) => ({
 			name: indicator.toUpperCase(),
 			id: `${indicator.toUpperCase()} ${index}`,
+			key: `${indicator.toUpperCase()} ${index}`,
 			selected: false,
 		}));
 

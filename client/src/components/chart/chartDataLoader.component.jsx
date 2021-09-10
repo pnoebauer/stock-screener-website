@@ -17,7 +17,6 @@ import EditChartIndicatorsButton from '../edit-chart-indicators/edit-chart-indic
 import {SYMBOLS, INTERVALS} from '../../assets/constants';
 
 import './chart.styles.css';
-import editChartIndicatorsComponent from '../edit-chart-indicators/edit-chart-indicators.component';
 
 class ChartComponent extends React.Component {
 	constructor(props) {

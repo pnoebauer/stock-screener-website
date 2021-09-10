@@ -9,3 +9,8 @@ export const doSetIndicators = payload => ({
 	type: ConfigurationTypes.SET_CHART_INDICATORS,
 	payload,
 });
+
+export const doDeleteChartIndicator = payload => ({
+	type: ConfigurationTypes.DELETE_CHART_INDICATOR,
+	payload,
+});

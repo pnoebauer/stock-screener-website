@@ -32,9 +32,20 @@ const chartReducer = (state = initialState, action) => {
 			return applySetChartIndicatorConfiguration(state, action);
 		case ConfigurationTypes.SET_CHART_INDICATORS:
 			return applySetIndicators(state, action);
+		case ConfigurationTypes.DELETE_CHART_INDICATOR:
+			return applyDeleteIndicator(state, action);
 		default:
 			return state;
 	}
+};
+
+const applyDeleteIndicator = (state, action) => {
+	const id = action.payload;
+
+	return {
+		...state,
+		indicators: state.indicators.filter(indicator => indicator.id !== id),
+	};
 };
 
 const applySetChartIndicatorConfiguration = (state, action) => {

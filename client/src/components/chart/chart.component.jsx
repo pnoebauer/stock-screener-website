@@ -45,15 +45,19 @@ import {getChartIndicatorConfigs} from '../../redux/chart/chart.selectors';
 import {MAIN_CHART_INDICATORS} from '../../assets/constants';
 
 function getMaxUndefined(calculators) {
-	return calculators
-		.map(each => {
-			try {
-				return each.undefinedLength();
-			} catch (e) {
-				return 0;
-			}
-		})
-		.reduce((a, b) => Math.max(a, b));
+	try {
+		return calculators
+			.map(each => {
+				try {
+					return each.undefinedLength();
+				} catch (e) {
+					return 0;
+				}
+			})
+			.reduce((a, b) => Math.max(a, b));
+	} catch (e) {
+		return 1;
+	}
 }
 
 const pipe =
@@ -565,68 +569,67 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						<OHLCTooltip origin={[-40, 0]}></OHLCTooltip>
 					</Chart>
 
-					{subIndicators[0]
-						? console.log(subIndicators[0].id(), 'id') || (
-								<Chart
-									id={`${1 + 1}`}
-									height={150}
-									yExtents={subIndicators[0].accessor()}
-									// origin={(w, h) => [0, h - 150]}	//h is 50 less than main height
-									// height={125}
-									// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
-									// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
-									origin={(w, h) => console.log({h}) || [0, 400]}
-									padding={{top: 10, bottom: 10}}
-								>
-									{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
+					{subIndicators[0] ? (
+						// console.log(subIndicators[0].id(), 'id') ||
+						<Chart
+							id={`${1 + 1}`}
+							height={150}
+							yExtents={subIndicators[0].accessor()}
+							// origin={(w, h) => [0, h - 150]}	//h is 50 less than main height
+							// height={125}
+							// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
+							// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
+							origin={(w, h) =>
+								// console.log({h}) ||
+								[0, 400]
+							}
+							padding={{top: 10, bottom: 10}}
+						>
+							{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
 
 					<MouseCoordinateY at='left' orient='left' displayFormat={format('.4s')} /> */}
-									<XAxis axisAt='bottom' orient='bottom' />
-									<YAxis axisAt='right' orient='right' ticks={2} />
+							<XAxis axisAt='bottom' orient='bottom' />
+							<YAxis axisAt='right' orient='right' ticks={2} />
 
-									<MouseCoordinateX
-										at='bottom'
-										orient='bottom'
-										displayFormat={timeFormat('%Y-%m-%d')}
-									/>
-									<MouseCoordinateY
-										at='right'
-										orient='right'
-										displayFormat={format('.2f')}
-									/>
+							<MouseCoordinateX
+								at='bottom'
+								orient='bottom'
+								displayFormat={timeFormat('%Y-%m-%d')}
+							/>
+							<MouseCoordinateY at='right' orient='right' displayFormat={format('.2f')} />
 
-									<LineSeries
-										yAccessor={subIndicators[0].accessor()}
-										stroke={subIndicators[0].stroke()}
-									/>
-									<SingleValueTooltip
-										yAccessor={subIndicators[0].accessor()}
-										yLabel={`ATR (${subIndicators[0].options().windowSize})`}
-										yDisplayFormat={format('.2f')}
-										/* valueStroke={atr14.stroke()} - optional prop */
-										/* labelStroke="#4682B4" - optional prop */
-										origin={[-40, 15]}
-										// onClick={e => {
-										// 	console.log('clicked', e);
-										// }}
-										onClick={e => {
-											// console.log(
-											// 	e,
-											// 	e.target,
-											// 	// e.value,
-											// 	// e.buttons,
-											// 	// e.type,
-											// 	e.nativeEvent,
-											// 	'eSUB----------'
-											// );
+							<LineSeries
+								yAccessor={subIndicators[0].accessor()}
+								stroke={subIndicators[0].stroke()}
+							/>
+							<SingleValueTooltip
+								yAccessor={subIndicators[0].accessor()}
+								yLabel={`ATR (${subIndicators[0].options().windowSize})`}
+								yDisplayFormat={format('.2f')}
+								/* valueStroke={atr14.stroke()} - optional prop */
+								/* labelStroke="#4682B4" - optional prop */
+								origin={[-40, 15]}
+								// onClick={e => {
+								// 	console.log('clicked', e);
+								// }}
+								onClick={e => {
+									// console.log(
+									// 	e,
+									// 	e.target,
+									// 	// e.value,
+									// 	// e.buttons,
+									// 	// e.type,
+									// 	e.nativeEvent,
+									// 	'eSUB----------'
+									// );
 
-											// const {id} = e;
-											const id = subIndicators[0].id();
-											this.show(id);
-										}}
-									/>
+									// const {id} = e;
+									const id = subIndicators[0].id();
+									this.show(id);
+								}}
+							/>
 
-									{/* <BarSeries
+							{/* <BarSeries
 							yAccessor={d => d.volume}
 							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
 						/>
@@ -635,9 +638,8 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							stroke={smaVolume50.stroke()}
 							fill={smaVolume50.fill()}
 						/> */}
-								</Chart>
-						  )
-						: null}
+						</Chart>
+					) : null}
 
 					{/* 
 				<Chart

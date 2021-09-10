@@ -407,9 +407,9 @@ const retrieveSampledChartData = async (
 // 	.catch(e => console.log(e));
 
 // retrieveSampledData('AAPL', 20, ['closePrice'], 'day');
-retrieveSampledData('AAPL', 20, ['closePrice'], 'day')
-	.then(data => console.log(data))
-	.catch(e => console.log(e));
+// retrieveSampledData('AAPL', 20, ['closePrice'], 'day')
+// 	.then(data => console.log(data))
+// 	.catch(e => console.log(e));
 
 // retrieveSampledChartData('AAPL', 20, 'day', new Date('2020-02-01'))
 // 	.then(data => console.log(data))

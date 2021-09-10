@@ -2,7 +2,10 @@ import React from 'react';
 
 import {connect} from 'react-redux';
 
-import {doSetChartIndicatorConfiguration} from '../../redux/chart/chart.actions';
+import {
+	doSetChartIndicatorConfiguration,
+	doDeleteChartIndicator,
+} from '../../redux/chart/chart.actions';
 
 import {getChartIndicatorConfiguration} from '../../redux/chart/chart.selectors';
 
@@ -16,6 +19,12 @@ import {
 
 import './chart-indicator-config.styles.css';
 
+function camelCaseToTitleCase(text) {
+	const result = text.replace(/([A-Z])/g, ' $1');
+	const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+	return finalResult;
+}
+
 class ChartIndicatorConfigurationForm extends React.Component {
 	constructor(props) {
 		super(props);
@@ -25,7 +34,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 		// let {type, sourcePath, windowSize, fast, slow, signal} = formConfiguration;
 		let {id, ...config} = formConfiguration;
-		console.log({config, indicatorId}, 'state');
+		// console.log({config, indicatorId}, 'state');
 
 		// this.state = {type, sourcePath, windowSize, fast, slow, signal, errormessage: ''};
 		this.state = {...config, errormessage: ''};
@@ -55,6 +64,12 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 		this.setState({errormessage: err});
 		this.setState({[name]: value});
+	};
+
+	handleDelete = event => {
+		const {indicatorId, deleteIndicator} = this.props;
+		// console.log(indicatorId);
+		deleteIndicator(indicatorId);
 	};
 
 	handleSubmit = event => {
@@ -119,7 +134,7 @@ class ChartIndicatorConfigurationForm extends React.Component {
 
 				{CHART_INDICATORS[this.state.type].sourcePath ? (
 					<label>
-						<div className='config-parameter-header'>Price parameter</div>
+						<div className='config-parameter-header'>Price Parameter</div>
 
 						<div className='config-parameter'>
 							<select
@@ -178,7 +193,12 @@ class ChartIndicatorConfigurationForm extends React.Component {
 					else {
 						return (
 							<div key={configType} className='config-parameter'>
-								<div className='config-parameter-header'>{configType}</div>
+								{/* <div className='config-parameter-header'>{configType}</div> */}
+								<div className='config-parameter-header'>
+									{camelCaseToTitleCase(configType)}
+								</div>
+
+								{/* <div className='config-parameter-header'>Lookback period</div> */}
 								<input
 									type='text'
 									name={configType}
@@ -196,7 +216,13 @@ class ChartIndicatorConfigurationForm extends React.Component {
 					}
 				})}
 
-				<p className='indicator-configuration-submit-container'>
+				<p className='indicator-configuration-button-container'>
+					<input
+						type='submit'
+						value='Delete Indicator'
+						className='indicator-configuration-delete-button'
+						onClick={this.handleDelete}
+					/>
 					<input
 						type='submit'
 						value='Apply'
@@ -214,10 +240,9 @@ const mapStateToProps = (state, {indicatorId}) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-	updateIndicatorConfiguration: indicatorConfig => {
-		// console.log({indicatorConfig});
-		return dispatch(doSetChartIndicatorConfiguration(indicatorConfig));
-	},
+	updateIndicatorConfiguration: indicatorConfig =>
+		dispatch(doSetChartIndicatorConfiguration(indicatorConfig)),
+	deleteIndicator: id => dispatch(doDeleteChartIndicator(id)),
 });
 
 export default connect(
