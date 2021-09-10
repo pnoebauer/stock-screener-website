@@ -574,53 +574,45 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 					})} */}
 
-					{/* {subIndicators[0] && subIndicators[0].type() === 'ATR'
-						? console.log(subIndicators[0].id(), subIndicators[0].type(), 'id') || ( */}
+					{subIndicators[0] && subIndicators[0].type() === 'ATR'
+						? console.log(subIndicators[0].id(), subIndicators[0].type(), 'id') || (
+								<Chart
+									id={`${1 + 1}`}
+									height={150}
+									yExtents={subIndicators[0].accessor()}
+									// origin={(w, h) => [0, h - 150]}	//h is 50 less than main height
+									// height={125}
+									// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
+									// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
+									origin={(w, h) =>
+										// console.log({h}) ||
+										[0, 410]
+									}
+									padding={{top: 10, bottom: 0}}
+								>
+									{/* <YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
 
-					{subIndicators[0] ? (
-						<Chart
-							id={`${1 + 1}`}
-							height={150}
-							yExtents={subIndicators[0].accessor()}
-							// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
-							// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
-							origin={(w, h) =>
-								// console.log({h}) ||
-								[0, 410]
-							}
-							padding={{top: 10, bottom: 0}}
-						>
-							<XAxis
-								axisAt='bottom'
-								orient='bottom'
-								opacity={0.3}
-								tickStrokeOpacity={0.3}
-								fontSize={10}
-							/>
-							<YAxis axisAt='right' orient='right' ticks={10} stroke='#000000' />
-							<MouseCoordinateX
-								at='bottom'
-								orient='bottom'
-								displayFormat={timeFormat('%Y-%m-%d')}
-							/>
-							<MouseCoordinateY at='right' orient='right' displayFormat={format('.2f')} />
+					<MouseCoordinateY at='left' orient='left' displayFormat={format('.4s')} /> */}
+									<XAxis
+										axisAt='bottom'
+										orient='bottom'
+										opacity={0.3}
+										tickStrokeOpacity={0.3}
+										fontSize={10}
+									/>
+									<YAxis axisAt='right' orient='right' ticks={10} stroke='#000000' />
 
-							{subIndicators[0].type() === 'MACD' && (
-								<>
-									<MACDSeries
-										yAccessor={subIndicators[0].accessor()}
-										{...macdAppearance}
+									<MouseCoordinateX
+										at='bottom'
+										orient='bottom'
+										displayFormat={timeFormat('%Y-%m-%d')}
 									/>
-									<MACDTooltip
-										origin={[-38, 30]}
-										yAccessor={subIndicators[0].accessor()}
-										options={subIndicators[0].options()}
-										appearance={macdAppearance}
+									<MouseCoordinateY
+										at='right'
+										orient='right'
+										displayFormat={format('.2f')}
 									/>
-								</>
-							)}
-							{subIndicators[0].type() === 'ATR' && (
-								<>
+
 									<LineSeries
 										yAccessor={subIndicators[0].accessor()}
 										stroke={subIndicators[0].stroke()}
@@ -632,19 +624,27 @@ class CandleStickChartPanToLoadMore extends React.Component {
 										/* valueStroke={atr14.stroke()} - optional prop */
 										/* labelStroke="#4682B4" - optional prop */
 										origin={[-20, 30]}
+										// onClick={e => {
+										// 	console.log('clicked', e);
+										// }}
 										onClick={e => {
 											const id = subIndicators[0].id();
 											this.show(id);
 										}}
 									/>
-								</>
-							)}
-							{/* 
-										<BarSeries yAccessor={d => d.volume} fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')} />
-										<AreaSeries yAccessor={smaVolume50.accessor()} stroke={smaVolume50.stroke()} fill={smaVolume50.fill()} /> 
-									*/}
-						</Chart>
-					) : null}
+
+									{/* <BarSeries
+							yAccessor={d => d.volume}
+							fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
+						/>
+						<AreaSeries
+							yAccessor={smaVolume50.accessor()}
+							stroke={smaVolume50.stroke()}
+							fill={smaVolume50.fill()}
+						/> */}
+								</Chart>
+						  )
+						: null}
 
 					{subIndicators[1] && subIndicators[1].type() === 'MACD'
 						? console.log(
@@ -718,6 +718,31 @@ class CandleStickChartPanToLoadMore extends React.Component {
 					/>
 				</Chart>
 				
+				<Chart
+					id={3}
+					height={150}
+					yExtents={macdCalculator.accessor()}
+					origin={(w, h) => [0, h - 150]}
+					padding={{top: 10, bottom: 10}}
+				>
+					<XAxis axisAt='bottom' orient='bottom' />
+					<YAxis axisAt='right' orient='right' ticks={2} />
+
+					<MouseCoordinateX
+						at='bottom'
+						orient='bottom'
+						displayFormat={timeFormat('%Y-%m-%d')}
+					/>
+					<MouseCoordinateY at='right' orient='right' displayFormat={format('.2f')} />
+
+					<MACDSeries yAccessor={d => d.macd} {...macdAppearance} />
+					<MACDTooltip
+						origin={[-38, 15]}
+						yAccessor={d => d.macd}
+						options={macdCalculator.options()}
+						appearance={macdAppearance}
+					/>
+				</Chart>
 				*/}
 					<CrossHairCursor />
 				</ChartCanvas>
