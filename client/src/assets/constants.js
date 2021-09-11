@@ -747,6 +747,10 @@ export const CHART_INDICATORS = {
 		sourcePath: 'close',
 		windowSize: 20,
 	},
+	mom: {
+		sourcePath: 'close',
+		windowSize: 20,
+	},
 	ema: {
 		sourcePath: 'close',
 		windowSize: 20,

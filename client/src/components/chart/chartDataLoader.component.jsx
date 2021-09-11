@@ -2,17 +2,8 @@ import React from 'react';
 
 import {connect} from 'react-redux';
 
-import {getData} from './utils';
-
-import {GrSettingsOption} from 'react-icons/gr';
-
 import Chart from './chart.component';
 
-// import Modal from '../portal-modal/modal.component';
-
-// import IndicatorSelector from '../indicator-selector/indicator-selector.component';
-
-import Tooltip from '../tooltip/tooltip.component';
 import EditChartIndicatorsButton from '../edit-chart-indicators/edit-chart-indicators.component';
 import AddChartIndicator from '../add-chart-indicator/add-chart-indicator.component';
 
@@ -26,20 +17,35 @@ class ChartComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		// this.selectionDisplay = React.createRef();
+
+		const activeSymbol = sessionStorage.getItem('shownChartSymbol') || 'GOOGL';
+		const activeChartPeriod = sessionStorage.getItem('activeChartPeriod') || 'day';
+
 		this.state = {
 			data: [],
-			symbol: 'GOOGL',
-			samplePeriod: 'day',
+			symbol: activeSymbol,
+			samplePeriod: activeChartPeriod,
 			shownValue: '',
 			fetchedEndDate: undefined,
+			width: window.innerWidth,
 		};
 	}
+
+	setWidth = () => {
+		this.setState({width: window.innerWidth});
+	};
 	async componentDidMount() {
+		// console.log('mounting');
 		// getData().then(data => {
 		// 	console.log({data});
 		// 	this.setState({data});
 		// });
 		await this.loadData(new Date());
+
+		window.visualViewport.addEventListener('resize', this.setWidth);
+	}
+	componentWillUnmount() {
+		window.visualViewport.removeEventListener('resize', this.setWidth);
 	}
 
 	async componentDidUpdate(prevProps, prevState) {
@@ -49,18 +55,21 @@ class ChartComponent extends React.Component {
 		) {
 			this.setState({data: []});
 
+			sessionStorage.setItem('shownChartSymbol', this.state.symbol);
+			sessionStorage.setItem('activeChartPeriod', this.state.samplePeriod);
+
 			await this.loadData(new Date());
 		}
 	}
 
 	loadData = async endDate => {
-		console.log('loading', {endDate, data: this.state.data});
+		// console.log('loading', {endDate, data: this.state.data});
 		const {symbol, samplePeriod, fetchedEndDate} = this.state;
 
-		console.log('--------------endDate === fetchedEndDate', endDate, fetchedEndDate);
+		// console.log('--------------endDate === fetchedEndDate', endDate, fetchedEndDate);
 
 		if (endDate === fetchedEndDate) {
-			console.log('already loaded', endDate);
+			// console.log('already loaded', endDate);
 			return;
 		}
 
@@ -84,7 +93,7 @@ class ChartComponent extends React.Component {
 
 			let newData = await response.json();
 
-			console.log({newData});
+			// console.log({newData});
 
 			this.setState(
 				{
@@ -92,9 +101,9 @@ class ChartComponent extends React.Component {
 						...newData.map(candle => ({...candle, date: new Date(candle.date)})),
 						...this.state.data,
 					],
-				},
-				() =>
-					console.log({data: this.state.data, fetchedEndDate: this.state.fetchedEndDate})
+				}
+				// () =>
+				// console.log({data: this.state.data, fetchedEndDate: this.state.fetchedEndDate})
 			);
 		} catch (error) {
 			console.log({error});
@@ -105,12 +114,6 @@ class ChartComponent extends React.Component {
 		// console.log(e.target.value, 'change');
 		this.setState({shownValue: e.target.value});
 	};
-
-	// onClick = e => {
-	// 	// console.log(e, 'clicked');
-	// 	// console.log(e.target, 'clicked');
-	// 	console.log(e.target.name, e.target.value, e.target.key, 'clicked');
-	// };
 
 	onKeyUp = e => {
 		// console.log(e.nativeEvent, this.state.shownValue, 'nativeEvent');
@@ -188,22 +191,18 @@ class ChartComponent extends React.Component {
 						))}
 					</select>
 					<EditChartIndicatorsButton />
-					{/* <button
-						// onClick={this.show}
-						className='chart-indicator-button tooltip'
-						// style={this.props.style}
-					>
-						<GrSettingsOption className='chart-indicator-icon' />
-						<Tooltip tooltipText={'Click to edit indicators'} position={'center'} />
-					</button> */}
+
+					{/* <span>{this.state.width}</span> */}
+
 					<AddChartIndicator key={this.props.indicatorConfigurations.length} />
 				</div>
 				<Chart
 					type={'svg'}
 					data={this.state.data}
 					stockSymbol={this.state.symbol}
-					width={1200}
-					height={600}
+					width={this.state.width * 1}
+					mainChartHeight={300}
+					subChartHeight={100}
 					loadData={this.loadData}
 					key={this.state.symbol}
 				/>
@@ -216,8 +215,4 @@ const mapStateToProps = state => ({
 	indicatorConfigurations: getChartIndicatorConfigs(state),
 });
 
-// export default CandleStickChartPanToLoadMore;
-
 export default connect(mapStateToProps)(ChartComponent);
-
-// export default ChartComponent;

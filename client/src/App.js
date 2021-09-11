@@ -21,7 +21,7 @@ class App extends React.Component {
 
 		let universe = await response.json();
 
-		console.log(universe);
+		// console.log(universe);
 
 		SYMBOLS.splice(0);
 

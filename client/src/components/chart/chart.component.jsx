@@ -34,7 +34,7 @@ import {
 	SingleValueTooltip,
 	ToolTipText,
 } from 'react-stockcharts/lib/tooltip';
-import {ema, sma, wma, tma, macd, atr} from 'react-stockcharts/lib/indicator';
+import {ema, sma, wma, tma, macd, atr, mom} from 'react-stockcharts/lib/indicator';
 import {fitWidth} from 'react-stockcharts/lib/helper';
 
 import Modal from '../portal-modal/modal.component';
@@ -43,6 +43,10 @@ import ChartIndicatorConfigurationForm from '../chart-indicator-config/chart-ind
 import {getChartIndicatorConfigs} from '../../redux/chart/chart.selectors';
 
 import {MAIN_CHART_INDICATORS} from '../../assets/constants';
+
+const canvasMargin = {left: 70, right: 70, top: 20, bottom: 30};
+const mainChartPadding = {top: 20, bottom: 20};
+const subChartPadding = {top: 10, bottom: 20};
 
 function getMaxUndefined(calculators) {
 	try {
@@ -84,14 +88,13 @@ const indicatorFunctions = {
 	tma,
 	macd,
 	atr,
+	mom,
 };
 
 class CandleStickChartPanToLoadMore extends React.Component {
 	constructor(props) {
 		super(props);
 		const {data: inputData} = props;
-
-		// console.log('--------CONSTRUCTING');
 
 		// console.log({inputData: inputData.length});
 		// console.log({inputData: inputData});
@@ -442,15 +445,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		const {data, indicators, xScale, xAccessor, displayXAccessor} = this.state;
 
-		const {data: inputData, indicatorConfigurations} = this.props;
-
-		// const mainIndicators = indicators.flatMap(indicator => {
-		// 	console.log(indicator.type(), 'type');
-		// 	if (MAIN_CHART_INDICATORS.includes(indicator.type().toLowerCase())) {
-		// 		// console.log(indicator.type(), 'main______');
-		// 		return [indicator];
-		// 	} else return [];
-		// });
+		const {
+			data: inputData,
+			indicatorConfigurations,
+			mainChartHeight,
+			subChartHeight,
+		} = this.props;
 
 		const mainIndicators = indicators.flatMap(indicator =>
 			MAIN_CHART_INDICATORS.includes(indicator.type().toLowerCase()) ? [indicator] : []
@@ -461,13 +461,21 @@ class CandleStickChartPanToLoadMore extends React.Component {
 
 		// console.log({data, displayXAccessor, xAccessor, xScale});
 
+		const canvasHeight =
+			canvasMargin.top +
+			canvasMargin.bottom +
+			mainChartPadding.top +
+			mainChartPadding.bottom +
+			mainChartHeight +
+			subIndicators.length * (subChartHeight + subChartPadding.top);
+
 		return (
 			<>
 				<ChartCanvas
 					ratio={ratio}
 					width={width}
-					height={800}
-					margin={{left: 70, right: 70, top: 20, bottom: 30}}
+					height={canvasHeight}
+					margin={{...canvasMargin}}
 					type={type}
 					seriesName={this.props.stockSymbol}
 					data={data}
@@ -478,12 +486,12 @@ class CandleStickChartPanToLoadMore extends React.Component {
 				>
 					<Chart
 						id={1}
-						height={400}
+						height={mainChartHeight}
 						yExtents={[
 							d => [d.high, d.low],
 							[...mainIndicators.map(indicator => indicator.accessor())],
 						]}
-						padding={{top: 10, bottom: 20}}
+						padding={{...mainChartPadding}}
 					>
 						<XAxis axisAt='bottom' orient='bottom' />
 						<YAxis axisAt='left' orient='left' ticks={5} stroke='#000000' />
@@ -533,30 +541,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 									id: indicator.id(),
 								};
 							})}
-							// width={185}
-							// 						textFill: _propTypes2.default.string,
-							// labelFill: _propTypes2.default.string,
-							// fontFamily: _propTypes2.default.string,
-							// fontSize: _propTypes2.default.number,
-							// displayFormat={ (0, _d3Format.format)(".2f")}
 						/>
-						{/* <SingleValueTooltip
-							yAccessor={mainIndicators[0].accessor()}
-							yLabel={`${mainIndicators[0].type()} (${
-								mainIndicators[0].options().windowSize
-							})`}
-							valueStroke={mainIndicators[0].stroke()}
-							labelStroke='#b45c46'
-							valueFill={mainIndicators[0].stroke()}
-							labelFill='#b45c46'
-							yDisplayFormat={format('.2f')}
-							origin={[140, 90]}
-							onClick={e => {
-								console.log(e, e.buttons, e.type, e.nativeEvent, 'e----------');
-								const {id} = e;
-								this.show(id);
-							}}
-						/> */}
 
 						<EdgeIndicator
 							itemType='last'
@@ -569,104 +554,33 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						<OHLCTooltip origin={[5, -10]}></OHLCTooltip>
 					</Chart>
 
-					{/* {!!subIndicators.length && subIndicators.map((indicator,index) => {
-
-
-					})} */}
-
-					{/* {subIndicators[0] && subIndicators[0].type() === 'ATR'
-						? console.log(subIndicators[0].id(), subIndicators[0].type(), 'id') || ( */}
-
-					{subIndicators[0] ? (
-						<Chart
-							id={`${1 + 1}`}
-							height={150}
-							yExtents={subIndicators[0].accessor()}
-							// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
-							// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
-							origin={(w, h) =>
-								// console.log({h}) ||
-								[0, 410]
-							}
-							padding={{top: 10, bottom: 0}}
-						>
-							<XAxis
-								axisAt='bottom'
-								orient='bottom'
-								opacity={0.3}
-								tickStrokeOpacity={0.3}
-								fontSize={10}
-							/>
-							<YAxis axisAt='right' orient='right' ticks={10} stroke='#000000' />
-							<MouseCoordinateX
-								at='bottom'
-								orient='bottom'
-								displayFormat={timeFormat('%Y-%m-%d')}
-							/>
-							<MouseCoordinateY at='right' orient='right' displayFormat={format('.2f')} />
-
-							{subIndicators[0].type() === 'MACD' && (
-								<>
-									<MACDSeries
-										yAccessor={subIndicators[0].accessor()}
-										{...macdAppearance}
-									/>
-									<MACDTooltip
-										origin={[-38, 30]}
-										yAccessor={subIndicators[0].accessor()}
-										options={subIndicators[0].options()}
-										appearance={macdAppearance}
-									/>
-								</>
-							)}
-							{subIndicators[0].type() === 'ATR' && (
-								<>
-									<LineSeries
-										yAccessor={subIndicators[0].accessor()}
-										stroke={subIndicators[0].stroke()}
-									/>
-									<SingleValueTooltip
-										yAccessor={subIndicators[0].accessor()}
-										yLabel={`ATR (${subIndicators[0].options().windowSize})`}
-										yDisplayFormat={format('.2f')}
-										/* valueStroke={atr14.stroke()} - optional prop */
-										/* labelStroke="#4682B4" - optional prop */
-										origin={[-20, 30]}
-										onClick={e => {
-											const id = subIndicators[0].id();
-											this.show(id);
-										}}
-									/>
-								</>
-							)}
-							{/* 
-										<BarSeries yAccessor={d => d.volume} fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')} />
-										<AreaSeries yAccessor={smaVolume50.accessor()} stroke={smaVolume50.stroke()} fill={smaVolume50.fill()} /> 
-									*/}
-						</Chart>
-					) : null}
-
-					{subIndicators[1] && subIndicators[1].type() === 'MACD'
-						? console.log(
-								subIndicators[1].id(),
-								subIndicators[1].type(),
-								subIndicators[1].accessor(),
-								'id'
-						  ) || (
+					{!!subIndicators.length &&
+						subIndicators.map((subIndicator, index) => {
+							return (
 								<Chart
-									id={`${1 + 2}`}
-									height={150}
-									yExtents={subIndicators[1].accessor()}
-									// origin={(w, h) => [0, h - 150]}
-									origin={(w, h) =>
+									id={`${2 + index}`}
+									height={subChartHeight}
+									yExtents={subIndicator.accessor()}
+									// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
+									// translates the chart (overlappes with main chart with origin at zero -> move by main chart height to be exactly below)
+									origin={(w, h) => {
+										const top =
+											mainChartHeight +
+											subChartPadding.top +
+											index * (subChartHeight + subChartPadding.top);
 										// console.log({h}) ||
-										[0, 850]
-									}
-									padding={{top: 10, bottom: 10}}
+										return [0, top];
+									}}
+									padding={{...subChartPadding}}
 								>
-									<XAxis axisAt='bottom' orient='bottom' />
-									<YAxis axisAt='right' orient='right' ticks={2} innerTickSize={3} />
-
+									<XAxis
+										axisAt='bottom'
+										orient='bottom'
+										opacity={0.3}
+										tickStrokeOpacity={0.3}
+										fontSize={10}
+									/>
+									<YAxis axisAt='right' orient='right' ticks={10} stroke='#000000' />
 									<MouseCoordinateX
 										at='bottom'
 										orient='bottom'
@@ -678,19 +592,53 @@ class CandleStickChartPanToLoadMore extends React.Component {
 										displayFormat={format('.2f')}
 									/>
 
-									<MACDSeries
-										yAccessor={subIndicators[1].accessor()}
-										{...macdAppearance}
-									/>
-									<MACDTooltip
-										origin={[-38, 30]}
-										yAccessor={subIndicators[1].accessor()}
-										options={subIndicators[1].options()}
-										appearance={macdAppearance}
-									/>
+									{subIndicator.type() === 'MACD' && (
+										<>
+											<MACDSeries
+												yAccessor={subIndicator.accessor()}
+												{...macdAppearance}
+											/>
+											<MACDTooltip
+												origin={[-38, 30]}
+												yAccessor={subIndicator.accessor()}
+												options={subIndicator.options()}
+												appearance={macdAppearance}
+												onClick={e => {
+													const id = subIndicator.id();
+													this.show(id);
+												}}
+											/>
+										</>
+									)}
+									{(subIndicator.type() === 'ATR' || subIndicator.type() === 'MOM') && (
+										<>
+											<LineSeries
+												yAccessor={subIndicator.accessor()}
+												stroke={subIndicator.stroke()}
+											/>
+											<SingleValueTooltip
+												yAccessor={subIndicator.accessor()}
+												yLabel={`${subIndicator.type()} (${
+													subIndicator.options().windowSize
+												})`}
+												yDisplayFormat={format('.2f')}
+												/* valueStroke={atr14.stroke()} - optional prop */
+												/* labelStroke="#4682B4" - optional prop */
+												origin={[-20, 30]}
+												onClick={e => {
+													const id = subIndicator.id();
+													this.show(id);
+												}}
+											/>
+										</>
+									)}
+									{/* 
+										<BarSeries yAccessor={d => d.volume} fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')} />
+										<AreaSeries yAccessor={smaVolume50.accessor()} stroke={smaVolume50.stroke()} fill={smaVolume50.fill()} /> 
+									*/}
 								</Chart>
-						  )
-						: null}
+							);
+						})}
 
 					{/* 
 				<Chart
