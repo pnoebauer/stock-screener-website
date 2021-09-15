@@ -192,8 +192,6 @@ class ChartComponent extends React.Component {
 					</select>
 					<EditChartIndicatorsButton />
 
-					{/* <span>{this.state.width}</span> */}
-
 					<AddChartIndicator key={this.props.indicatorConfigurations.length} />
 				</div>
 				<Chart
