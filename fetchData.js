@@ -64,12 +64,14 @@ const fetchHistoricalData = async (
 	// /v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true
 	// const startDate = new Date(1990, 0, 1, 0, 0);
 	const startDate = new Date(2000, 0, 1, 0, 0);
-	const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
+	// const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
+	const startDateUnix = startDate.getTime(); //getTime already returns in UTC
 
 	// const endDate = addDays(startDate, 10);
 	// const endDate = new Date(2021, 5, 11, 0, 0); //default: prior trading day
 	const endDate = new Date(); //default: prior trading day
-	const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
+	// const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
+	const endDateUnix = endDate.getTime(); //getTime already returns in UTC
 
 	// console.log(startDateUnix, endDateUnix);
 
