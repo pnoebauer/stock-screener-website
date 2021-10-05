@@ -7,6 +7,8 @@ import Chart from './chart.component';
 import EditChartIndicatorsButton from '../edit-chart-indicators/edit-chart-indicators.component';
 import AddChartIndicator from '../add-chart-indicator/add-chart-indicator.component';
 
+import SpinButton from '../spin-button/spin-button.component';
+
 import {getChartIndicatorConfigs} from '../../redux/chart/chart.selectors';
 
 import {SYMBOLS, INTERVALS} from '../../assets/constants';
@@ -28,12 +30,20 @@ class ChartComponent extends React.Component {
 			shownValue: '',
 			fetchedEndDate: undefined,
 			width: window.innerWidth,
+			mainChartHeight: 300,
 		};
 	}
 
 	setWidth = () => {
 		this.setState({width: window.innerWidth});
 	};
+
+	setHeight = e => {
+		this.setState({mainChartHeight: Number(e.target.value)}, () =>
+			console.log(this.state.mainChartHeight)
+		);
+	};
+
 	async componentDidMount() {
 		// console.log('mounting');
 		// getData().then(data => {
@@ -44,6 +54,7 @@ class ChartComponent extends React.Component {
 
 		window.visualViewport.addEventListener('resize', this.setWidth);
 	}
+
 	componentWillUnmount() {
 		window.visualViewport.removeEventListener('resize', this.setWidth);
 	}
@@ -192,6 +203,8 @@ class ChartComponent extends React.Component {
 					</select>
 					<EditChartIndicatorsButton />
 
+					<SpinButton defaultValue={300} handleChange={this.setHeight} />
+
 					<AddChartIndicator key={this.props.indicatorConfigurations.length} />
 				</div>
 				<Chart
@@ -199,7 +212,7 @@ class ChartComponent extends React.Component {
 					data={this.state.data}
 					stockSymbol={this.state.symbol}
 					width={this.state.width * 1}
-					mainChartHeight={300}
+					mainChartHeight={this.state.mainChartHeight}
 					subChartHeight={100}
 					loadData={this.loadData}
 					key={this.state.symbol}

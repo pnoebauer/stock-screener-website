@@ -559,6 +559,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 							return (
 								<Chart
 									id={`${2 + index}`}
+									key={`${2 + index}`}
 									height={subChartHeight}
 									yExtents={subIndicator.accessor()}
 									// origin={(w, h) => [0, h - 125]} the higher the number the further down the chart
@@ -568,7 +569,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 											mainChartHeight +
 											subChartPadding.top +
 											index * (subChartHeight + subChartPadding.top);
-										// console.log({h}) ||
+										// console.log({h, mainChartHeight});
 										return [0, top];
 									}}
 									padding={{...subChartPadding}}
@@ -632,41 +633,10 @@ class CandleStickChartPanToLoadMore extends React.Component {
 											/>
 										</>
 									)}
-									{/* 
-										<BarSeries yAccessor={d => d.volume} fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')} />
-										<AreaSeries yAccessor={smaVolume50.accessor()} stroke={smaVolume50.stroke()} fill={smaVolume50.fill()} /> 
-									*/}
 								</Chart>
 							);
 						})}
 
-					{/* 
-				<Chart
-					id={2}
-					height={150}
-					yExtents={[d => d.volume, smaVolume50.accessor()]}
-					yExtents={[
-							d => [d.high, d.low],
-							[...indicators.map(indicator => indicator.accessor())],
-						]}
-					origin={(w, h) => [0, h - 300]}
-				>
-					<YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')} />
-
-					<MouseCoordinateY at='left' orient='left' displayFormat={format('.4s')} />
-
-					<BarSeries
-						yAccessor={d => d.volume}
-						fill={d => (d.close > d.open ? '#6BA583' : '#FF0000')}
-					/>
-					<AreaSeries
-						yAccessor={smaVolume50.accessor()}
-						stroke={smaVolume50.stroke()}
-						fill={smaVolume50.fill()}
-					/>
-				</Chart>
-				
-				*/}
 					<CrossHairCursor />
 				</ChartCanvas>
 
