@@ -213,11 +213,13 @@ class ChartComponent extends React.Component {
 							defaultValue={300}
 							handleChange={this.setHeight}
 							name={'mainChartHeight'}
+							chartName={'main'}
 						/>
 						<SpinButton
 							defaultValue={100}
 							handleChange={this.setHeight}
 							name={'subChartHeight'}
+							chartName={'sub'}
 						/>
 					</div>
 
