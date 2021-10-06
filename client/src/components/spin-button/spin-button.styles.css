@@ -12,23 +12,61 @@ input[type='number'] {
 	-moz-appearance: textfield;
 }
 
+.quantity {
+	/* height: 40px; */
+}
+
 .quantity input {
-	width: 90px;
+	width: 70px;
 	height: 42px;
+	/* height: 70%; */
 	font-size: 30px;
 	/* line-height: 1.65; */
 	float: left;
 	display: block;
 	padding: 0;
 	margin: 0;
-	margin-left: 10px;
+	margin-left: 50px;
 	padding-left: 10px;
 	border: none;
 	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
 	/* font-size: 2rem; */
 	border-radius: 4px;
+	/* display: block; */
+}
+
+.quantity label {
+	/* display: block; */
+	/* height: 30%; */
+	/* font-size: 30%; */
 }
 
 .quantity input:focus {
+	outline: 0;
+}
+
+.spinner {
+	width: 70px;
+	/* height: 42px; */
+	/* height: 100%; */
+	height: 6 0%;
+	font-size: 120%;
+	/* line-height: 1.65; */
+	float: left;
+	display: block;
+	padding: 0;
+	margin: 0;
+	/* margin-top: 3px; */
+	/* margin-left: 50px; */
+	padding-left: 10px;
+	border: none;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+	/* font-size: 2rem; */
+	border-radius: 4px;
+	/* display: block; */
+	box-sizing: border-box;
+}
+
+.spinner:focus {
 	outline: 0;
 }

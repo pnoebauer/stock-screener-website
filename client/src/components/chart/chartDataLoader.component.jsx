@@ -31,6 +31,7 @@ class ChartComponent extends React.Component {
 			fetchedEndDate: undefined,
 			width: window.innerWidth,
 			mainChartHeight: 300,
+			subChartHeight: 100,
 		};
 	}
 
@@ -39,9 +40,10 @@ class ChartComponent extends React.Component {
 	};
 
 	setHeight = e => {
-		this.setState({mainChartHeight: Number(e.target.value)}, () =>
-			console.log(this.state.mainChartHeight)
-		);
+		// this.setState({[e.target.name]: Number(e.target.value)}, () =>
+		// 	console.log(this.state[e.target.name])
+		// );
+		this.setState({[e.target.name]: Number(e.target.value)});
 	};
 
 	async componentDidMount() {
@@ -171,49 +173,64 @@ class ChartComponent extends React.Component {
 		return (
 			<>
 				<div className='chart-settings'>
-					<input
-						list='symbols'
-						name='stock-symbol'
-						id='stock-symbol'
-						onChange={this.onChange}
-						placeholder={this.state.symbol}
-						onKeyUp={this.onKeyUp}
-						onBlur={this.handleBlur}
-					/>
-					<datalist id='symbols'>
-						{SYMBOLS.map(stockName => (
-							<option key={stockName} value={stockName}>
-								{stockName}
-							</option>
-						))}
-					</datalist>
+					<div className='symbol-barperiod-select'>
+						<input
+							list='symbols'
+							name='stock-symbol'
+							id='stock-symbol'
+							onChange={this.onChange}
+							placeholder={this.state.symbol}
+							onKeyUp={this.onKeyUp}
+							onBlur={this.handleBlur}
+						/>
+						<datalist id='symbols'>
+							{SYMBOLS.map(stockName => (
+								<option key={stockName} value={stockName}>
+									{stockName}
+								</option>
+							))}
+						</datalist>
 
-					<select
-						value={this.state.samplePeriod}
-						onChange={this.selectionChange}
-						name='selector'
-						className='interval-type-selector'
-					>
-						{INTERVALS.map((value, index) => (
-							// console.log( value, 'v') ||
-							<option value={value} key={index}>
-								{value}
-							</option>
-						))}
-					</select>
-					<EditChartIndicatorsButton />
+						<select
+							value={this.state.samplePeriod}
+							onChange={this.selectionChange}
+							name='selector'
+							className='interval-type-selector'
+						>
+							{INTERVALS.map((value, index) => (
+								// console.log( value, 'v') ||
+								<option value={value} key={index}>
+									{value}
+								</option>
+							))}
+						</select>
+						<EditChartIndicatorsButton />
+					</div>
 
-					<SpinButton defaultValue={300} handleChange={this.setHeight} />
+					<div className='chart-sizing-container'>
+						<label className='chart-sizing-label'>Chart Heights</label>
+						<SpinButton
+							defaultValue={300}
+							handleChange={this.setHeight}
+							name={'mainChartHeight'}
+						/>
+						<SpinButton
+							defaultValue={100}
+							handleChange={this.setHeight}
+							name={'subChartHeight'}
+						/>
+					</div>
 
 					<AddChartIndicator key={this.props.indicatorConfigurations.length} />
 				</div>
+
 				<Chart
 					type={'svg'}
 					data={this.state.data}
 					stockSymbol={this.state.symbol}
 					width={this.state.width * 1}
 					mainChartHeight={this.state.mainChartHeight}
-					subChartHeight={100}
+					subChartHeight={this.state.subChartHeight}
 					loadData={this.loadData}
 					key={this.state.symbol}
 				/>

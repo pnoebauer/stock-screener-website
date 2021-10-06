@@ -88,7 +88,7 @@ class AddChartIndicator extends React.Component {
 
 	render() {
 		return (
-			<>
+			<div className='add-chart-indicators-container'>
 				<input
 					list='indicators'
 					name='added-indicator'
@@ -115,7 +115,7 @@ class AddChartIndicator extends React.Component {
 					+
 					<Tooltip tooltipText={'Click to add indicator'} position={'left'} />
 				</button>
-			</>
+			</div>
 		);
 	}
 }

@@ -4,12 +4,31 @@ svg.react-stockchart {
 
 .chart-settings {
 	display: flex;
-	justify-content: flex-start;
+	/* justify-content: flex-start; */
+	justify-content: space-between;
 	position: relative;
 	flex-wrap: nowrap;
 	flex-shrink: 0;
-	height: 40px;
+	height: 60px;
 	padding: 10px;
+	width: 98vw;
+	box-sizing: border-box;
+}
+
+.symbol-barperiod-select {
+	display: flex;
+}
+
+.chart-sizing-container {
+	display: block;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.chart-sizing-label {
+	display: block;
+	text-align: center;
+	font-size: 80%;
 }
 
 button.chart-indicator-button {
@@ -17,7 +36,7 @@ button.chart-indicator-button {
 	border: 1px solid black;
 	border-radius: 15%;
 	/* width: 30px; */
-	width: 2%;
+	width: 8%;
 }
 
 .chart-indicator-icon {
@@ -37,4 +56,16 @@ button.chart-indicator-button {
 
 .chart-indicator-icon:hover {
 	transform: scale(1.1);
+}
+
+#stock-symbol,
+.interval-type-selector {
+	text-align: center;
+	box-sizing: border-box;
+	height: 100%;
+}
+
+#stock-symbol:focus,
+.interval-type-selector:focus {
+	outline: none;
 }
