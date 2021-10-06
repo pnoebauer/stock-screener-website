@@ -2,6 +2,10 @@ import React from 'react';
 
 import {connect} from 'react-redux';
 
+import {FullScreen} from '@chiragrupani/fullscreen-react';
+
+import {ImEnlarge2, ImShrink2} from 'react-icons/im';
+
 import Chart from './chart.component';
 
 import EditChartIndicatorsButton from '../edit-chart-indicators/edit-chart-indicators.component';
@@ -32,6 +36,7 @@ class ChartComponent extends React.Component {
 			width: window.innerWidth,
 			mainChartHeight: 300,
 			subChartHeight: 100,
+			isFullScreen: false,
 		};
 	}
 
@@ -172,70 +177,93 @@ class ChartComponent extends React.Component {
 		}
 		return (
 			<>
-				<div className='chart-settings'>
-					<div className='symbol-barperiod-select'>
-						<input
-							list='symbols'
-							name='stock-symbol'
-							id='stock-symbol'
-							onChange={this.onChange}
-							placeholder={this.state.symbol}
-							onKeyUp={this.onKeyUp}
-							onBlur={this.handleBlur}
-						/>
-						<datalist id='symbols'>
-							{SYMBOLS.map(stockName => (
-								<option key={stockName} value={stockName}>
-									{stockName}
-								</option>
-							))}
-						</datalist>
+				{/* <button onClick={e => this.setState({isFullScreen: true})}>Go Fullscreen</button> */}
+				<FullScreen
+					isFullScreen={this.state.isFullScreen}
+					onChange={isFullScreen => {
+						this.setState({isFullScreen});
+					}}
+				>
+					<button
+						onClick={e =>
+							this.setState(prevState => ({
+								isFullScreen: !prevState.isFullScreen,
+							}))
+						}
+						style={{position: 'relative', height: '30px', width: '30px'}}
+					>
+						{/* Go Fullscreen */}
+						{this.state.isFullScreen ? (
+							<ImShrink2 className='enlarge-icon' />
+						) : (
+							<ImEnlarge2 className='enlarge-icon' />
+						)}
+					</button>
+					<div className='chart-settings'>
+						<div className='symbol-barperiod-select'>
+							<input
+								list='symbols'
+								name='stock-symbol'
+								id='stock-symbol'
+								onChange={this.onChange}
+								placeholder={this.state.symbol}
+								onKeyUp={this.onKeyUp}
+								onBlur={this.handleBlur}
+							/>
+							<datalist id='symbols'>
+								{SYMBOLS.map(stockName => (
+									<option key={stockName} value={stockName}>
+										{stockName}
+									</option>
+								))}
+							</datalist>
 
-						<select
-							value={this.state.samplePeriod}
-							onChange={this.selectionChange}
-							name='selector'
-							className='interval-type-selector'
-						>
-							{INTERVALS.map((value, index) => (
-								// console.log( value, 'v') ||
-								<option value={value} key={index}>
-									{value}
-								</option>
-							))}
-						</select>
-						<EditChartIndicatorsButton />
+							<select
+								value={this.state.samplePeriod}
+								onChange={this.selectionChange}
+								name='selector'
+								className='interval-type-selector'
+							>
+								{INTERVALS.map((value, index) => (
+									// console.log( value, 'v') ||
+									<option value={value} key={index}>
+										{value}
+									</option>
+								))}
+							</select>
+							<EditChartIndicatorsButton />
+						</div>
+
+						<div className='chart-sizing-container'>
+							<label className='chart-sizing-label'>Chart Heights</label>
+							<SpinButton
+								defaultValue={300}
+								handleChange={this.setHeight}
+								name={'mainChartHeight'}
+								chartName={'main'}
+							/>
+							<SpinButton
+								defaultValue={100}
+								handleChange={this.setHeight}
+								name={'subChartHeight'}
+								chartName={'sub'}
+							/>
+						</div>
+
+						<AddChartIndicator key={this.props.indicatorConfigurations.length} />
 					</div>
 
-					<div className='chart-sizing-container'>
-						<label className='chart-sizing-label'>Chart Heights</label>
-						<SpinButton
-							defaultValue={300}
-							handleChange={this.setHeight}
-							name={'mainChartHeight'}
-							chartName={'main'}
-						/>
-						<SpinButton
-							defaultValue={100}
-							handleChange={this.setHeight}
-							name={'subChartHeight'}
-							chartName={'sub'}
-						/>
-					</div>
-
-					<AddChartIndicator key={this.props.indicatorConfigurations.length} />
-				</div>
-
-				<Chart
-					type={'svg'}
-					data={this.state.data}
-					stockSymbol={this.state.symbol}
-					width={this.state.width * 1}
-					mainChartHeight={this.state.mainChartHeight}
-					subChartHeight={this.state.subChartHeight}
-					loadData={this.loadData}
-					key={this.state.symbol}
-				/>
+					<Chart
+						type={'svg'}
+						data={this.state.data}
+						stockSymbol={this.state.symbol}
+						width={this.state.width * 1}
+						mainChartHeight={this.state.mainChartHeight}
+						subChartHeight={this.state.subChartHeight}
+						loadData={this.loadData}
+						key={this.state.symbol}
+					/>
+				</FullScreen>
 			</>
 		);
 	}

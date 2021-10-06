@@ -1,3 +1,12 @@
+:not(:root):fullscreen {
+	background: white;
+	overflow: scroll !important;
+}
+
+body:fullscreen {
+	height: 100vh !important;
+}
+
 svg.react-stockchart {
 	left: 0;
 }
@@ -39,7 +48,8 @@ button.chart-indicator-button {
 	width: 8%;
 }
 
-.chart-indicator-icon {
+.chart-indicator-icon,
+.enlarge-icon {
 	position: absolute;
 
 	left: 0;
@@ -54,7 +64,8 @@ button.chart-indicator-button {
 	cursor: pointer;
 }
 
-.chart-indicator-icon:hover {
+.chart-indicator-icon:hover,
+.enlarge-icon:hover {
 	transform: scale(1.1);
 }
 
