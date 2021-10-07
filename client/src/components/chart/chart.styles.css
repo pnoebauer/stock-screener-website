@@ -7,6 +7,16 @@ body:fullscreen {
 	height: 100vh !important;
 }
 
+#fullscreen-button {
+	position: relative;
+	height: 30px;
+	width: 30px;
+	top: 88px;
+	right: 59px;
+	float: right;
+	z-index: 1000;
+}
+
 svg.react-stockchart {
 	left: 0;
 }

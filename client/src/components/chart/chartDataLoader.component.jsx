@@ -177,7 +177,6 @@ class ChartComponent extends React.Component {
 		}
 		return (
 			<>
-				{/* <button onClick={e => this.setState({isFullScreen: true})}>Go Fullscreen</button> */}
 				<FullScreen
 					isFullScreen={this.state.isFullScreen}
 					onChange={isFullScreen => {
@@ -190,9 +189,8 @@ class ChartComponent extends React.Component {
 								isFullScreen: !prevState.isFullScreen,
 							}))
 						}
-						style={{position: 'relative', height: '30px', width: '30px'}}
+						id='fullscreen-button'
 					>
-						{/* Go Fullscreen */}
 						{this.state.isFullScreen ? (
 							<ImShrink2 className='enlarge-icon' />
 						) : (
