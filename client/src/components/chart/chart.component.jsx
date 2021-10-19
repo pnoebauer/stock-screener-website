@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 import {format} from 'd3-format';
 import {timeFormat} from 'd3-time-format';
 
-import {ChartCanvas, Chart} from 'react-stockcharts';
+import {ChartCanvas, Chart, ZoomButtons} from 'react-stockcharts';
 
 import './chart.styles.css';
 
@@ -182,9 +182,14 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			inactive: false,
 			startPoint,
 			start: 0,
+			// suffix: 1,
 		};
 
 		// console.log('s', this.state);
+
+		this.saveNode = this.saveNode.bind(this);
+		this.resetYDomain = this.resetYDomain.bind(this);
+		this.handleReset = this.handleReset.bind(this);
 	}
 
 	handleDownloadMore = async (start, end) => {
@@ -324,6 +329,26 @@ class CandleStickChartPanToLoadMore extends React.Component {
 	//  required to achieve the fade out effect
 	closeForm = () => this.setState({inactive: true});
 
+	componentWillMount() {
+		this.setState({
+			suffix: 1,
+		});
+	}
+	saveNode(node) {
+		this.node = node;
+	}
+	resetYDomain() {
+		this.node.resetYDomain();
+	}
+	handleReset() {
+		this.setState(
+			{
+				suffix: this.state.suffix + 1,
+			},
+			() => console.log(this.state.suffix, 'suf')
+		);
+	}
+
 	async componentDidUpdate(prevProps, prevState) {
 		const {indicatorConfigurations, data: inputData} = this.props;
 
@@ -443,6 +468,10 @@ class CandleStickChartPanToLoadMore extends React.Component {
 	render() {
 		const {type, width, ratio, height} = this.props;
 
+		// used for enabling/disabling zoom etc.
+		const {mouseMoveEvent, panEvent, zoomEvent, zoomAnchor} = this.props;
+		const {clamp} = this.props;
+
 		const {data, indicators, xScale, xAccessor, displayXAccessor} = this.state;
 
 		const {
@@ -450,6 +479,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 			indicatorConfigurations,
 			mainChartHeight,
 			subChartHeight,
+			stockSymbol,
 		} = this.props;
 
 		const mainIndicators = indicators.flatMap(indicator =>
@@ -472,6 +502,7 @@ class CandleStickChartPanToLoadMore extends React.Component {
 		return (
 			<>
 				<ChartCanvas
+					ref={this.saveNode}
 					ratio={ratio}
 					width={width}
 					height={canvasHeight}
@@ -483,6 +514,13 @@ class CandleStickChartPanToLoadMore extends React.Component {
 					xAccessor={xAccessor}
 					displayXAccessor={displayXAccessor}
 					onLoadMore={this.handleDownloadMore}
+
+					seriesName={`${stockSymbol}_${this.state.suffix}`}
+					mouseMoveEvent={mouseMoveEvent}
+					panEvent={panEvent}
+					zoomEvent={zoomEvent}
+					clamp={clamp}
+					zoomAnchor={zoomAnchor}
 				>
 					<Chart
 						id={1}
@@ -493,8 +531,14 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						]}
 						padding={{...mainChartPadding}}
 					>
-						<XAxis axisAt='bottom' orient='bottom' />
-						<YAxis axisAt='left' orient='left' ticks={5} stroke='#000000' />
+						<XAxis axisAt='bottom' orient='bottom' zoomEnabled={zoomEvent} />
+						<YAxis
+							axisAt='left'
+							orient='left'
+							ticks={5}
+							stroke='#000000'
+							zoomEnabled={zoomEvent}
+						/>
 
 						<MouseCoordinateY at='left' orient='left' displayFormat={format('.2f')} />
 						<MouseCoordinateX
@@ -552,6 +596,8 @@ class CandleStickChartPanToLoadMore extends React.Component {
 						/>
 
 						<OHLCTooltip origin={[5, -10]}></OHLCTooltip>
+
+						<ZoomButtons onReset={this.handleReset} />
 					</Chart>
 
 					{!!subIndicators.length &&
@@ -581,7 +627,13 @@ class CandleStickChartPanToLoadMore extends React.Component {
 										tickStrokeOpacity={0.3}
 										fontSize={10}
 									/>
-									<YAxis axisAt='right' orient='right' ticks={10} stroke='#000000' />
+									<YAxis
+										axisAt='right'
+										orient='right'
+										ticks={10}
+										stroke='#000000'
+										zoomEnabled={zoomEvent}
+									/>
 									<MouseCoordinateX
 										at='bottom'
 										orient='bottom'

@@ -1,6 +1,7 @@
 // export const SYMBOLS = ['SPX', '@ES', '@NQ', 'SPY'];
 
-export const INTERVALS = ['day', 'week', 'month', 'quarter', 'year'];
+// export const INTERVALS = ['day', 'week', 'month', 'quarter', 'year'];
+export const INTERVALS = ['day', 'week', 'month', 'year'];
 
 export const SP500 = [
 	'MMM',

@@ -170,6 +170,7 @@ function eventsHandler(req, res, queriedSymbols) {
 
 	// send the data object to the client
 	res.write(data);
+	console.log('events handler sending data');
 
 	const clientId = Date.now();
 
@@ -202,7 +203,7 @@ function eventsHandler(req, res, queriedSymbols) {
 app.get('/events/:id', async function (req, res) {
 	// client send queriedSymbols through url query string
 	const queriedSymbols = req.query.id;
-	// console.log(queriedSymbols);
+	console.log('events endpoint', {queriedSymbols});
 
 	// add client to clients array and send the data of all queriedSymbols
 	eventsHandler(req, res, queriedSymbols);
@@ -385,6 +386,7 @@ const retrieveSymbolWithIndicators = async queryObject => {
 // // retrieveSymbolWithIndicators(queryObject).then(data => console.log(data));
 
 app.get('/universes', (req, res) => {
+	console.log('universes endpoint', UNIVERSES);
 	return res.json(UNIVERSES);
 });
 
@@ -396,6 +398,8 @@ app.post('/scanner', (req, res) => {
 
 	retrieveSymbolWithIndicators(queryObject).then(data => {
 		// console.log(queryObject, data);
+
+		console.log('scanner endpoint', data);
 		return res.json(data);
 	});
 });
@@ -411,7 +415,7 @@ app.post('/chart', (req, res) => {
 	dbConnect
 		.retrieveSampledChartData(symbol, lookBack, samplePeriod, endDate)
 		.then(data => {
-			// console.log({data});
+			console.log('chart endpoint', data);
 			return res.json(data);
 		});
 

@@ -13,7 +13,8 @@ const addDays = (date, days) => {
 const convertDateToUnix = (...dateArgs) => {
 	// new Date(year, month, day, hours, minutes, seconds, milliseconds)
 	// Note: months range from 0 to 11
-	new Date(...dateArgs).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
+	// const newLocal = new Date(...dateArgs).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
+	return new Date(...dateArgs).getTime();
 };
 
 const fetchData = async (url, queryParams) => {

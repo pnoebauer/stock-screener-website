@@ -259,7 +259,7 @@ class ChartComponent extends React.Component {
 						mainChartHeight={this.state.mainChartHeight}
 						subChartHeight={this.state.subChartHeight}
 						loadData={this.loadData}
-						key={this.state.symbol}
+						key={this.state.symbol} //not needed (seriesname triggers the update), except for data loading
 					/>
 				</FullScreen>
 			</>
